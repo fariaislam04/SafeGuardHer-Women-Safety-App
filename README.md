@@ -1,4 +1,4 @@
-<h1 align="center" style="font-size: 52px;">SafeGuardHer: Women Safety App</h1>
+<h1 style="font-size: 52px;">SafeGuardHer: Women Safety App</h1>
 
 This is an easy-to-use women safety app designed to provide reliable safety tools for women. 
 (App is still under development)
