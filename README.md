@@ -28,24 +28,24 @@ The primary objectives of the SafeGuardHer app are:
 ## Project File Structure
 
 SafeGuardHer/ <br>
-├── lib/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp&nbsp;#contains all the main files <br>
-│ ├── main.dart````````````````````````````#This is where the project starts from <br>
-│ ├── screens/                             #Contains all the major screens
-│ │ ├── home_screen.dart                   #Contains track me screen, record screen etc.
-│ │ ├── record_screen.dart                 #Contains anonymous record screen
-│ │ ├── track_me_screen.dart               #Contains map and track-me feature
-│ ├── widgets/                             #Contains all widgets for the screens
-│ │ ├── app_bar.dart                       #Contains everything related to appbar
-│ │ ├── bottom_navbar.dart                 #Contains bottom navigation bar 
-│ │ ├── panic_button_widget.dart           #Contains panic button as FloatingActionButton
-├── assets/                                #Contains all images, icons etc.
-│ ├── illustrations/                       #Contains onBoarding page illustrations etc
-│ ├── logos/                               #Contains normal and splash screen logo
-│ ├── icons/                               #Contains icons for buttons
-├── test/
-│ ├── widget_test.dart
-├── README.md
-├── pubspec.yaml                           #Contains all the dependencies (run: flutter pub get)
-├── android/
-├── ios/
-└── build/
+├── lib/ <br>
+│ ├── main.dart <br>
+│ ├── screens/ <br>
+│ │ ├── home_screen.dart <br>
+│ │ ├── record_screen.dart <br>
+│ │ ├── track_me_screen.dart <br>
+│ ├── widgets/ <br>
+│ │ ├── app_bar.dart <br>
+│ │ ├── bottom_navbar.dart <br>
+│ │ ├── panic_button_widget.dart <br>
+├── assets/ <br>
+│ ├── illustrations/ <br>
+│ ├── logos/ <br>
+│ ├── icons/ <br>
+├── test/ <br>
+│ ├── widget_test.dart <br>
+├── README.md <br>
+├── pubspec.yaml <br>
+├── android/ <br>
+├── ios/ <br>
+└── build/ <br>
