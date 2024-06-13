@@ -28,7 +28,7 @@ The primary objectives of the SafeGuardHer app are:
 ## Project File Structure
 
 SafeGuardHer/ <br>
-├── lib/```````````````````````````````````#contains all the main files <br>
+├── lib/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp&nbsp;#contains all the main files <br>
 │ ├── main.dart````````````````````````````#This is where the project starts from <br>
 │ ├── screens/                             #Contains all the major screens
 │ │ ├── home_screen.dart                   #Contains track me screen, record screen etc.
