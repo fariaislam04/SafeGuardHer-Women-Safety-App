@@ -27,7 +27,7 @@ The primary objectives of the SafeGuardHer app are:
 
 ## Project File Structure
 
-SafeGuardHer/
+`SafeGuardHer/
 ├── lib/                                   #contains all the main files
 │ ├── main.dart                            #This is where the project starts from
 │ ├── screens/                             #Contains all the major screens
@@ -48,4 +48,4 @@ SafeGuardHer/
 ├── pubspec.yaml                           #Contains all the dependencies (run: flutter pub get)
 ├── android/
 ├── ios/
-└── build/
+└── build/`
