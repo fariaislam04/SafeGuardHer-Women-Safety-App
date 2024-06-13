@@ -1,0 +1,28 @@
+name: safeguardher_flutter_app
+description: "Women Safety Flutter App."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  badges: 2.0.2
+  flutter_svg: 2.0.9
+  font_awesome_flutter: 10.6.0
+  google_fonts: 6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logos/
+    - assets/illustrations/
+    - assets/icons/
