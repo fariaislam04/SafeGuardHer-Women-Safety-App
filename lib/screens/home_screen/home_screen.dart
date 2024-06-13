@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: _currentIndex == 0 || _currentIndex == 1 ? PanicButtonWidget() : null,
+      floatingActionButton: _currentIndex == 0 || _currentIndex == 1 ? const PanicButtonWidget() : null,
     );
   }
 

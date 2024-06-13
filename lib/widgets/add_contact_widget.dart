@@ -40,7 +40,7 @@ class AddContactWidget extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: 50,
+              width: 60,
               child: ElevatedButton(
                 onPressed: () {
                   if (kDebugMode) {
@@ -51,7 +51,7 @@ class AddContactWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(10), backgroundColor: const Color(0xFFCE0450),
                   shape: const CircleBorder(),
                 ),
-                child: const Icon(Icons.person, color: Colors.white),
+                child: const Icon(Icons.person_add_rounded, color: Colors.white),
               ),
             ),
           ],
