@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
+import 'package:vibration/vibration.dart';
 import '../../../constants/util/timer_util.dart';
 
 class TenSecondPanicScreen extends StatefulWidget {
@@ -11,7 +12,7 @@ class TenSecondPanicScreen extends StatefulWidget {
 }
 
 class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
-  late Timer _timer;
+  late Timer _countdownTimer;
   int _countdown = 10;
 
   @override
@@ -22,22 +23,40 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _countdownTimer.cancel();
     super.dispose();
   }
 
-  void _startCountdown() {
-    _timer = TimerUtil.startCountdown(
+  /*
+  Everytime the _startCountdown() function is being called, the _vibrate()
+  function is triggered, which makes the phone vibrate for each countdown.
+  Basically when the user clicks on panic button, the vibration will continue
+   until timer sets to zero or is turned off.
+   */
+
+
+  void _startCountdown()
+  {
+    _countdownTimer = TimerUtil.startCountdown(
       initialCount: _countdown,
-      onTick: (currentCount) {
-        setState(() {
+      onTick: (currentCount)
+      {
+        setState(()
+        {
           _countdown = currentCount;
+          _vibrate();
         });
       },
-      onComplete: () {
-        _timer.cancel();
+      onComplete: ()
+      {
+        _countdownTimer.cancel();
       },
     );
+  }
+
+  Future<void> _vibrate() async
+  {
+      await Vibration.vibrate(duration: 500);
   }
 
   @override
@@ -63,7 +82,7 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 80,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -145,7 +164,7 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   // Navigate to the Home page if user presses "STOP SOS"
-                  _timer.cancel();
+                  _countdownTimer.cancel();
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
