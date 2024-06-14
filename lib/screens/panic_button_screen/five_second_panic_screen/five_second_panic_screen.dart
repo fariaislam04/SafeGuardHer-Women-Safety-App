@@ -15,32 +15,26 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
   int _countdown = 5;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     _startCountdown();
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     _timer.cancel();
     super.dispose();
   }
 
-  void _startCountdown()
-  {
+  void _startCountdown() {
     _timer = TimerUtil.startCountdown(
       initialCount: _countdown,
-      onTick: (currentCount)
-      {
-        setState(()
-        {
+      onTick: (currentCount) {
+        setState(() {
           _countdown = currentCount;
         });
       },
-      onComplete: ()
-      {
+      onComplete: () {
         _timer.cancel();
       },
     );
@@ -51,63 +45,116 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
     return Scaffold(
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 32),
-            const Text(
-              'Within 5 seconds, your close contacts will be alerted of your whereabouts.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 140),
             RippleAnimation(
               key: UniqueKey(),
               repeat: true,
               duration: const Duration(milliseconds: 900),
-              ripplesCount: _countdown,
-              color: const Color(0xFFFB6D30),
-              minRadius: 180,
-              size: const Size(130, 130),
+              ripplesCount: 5,
+              color: const Color(0xFFFF9B70),
+              minRadius: 100,
+              size: const Size(170, 170),
               child: CircleAvatar(
                 radius: 50,
-                backgroundColor: const Color(0xFFFD4C00),
+                backgroundColor: const Color(0xFFFB6829),
                 child: Text(
                   '$_countdown',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 30,
+                    fontSize: 80,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 100),
             const Text(
-              'Press the button below to stop SOS alert.',
+              'KEEP CALM!',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins',
+                color: Color(0xFFD20451),
               ),
             ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the Home page if user presses "STOP SOS"
-                _timer.cancel();
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: const Color(0xFFD20452),
-                minimumSize: const Size(200, 70),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: const TextSpan(
+                  text: 'Within ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                    color: Colors.black,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '5 seconds,',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' your ',
+                    ),
+                    TextSpan(
+                      text: 'close contacts',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' will be alerted of your whereabouts.',
+                    ),
+                  ],
                 ),
               ),
-              child: const Text('STOP SENDING SOS ALERT'),
+            ),
+            const SizedBox(height: 60),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Press the button below to stop SOS alert.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 50),
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigate to the Home page if user presses "STOP SOS"
+                  _timer.cancel();
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFFD20452),
+                  minimumSize: const Size(200, 70),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                child: const Text(
+                  'STOP SENDING SOS ALERT',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
             ),
           ],
         ),

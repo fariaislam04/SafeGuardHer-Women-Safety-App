@@ -34,11 +34,15 @@ SafeGuardHer/ <br>
 │ │ ├── home_screen.dart <br>
 │ │ ├── record_screen.dart <br>
 │ │ ├── track_me_screen.dart <br>
+│ ├── constants/ <br>
+│ │ ├── util/ <br>
+│ │ │ ├── timer_util.dart/ <br>
 │ ├── widgets/ <br>
 │ │ ├── app_bar.dart <br>
 │ │ ├── bottom_navbar.dart <br>
 │ │ ├── panic_button_widget.dart <br>
 ├── assets/ <br>
+│ ├── fonts/ <br>
 │ ├── illustrations/ <br>
 │ ├── logos/ <br>
 │ ├── icons/ <br>
