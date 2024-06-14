@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../widgets/app_bar.dart';
 
 class RecordScreen extends StatelessWidget {
   const RecordScreen({super.key});

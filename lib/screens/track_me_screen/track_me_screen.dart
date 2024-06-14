@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../widgets/add_contact_widget.dart';
-import '../../widgets/app_bar.dart';
 
 class TrackMeScreen extends StatelessWidget {
   const TrackMeScreen({super.key});
