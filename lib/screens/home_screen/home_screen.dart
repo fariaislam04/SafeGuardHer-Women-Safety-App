@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safeguardher_flutter_app/widgets/app_bar.dart';
 import '../../widgets/bottom_navbar.dart';
 import '../../widgets/panic_button_widget.dart';
 import '../record_screen/record_screen.dart';
@@ -18,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: const CustomAppBar(),
       body: _buildBody(),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
