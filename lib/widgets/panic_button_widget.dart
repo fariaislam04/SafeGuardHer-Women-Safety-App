@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:safeguardher_flutter_app/screens/panic_button_screen/10_second_panic_screen/10_second_panic_screen.dart';
-import 'package:safeguardher_flutter_app/screens/panic_button_screen/5_second_panic_screen/5_second_panic_screen.dart';
+import 'package:safeguardher_flutter_app/screens/panic_button_screen'
+    '/ten_second_panic_screen/ten_second_panic_screen.dart';
+import 'package:safeguardher_flutter_app/screens/panic_button_screen'
+    '/five_second_panic_screen/five_second_panic_screen.dart';
 
 class PanicButtonWidget extends StatefulWidget {
   const PanicButtonWidget({super.key});
