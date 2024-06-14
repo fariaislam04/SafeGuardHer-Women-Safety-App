@@ -14,6 +14,7 @@ class TimerUtil
       {
         countdown--;
         onTick(countdown);
+
       }
       else
       {

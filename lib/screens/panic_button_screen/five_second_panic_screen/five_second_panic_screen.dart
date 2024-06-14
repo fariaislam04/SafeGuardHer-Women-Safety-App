@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:vibration/vibration.dart';
 import '../../../constants/util/timer_util.dart';
 
 class FiveSecondPanicScreen extends StatefulWidget {
@@ -29,15 +30,24 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
   void _startCountdown() {
     _timer = TimerUtil.startCountdown(
       initialCount: _countdown,
-      onTick: (currentCount) {
-        setState(() {
+      onTick: (currentCount)
+      {
+        setState(()
+        {
           _countdown = currentCount;
+          _vibrate();
         });
       },
-      onComplete: () {
+      onComplete: ()
+      {
         _timer.cancel();
       },
     );
+  }
+
+  Future<void> _vibrate() async
+  {
+    await Vibration.vibrate(duration: 500);
   }
 
   @override
@@ -63,7 +73,7 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 80,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

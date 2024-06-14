@@ -7,16 +7,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => const Size.fromHeight(85);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
-      toolbarHeight: 80,
+      toolbarHeight: 90,
       leadingWidth: 200,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 15.0),
+        padding: const EdgeInsets.only(left: 15.0, top: 5.0),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -25,7 +25,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: SvgPicture.asset(
                 'assets/logos/logo.svg',
                 width: 80,
-                height: 45,
+                height: 50,
                 fit: BoxFit.contain,
               ),
             ),
@@ -34,33 +34,45 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: <Widget>[
         Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              badges.Badge(
-                badgeContent: const Text('3', style: TextStyle(color: Colors.white)),
-                badgeColor: const Color(0xFFCE0450),
-                child: IconButton(
-                  onPressed: () {
-                    if (kDebugMode) {
-                      print("Notification btn");
-                    }
-                  },
-                  icon: const Icon(Icons.notifications),
-                  color: const Color(0xFF222222),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 0.0, top: 5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: badges.Badge(
+                    badgeContent: const Text('3', style: TextStyle(color: Colors.white)),
+                    badgeStyle: const badges.BadgeStyle(
+                      badgeColor: Color(0xFFCE0450),
+                      padding: EdgeInsets.all(6),
+                      shape: badges.BadgeShape.circle,
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        if (kDebugMode) {
+                          print("Notification btn");
+                        }
+                      },
+                      icon: const Icon(Icons.notifications),
+                      color: const Color(0xFF222222),
+                    ),
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: () {
-                  if (kDebugMode) {
-                    print("menu btn");
-                  }
-                },
-                padding: const EdgeInsets.only(left: 30.0, right: 24.0),
-                icon: const Icon(Icons.menu),
-                color: const Color(0xFF222222),
-              )
-            ],
+                const SizedBox(width: 15),
+                Flexible(
+                  child: IconButton(
+                    onPressed: () {
+                      if (kDebugMode) {
+                        print("menu btn");
+                      }
+                    },
+                    icon: const Icon(Icons.menu),
+                    color: const Color(0xFF222222),
+                  ),
+                ),
+                const SizedBox(width: 16),
+              ],
+            ),
           ),
         ),
       ],
