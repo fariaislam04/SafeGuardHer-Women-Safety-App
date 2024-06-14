@@ -38,8 +38,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               badges.Badge(
-                badgeContent: const Text('3', style: TextStyle(color: Colors.white)),
-                badgeColor: const Color(0xFFCE0450),
+                badgeContent:
+                    const Text('3', style: TextStyle(color: Colors.white)),
+                // badgeColor: const Color(0xFFCE0450),
                 child: IconButton(
                   onPressed: () {
                     if (kDebugMode) {
