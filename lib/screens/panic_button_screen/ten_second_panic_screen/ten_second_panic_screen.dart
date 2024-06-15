@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 import 'package:vibration/vibration.dart';
+import 'package:toastification/toastification.dart';
 import '../../../constants/util/timer_util.dart';
+import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 
 class TenSecondPanicScreen extends StatefulWidget {
   const TenSecondPanicScreen({super.key});
@@ -27,36 +28,51 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
     super.dispose();
   }
 
-  /*
-  Everytime the _startCountdown() function is being called, the _vibrate()
-  function is triggered, which makes the phone vibrate for each countdown.
-  Basically when the user clicks on panic button, the vibration will continue
-   until timer sets to zero or is turned off.
-   */
-
-
-  void _startCountdown()
-  {
+  void _startCountdown() {
     _countdownTimer = TimerUtil.startCountdown(
       initialCount: _countdown,
-      onTick: (currentCount)
-      {
-        setState(()
-        {
+      onTick: (currentCount) {
+        setState(() {
           _countdown = currentCount;
           _vibrate();
         });
       },
-      onComplete: ()
-      {
+      onComplete: () {
         _countdownTimer.cancel();
       },
     );
   }
 
-  Future<void> _vibrate() async
-  {
-      await Vibration.vibrate(duration: 500);
+  Future<void> _vibrate() async {
+    await Vibration.vibrate(duration: 500);
+  }
+
+  void _showCustomToast(BuildContext context) {
+    toastification.showCustom(
+      context: context,
+      autoCloseDuration: const Duration(seconds: 10),
+      alignment: const AlignmentDirectional(-1, -1),
+      builder: (BuildContext context, ToastificationItem holder) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.red,
+          ),
+          padding: const EdgeInsets.all(8),
+          margin: const EdgeInsets.all(8),
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Panic alert aborted',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight
+                    .w600, fontSize: 12),
+              ),
+              SizedBox(height: 5)
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -88,7 +104,6 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
               ),
             ),
             const SizedBox(height: 100),
-            // space
             const Text(
               'KEEP CALM!',
               textAlign: TextAlign.center,
@@ -163,12 +178,13 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
               padding: const EdgeInsets.only(bottom: 50),
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigate to the Home page if user presses "STOP SOS"
                   _countdownTimer.cancel();
+                  _showCustomToast(context);
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: const Color(0xFFD20452),
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFFD20452),
                   minimumSize: const Size(200, 70),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

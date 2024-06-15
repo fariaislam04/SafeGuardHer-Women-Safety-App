@@ -12,15 +12,7 @@ class TrackMeScreen extends StatelessWidget {
         children: [
           const AddContactWidget(),
           Expanded(
-            child: Container(
-              color: Colors.grey[200],
-              child: const Center(
-                child: Text(
-                  'Beems er map part',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ),
-            ),
+            child: Image.asset('assets/illustrations/map.png'),
           ),
         ],
       ),
