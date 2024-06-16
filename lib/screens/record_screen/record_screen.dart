@@ -1,8 +1,62 @@
+import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mic_stream/mic_stream.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:safeguardher_flutter_app/screens/record_screen/view_recordings_history.dart';
 
-class RecordScreen extends StatelessWidget {
+class RecordScreen extends StatefulWidget {
   const RecordScreen({super.key});
+
+  @override
+  State<RecordScreen> createState() => _RecordScreenState();
+}
+
+class _RecordScreenState extends State<RecordScreen> {
+  StreamSubscription? streamSubscription;
+  List<int> samples = [];
+  Stream? stream;
+  bool isListening = false;
+
+  @override
+  void initState()
+  {
+    super.initState();
+    Permission.microphone.isGranted.then((value)
+    {
+      if (!value)
+      {
+        Permission.microphone.request();
+      }
+    });
+  }
+
+  startListening() async
+  {
+    stream = MicStream.microphone(sampleRate: 16000,
+        audioSource: AudioSource.MIC,
+        channelConfig: ChannelConfig.CHANNEL_IN_MONO);
+    if (stream != null)
+    {
+      streamSubscription = stream!.listen((event)
+      {
+        setState(() {
+          samples = event;
+        });
+      });
+    }
+    else
+    {
+      log("microphone stream is null");
+    }
+  }
+
+  stopListening()
+  {
+    log("stopping");
+    streamSubscription?.cancel();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +79,7 @@ class RecordScreen extends StatelessWidget {
             const Text(
               'Anonymously record audio/video without notifying others.',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 11,
                 fontFamily: 'Poppins',
                 color: Colors.grey,
               ),
@@ -52,36 +106,65 @@ class RecordScreen extends StatelessWidget {
                 ),
                 subtitle: const Text('Tap to see history'),
                 onTap: () {
-                  // Navigate to recordings history screen
+                  isListening = false;
+                  stopListening();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ViewRecordingsHistory(),
+                    ),
+                  );
+
                 },
                 trailing: const Icon(
                   Icons.arrow_forward_ios,
-                  color: Color(0xFF263238), // Change the color of the icon
-                  size: 15, // Change the size of the icon
+                  color: Color(0xFF263238),
+                  size: 15,
                 ),
               ),
             ),
-            const Spacer(flex: 5),
+            const SizedBox(height: 0),
+            // Audio Visualizer
+            Row(
+              children: [
+                ...List.generate(
+                  samples.length,
+                      (index) => CustomPaint(
+                    foregroundPainter: LinePainter(samples[index], index * 2),
+                    child: Container(),
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(flex: 6),
             Center(
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // Start recording
+                  setState(() {
+                    if (!isListening) {
+                      isListening = true;
+                      startListening();
+                    } else {
+                      isListening = false;
+                      stopListening();
+                    }
+                  });
                 },
                 icon: Container(
-                  padding: const EdgeInsets.all(0.5), // Border width
+                  padding: const EdgeInsets.all(0.5),
                   decoration: const BoxDecoration(
-                    color: Colors.white, // Border color
+                    color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.fiber_manual_record,
-                    color: Colors.red,
-                    size: 24, // Icon size
+                  child: Icon(
+                    isListening ? Icons.stop : Icons.fiber_manual_record,
+                    color: isListening ? Colors.black : Colors.red,
+                    size: 24,
                   ),
                 ),
-                label: const Text(
-                  'Start Recording',
-                  style: TextStyle(
+                label: Text(
+                  isListening ? 'Stop Recording' : 'Start Recording',
+                  style: const TextStyle(
                     fontSize: 13,
                     fontFamily: 'Poppins',
                     color: Colors.white,
@@ -106,4 +189,27 @@ class RecordScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class LinePainter extends CustomPainter {
+  final int height;
+  final int gap;
+
+  LinePainter(this.height, this.gap);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint();
+    paint.color = const Color(0xFFF93F95);
+    paint.strokeWidth = 1;
+
+    canvas.drawLine(
+      Offset(gap.toDouble(), -height.toDouble() + 200),
+      Offset(gap.toDouble(), 200),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
