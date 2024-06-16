@@ -14,15 +14,22 @@ dependencies:
   badges: 3.1.2
   flutter_svg: 2.0.10+1
   font_awesome_flutter: 10.7.0
+  toastification: ^2.0.0
+  permission_handler: ^11.3.1
+  background_sms: ^0.0.4
   google_fonts: 6.2.1
   device_info_plus: ^10.1.0
   awesome_ripple_animation: 2.0.0
+  mic_stream: ^0.7.1+2
   flutter_native_splash: ^2.4.0
   smooth_page_indicator: ^1.1.0
   onboarding: ^4.0.2
   shared_preferences: ^2.0.6
   introduction_screen: ^3.1.14
 
+  flutter_audio_waveforms: ^1.2.1+8
+  just_waveform: ^0.0.5
+  firebase_core: ^3.1.0
 
 dev_dependencies:
   flutter_test:

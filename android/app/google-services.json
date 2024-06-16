@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "404049514776",
+    "project_id": "safeguardher-app",
+    "storage_bucket": "safeguardher-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:404049514776:android:82266952c9e852f4508e6d",
+        "android_client_info": {
+          "package_name": "com.example.safeguardher_flutter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdnFuBOHW0OuV45PWUR8_CZe_1tUg6TeQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

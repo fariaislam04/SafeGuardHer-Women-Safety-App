@@ -23,6 +23,7 @@ class AddContactWidget extends StatelessWidget {
                       'Track Me',
                       style: TextStyle(
                         fontSize: 14,
+                        fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
@@ -33,6 +34,7 @@ class AddContactWidget extends StatelessWidget {
                     'Share your live location with close contacts',
                     style: TextStyle(
                       fontSize: 11,
+                      fontFamily: 'Poppins',
                       color: Colors.black,
                     ),
                   ),

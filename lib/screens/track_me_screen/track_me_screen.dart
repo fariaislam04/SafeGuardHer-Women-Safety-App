@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/add_contact_widget.dart';
+import '../../widgets/custom_widgets/add_contact_widget.dart';
 
 class TrackMeScreen extends StatelessWidget {
   const TrackMeScreen({super.key});
@@ -12,15 +12,7 @@ class TrackMeScreen extends StatelessWidget {
         children: [
           const AddContactWidget(),
           Expanded(
-            child: Container(
-              color: Colors.grey[200],
-              child: const Center(
-                child: Text(
-                  'Beems er map part',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ),
-            ),
+            child: Image.asset('assets/illustrations/map.png'),
           ),
         ],
       ),
