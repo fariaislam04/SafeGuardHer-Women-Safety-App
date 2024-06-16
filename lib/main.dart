@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 
-void main() {
-  runApp(const SafeGuardHer());
+void main () {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+    runApp(const SafeGuardHer());
+  });
 }
 
 class SafeGuardHer extends StatelessWidget {
