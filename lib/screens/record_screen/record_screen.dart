@@ -77,7 +77,8 @@ class _RecordScreenState extends State<RecordScreen> {
             ),
             const SizedBox(height: 10),
             const Text(
-              'Anonymously record audio/video without notifying others.',
+              'Anonymously record audio and capture images without notifying '
+                  'others.',
               style: TextStyle(
                 fontSize: 11,
                 fontFamily: 'Poppins',
