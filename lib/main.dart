@@ -14,7 +14,7 @@ Future<void> main () async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool seenOnboarding = prefs.getBool('seenOnboarding') ?? false;
-  
+
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
    runApp(SafeGuardHer(seenOnboarding: seenOnboarding));
@@ -24,13 +24,13 @@ Future<void> main () async {
 class SafeGuardHer extends StatelessWidget {
   final bool seenOnboarding;
 
-  const SafeGuardHer({required this.seenOnboarding});
+  const SafeGuardHer({super.key, required this.seenOnboarding});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: seenOnboarding ? HomeScreen() : OnboardingScreen(),
+      home: seenOnboarding ? const HomeScreen() : OnboardingScreen(),
     );
   }
 }
