@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:safeguardher_flutter_app/screens/panic_button_screen/safety_code_screen/safety_code_screen.dart';
+import 'package:safeguardher_flutter_app/screens/panic_button_screen/stop_panic_alert_screen/stop_panic_alert_screen.dart';
 import 'package:vibration/vibration.dart';
 import '../../../constants/util/timer_util.dart';
 
@@ -45,7 +46,7 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SafetyCodeScreen(),
+            builder: (context) => const SafetyCodeScreen(),
           ),
         );
       },
@@ -153,7 +154,12 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
                 onPressed: () {
                   // Navigate to the Home page if user presses "STOP SOS"
                   _timer.cancel();
-                  Navigator.of(context).pop();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                      builder: (context) => const StopPanicAlertScreen(),
+                  )
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,

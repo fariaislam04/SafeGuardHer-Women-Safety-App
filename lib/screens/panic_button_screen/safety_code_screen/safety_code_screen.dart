@@ -2,112 +2,127 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SafetyCodeScreen extends StatefulWidget {
+  const SafetyCodeScreen({super.key});
+
   @override
-  _SafetyCodeScreenState createState() => _SafetyCodeScreenState();
+  SafetyCodeScreenState createState() => SafetyCodeScreenState();
 }
 
-class _SafetyCodeScreenState extends State<SafetyCodeScreen> {
-  final TextEditingController codeController1 = TextEditingController();
-  final TextEditingController codeController2 = TextEditingController();
-  final TextEditingController codeController3 = TextEditingController();
-  final TextEditingController codeController4 = TextEditingController();
-
-  String verificationStatus = '';
-
-  @override
-  void initState() {
-    super.initState();
-    // Clear the verification status when initializing the screen
-    resetVerificationStatus();
-  }
-
-  // Function to reset verification status
-  void resetVerificationStatus() {
-    setState(() {
-      verificationStatus = '';
-    });
-  }
+class SafetyCodeScreenState extends State<SafetyCodeScreen> {
+  final List<TextEditingController> _controllers = List.generate(4, (index) => TextEditingController());
+  final String _correctCode = "2001";
+  String _message = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF6C022A),
+      backgroundColor: const Color(0xFF6C022A),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Stack(
           children: [
-            SizedBox(height: 20),
-            SvgPicture.asset('assets/icons/bell_ring.svg'), // Replace with your logo asset
-            const SizedBox(height: 30),
-            Text(
-              'Your close contacts have been notified and help will arrive soon',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
+            Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () {
+                        // Handle back button logic here
+                      },
+                    ),
+                    const Spacer(flex: 5),
+                    SvgPicture.asset('assets/logos/logo_dark_theme.svg', height: 80),
+                    const Spacer(flex: 2),
+                  ],
+                ),
               ),
             ),
-            SizedBox(height: 50),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  SizedBox(height: 20),
-                  Text(
-                    'Enter safe code',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Container(
+                  padding: EdgeInsets.all(24.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    'To stop panic alert, enter the safe code sent to your close contacts',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      buildCodeTextField(codeController1, 1),
-                      buildCodeTextField(codeController2, 2),
-                      buildCodeTextField(codeController3, 3),
-                      buildCodeTextField(codeController4, 4),
+                      const SizedBox(height: 30),
+                      const Text(
+                        'Your close contacts have been\nnotified and help will arrive soon',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.black, fontSize: 18),
+                      ),
+                      const SizedBox(height: 40),
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset('assets/icons/bell_ring.svg', height: 60),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      _message.isEmpty
+                          ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(4, (index) {
+                          return Container(
+                            width: 50,
+                            height: 50,
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: TextField(
+                              controller: _controllers[index],
+                              keyboardType: TextInputType.number,
+                              maxLength: 1,
+                              textAlign: TextAlign.center,
+                              decoration: const InputDecoration(
+                                counterText: '',
+                                border: InputBorder.none,
+                              ),
+                              onChanged: (value) {
+                                if (value.length == 1 && index < 3) {
+                                  FocusScope.of(context).nextFocus();
+                                }
+                              },
+                            ),
+                          );
+                        }),
+                      )
+                          : Text(
+                        _message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.black, fontSize: 18),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: _verifyCode,
+                        child: const Text('Verify Code'),
+                      ),
+                      const SizedBox(height: 20),
+                      TextButton(
+                        onPressed: () {
+                          // Handle resend OTP logic here
+                        },
+                        child: const Text(
+                          'Resend safe OTP',
+                          style: TextStyle(color: Color(0xFF6C022A)),
+                        ),
+                      ),
                     ],
                   ),
-                  SizedBox(height: 20),
-                  Text(
-                    verificationStatus,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  GestureDetector(
-                    onTap: () {
-                      // Resend OTP function
-                    },
-                    child: Text(
-                      'Resend safe OTP',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                ],
+                ),
               ),
             ),
           ],
@@ -116,59 +131,20 @@ class _SafetyCodeScreenState extends State<SafetyCodeScreen> {
     );
   }
 
-  Widget buildCodeTextField(TextEditingController controller, int index) {
-    return Container(
-      width: 50,
-      height: 50,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black54),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        controller: controller,
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          counterText: "",
-        ),
-        style: TextStyle(fontSize: 24, color: Colors.black),
-        onChanged: (value) {
-          // Handle onChanged event
-          if (value.length == 1) {
-            // Move focus to the next TextField or handle validation
-            FocusScope.of(context).nextFocus();
-
-            // Check if all fields are filled
-            if (codeController1.text.isNotEmpty &&
-                codeController2.text.isNotEmpty &&
-                codeController3.text.isNotEmpty &&
-                codeController4.text.isNotEmpty) {
-              // Check the entered code
-              String enteredCode = codeController1.text +
-                  codeController2.text +
-                  codeController3.text +
-                  codeController4.text;
-              if (enteredCode == '2001') {
-                setState(() {
-                  verificationStatus = 'Verified';
-                });
-              } else {
-                setState(() {
-                  verificationStatus = 'Please try again';
-                  // Clear text fields for retry
-                  codeController1.clear();
-                  codeController2.clear();
-                  codeController3.clear();
-                  codeController4.clear();
-                });
-              }
-            }
-          }
-        },
-      ),
-    );
+  void _verifyCode() {
+    String inputCode = _controllers.map((e) => e.text).join();
+    if (inputCode == _correctCode) {
+      setState(() {
+        _message =
+        "Safe Code Verified!\nYou will be redirected to Report Incident page soon.";
+      });
+    } else {
+      setState(() {
+        _message = "Please try again";
+      });
+      for (var controller in _controllers) {
+        controller.clear();
+      }
+    }
   }
 }

@@ -9,7 +9,8 @@ class AddContactWidget extends StatelessWidget {
     return Container(
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+        padding: const EdgeInsets.only(top:5.0, bottom: 15.0, left: 15.0,
+            right: 10.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -18,7 +19,7 @@ class AddContactWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(top: 5.0),
+                    padding: EdgeInsets.only(top: 0.0),
                     child: Text(
                       'Track Me',
                       style: TextStyle(
@@ -29,11 +30,11 @@ class AddContactWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 3.0),
+                  SizedBox(height: 2.0),
                   Text(
                     'Share your live location with close contacts',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontFamily: 'Poppins',
                       color: Colors.black,
                     ),

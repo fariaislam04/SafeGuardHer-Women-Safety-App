@@ -5,6 +5,8 @@ import 'package:toastification/toastification.dart';
 import '../../../constants/util/timer_util.dart';
 import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 
+import '../stop_panic_alert_screen/stop_panic_alert_screen.dart';
+
 class TenSecondPanicScreen extends StatefulWidget {
   const TenSecondPanicScreen({super.key});
 
@@ -179,8 +181,13 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   _countdownTimer.cancel();
-                  _showCustomToast(context);
-                  Navigator.of(context).pop();
+                 // _showCustomToast(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const StopPanicAlertScreen(),
+                      )
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
