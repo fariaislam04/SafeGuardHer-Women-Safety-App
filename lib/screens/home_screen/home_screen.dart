@@ -20,12 +20,14 @@ class HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: const [
-          TrackMeScreen(),
-          RecordScreen(),
-        ],
+      body: SafeArea(
+        child: IndexedStack(
+          index: _currentIndex,
+          children: const [
+            TrackMeScreen(),
+            RecordScreen(),
+          ],
+        ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,

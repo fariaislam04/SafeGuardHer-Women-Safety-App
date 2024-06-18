@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../screens/settings_screen/settings_screen.dart';
+import '../animations/bottom_to_top_animation.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -63,9 +65,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 Flexible(
                   child: IconButton(
                     onPressed: () {
-                      if (kDebugMode) {
-                        print("menu btn");
-                      }
+                      Navigator.push(
+                        context,
+                        BottomToTopAnimatedRoute(page: const SettingsScreen()),
+                      );
                     },
                     icon: const Icon(Icons.menu),
                     color: const Color(0xFF222222),
@@ -84,3 +87,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
+
+
+
