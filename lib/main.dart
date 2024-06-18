@@ -9,10 +9,10 @@ import 'package:safeguardher_flutter_app/screens/logininfo_screen/logininfo_scre
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  /* WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  ); */
+  );
 
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -21,13 +21,15 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(SafeGuardHer(seenOnboarding: seenOnboarding));
+
+
   });
 }
 
 class SafeGuardHer extends StatelessWidget {
   final bool seenOnboarding;
 
-  const SafeGuardHer({required this.seenOnboarding});
+  const SafeGuardHer({super.key, required this.seenOnboarding});
 
   @override
   Widget build(BuildContext context) {
