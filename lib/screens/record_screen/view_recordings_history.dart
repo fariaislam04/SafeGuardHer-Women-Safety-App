@@ -13,6 +13,23 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
   final List<Map<String, dynamic>> recordings = [
     {'date': '16/05/24', 'duration': '25'},
     {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25'},
   ];
 
   @override
@@ -20,7 +37,7 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.only(left: 15.0, top: 3.0, right: 15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,16 +73,17 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
             ),
             const Divider(color: Color(0xFFEDEDED)),
             const SizedBox(height: 13),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: recordings.length,
-              itemBuilder: (context, index) {
-                final recording = recordings[index];
-                return RecordedHistoryTile(
-                  date: recording['date'],
-                  duration: recording['duration'],
-                );
-              },
+            Expanded(
+              child: ListView.builder(
+                itemCount: recordings.length,
+                itemBuilder: (context, index) {
+                  final recording = recordings[index];
+                  return RecordedHistoryTile(
+                    date: recording['date'],
+                    duration: recording['duration'],
+                  );
+                },
+              ),
             ),
           ],
         ),

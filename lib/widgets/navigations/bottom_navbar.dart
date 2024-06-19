@@ -12,34 +12,36 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          top: BorderSide(width: 1.0, color: Color(0xFFEDEDED)),
+    return SafeArea(
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            top: BorderSide(width: 1.0, color: Color(0xFFEDEDED)),
+          ),
         ),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: onTap,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.symmetric(vertical: 9.0),
-              child: Icon(Icons.location_pin, size: 35),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: onTap,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Padding(
+                padding: EdgeInsets.symmetric(vertical: 5.0),
+                child: Icon(Icons.location_pin, size: 35),
+              ),
+              label: 'Track Me',
             ),
-            label: 'Track Me',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.symmetric(vertical: 9.0),
-              child: Icon(Icons.multitrack_audio),
+            BottomNavigationBarItem(
+              icon: Padding(
+                padding: EdgeInsets.symmetric(vertical: 5.0),
+                child: Icon(Icons.multitrack_audio),
+              ),
+              label: 'Record',
             ),
-            label: 'Record',
-          ),
-        ],
-        selectedItemColor: const Color(0xFFD20451),
-        unselectedItemColor: Colors.grey,
-        iconSize: 35,
+          ],
+          selectedItemColor: const Color(0xFFD20451),
+          unselectedItemColor: Colors.grey,
+          iconSize: 35,
+        ),
       ),
     );
   }
