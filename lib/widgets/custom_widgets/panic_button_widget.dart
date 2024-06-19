@@ -19,7 +19,7 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
 
   /*============================================================================
    *  PANIC BUTTON HANDLER: If user presses the panic button once, the program
-   *  waits for 3 seconds to see if the user presses anymore. If not, then 10
+   *  waits for 2 seconds to see if the user presses anymore. If not, then 10
    *  second timer starts.
    *  If the user presses the panic button 3 times, the function triggers 5
    *  second timer.
@@ -34,7 +34,7 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
     if (!_isTimerActive)
     {
       _isTimerActive = true;
-      Future.delayed(const Duration(seconds: 3), () {
+      Future.delayed(const Duration(seconds: 2), () {
         setState(() {
           _isTimerActive = false;
           if (_pressCount == 1)
@@ -99,10 +99,11 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
         ),
         const SizedBox(height: 8),
         const Padding(
-          padding: EdgeInsets.only(top: 10.0, bottom: 5),
+          padding: EdgeInsets.only(bottom: 5),
           child: Text(
-            'Panic Button',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+            'Panic',
+            style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight:
+            FontWeight.w500),
           ),
         ),
       ],
