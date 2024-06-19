@@ -11,25 +11,18 @@ class ViewRecordingsHistory extends StatefulWidget {
 
 class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
   final List<Map<String, dynamic>> recordings = [
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
-    {'date': '16/05/24', 'duration': '25'},
+    {'date': '16/05/24', 'duration': '25 minutes'},
+    {'date': '15/05/24', 'duration': '30 seconds'},
+    {'date': '14/05/24', 'duration': '27 minutes'},
+    {'date': '13/05/24', 'duration': '32 minutes'},
+    {'date': '12/05/24', 'duration': '29 seconds'},
+    {'date': '11/05/24', 'duration': '33 seconds'},
+    {'date': '10/05/24', 'duration': '26 minutes'},
+    {'date': '09/05/24', 'duration': '35 minutes'},
+    {'date': '08/05/24', 'duration': '28 minutes'},
+    {'date': '07/05/24', 'duration': '31 seconds'},
+    {'date': '06/05/24', 'duration': '34 minutes'},
+    {'date': '05/05/24', 'duration': '30 seconds'},
   ];
 
   @override

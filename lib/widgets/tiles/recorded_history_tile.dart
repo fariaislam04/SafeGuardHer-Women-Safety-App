@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safeguardher_flutter_app/screens/record_screen/recording_details.dart';
 
 class RecordedHistoryTile extends StatelessWidget {
   final String date;
@@ -26,11 +27,16 @@ class RecordedHistoryTile extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        subtitle: Text('Lasted $duration seconds', style: const TextStyle
+        subtitle: Text('Lasted $duration', style: const TextStyle
           (fontFamily: 'Poppins', fontSize: 11),),
         onTap: () {
           // Navigate to record details page
-
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+              builder: (context) => const RecordingDetails(),
+          ),
+          );
         },
         trailing: const Icon(
           Icons.arrow_forward_ios,
