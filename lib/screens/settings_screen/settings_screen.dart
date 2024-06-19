@@ -13,8 +13,7 @@ class SettingsScreen extends StatelessWidget {
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(left: 0.0, right: 0.0, top: 0.0),
-            child: ClipRRect( // Wrap content with ClipRRect for rounded border
-              borderRadius: BorderRadius.circular(16.0),
+            child: ClipRRect(
               child: Column(
                 children: [
                   Row(
@@ -26,7 +25,7 @@ class SettingsScreen extends StatelessWidget {
                         color: Colors.white,
                         padding: const EdgeInsets.only(right: 30.0),
                         onPressed: () {
-                          Navigator.pop(context); // Close SettingsScreen
+                          Navigator.pop(context);
                         },
                       ),
                     ],
@@ -39,6 +38,8 @@ class SettingsScreen extends StatelessWidget {
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(16.0),
                           topRight: Radius.circular(16.0),
+                          bottomRight: Radius.circular(0.0),
+                          bottomLeft: Radius.circular(0.0),
                         ),
                       ),
                       child: Padding(
