@@ -32,6 +32,7 @@ dependencies:
   just_audio: ^0.9.38
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
+  google_maps_flutter: ^2.2.8
 
 
 dev_dependencies:
@@ -42,6 +43,7 @@ dev_dependencies:
   build_runner: ^2.4.11
   custom_lint: ^0.6.4
   riverpod_lint: ^2.3.10
+
 
 flutter:
   uses-material-design: true
