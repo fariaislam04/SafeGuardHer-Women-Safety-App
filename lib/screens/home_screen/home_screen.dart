@@ -23,7 +23,7 @@ class HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: IndexedStack(
           index: _currentIndex,
-          children: const [
+          children:  const [
             TrackMeScreen(),
             RecordScreen(),
           ],
