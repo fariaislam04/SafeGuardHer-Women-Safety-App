@@ -34,13 +34,16 @@ class TrackMeScreenState extends State<TrackMeScreen> {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
+                _getUserLocation();
                 Navigator.of(context).pop();
               },
             ),
           ],
         ),
       );
-    } else {
+    }
+    else
+    {
       _getUserLocation();
     }
   }
