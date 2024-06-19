@@ -32,10 +32,11 @@ dependencies:
   just_audio: ^0.9.38
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
-  google_maps_flutter: ^2.2.8
+  google_maps_flutter: ^2.7.0
   voice_message_package: ^2.2.1
   provider: ^6.1.2
   photo_view: ^0.15.0
+  location: ^6.0.2
 
 
 dev_dependencies:
