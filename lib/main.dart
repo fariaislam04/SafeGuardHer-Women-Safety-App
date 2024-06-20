@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:safeguardher_flutter_app/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
+import 'package:safeguardher_flutter_app/screens/login_screen/login_screen.dart';
+import 'package:safeguardher_flutter_app/screens/login_screen/logininfo_screen.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -28,9 +30,10 @@ class SafeGuardHer extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: seenOnboarding ? const HomeScreen() : OnboardingScreen(),
+      //home: seenOnboarding ? const HomeScreen() : OnboardingScreen(),
       //home: OnboardingScreen(),
       //home: LoginScreen(),
+      home: LoginInfoScreen(),
     );
   }
 }
