@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:safeguardher_flutter_app/screens/login_screen/login_screen.dart';
+import 'package:safeguardher_flutter_app/screens/signup_screen/signup_screen1.dart';
 
 class LoginInfoScreen extends StatefulWidget {
+  const LoginInfoScreen({super.key});
+
   @override
   _LoginInfoScreenState createState() => _LoginInfoScreenState();
 }
@@ -79,7 +79,8 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                    borderSide:
+                        const BorderSide(color: Colors.grey, width: 1.0),
                   ),
                 ),
                 keyboardType: TextInputType.emailAddress,
@@ -118,11 +119,13 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                    borderSide:
+                        const BorderSide(color: Colors.grey, width: 1.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                    borderSide:
+                        const BorderSide(color: Colors.grey, width: 1.0),
                   ),
                 ),
                 obscureText: !_passwordVisible,
@@ -147,7 +150,10 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Add your login logic here
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignUpScreen1()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD20451), // Button color
@@ -175,9 +181,7 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
                         fontSize: 12),
                   ),
                   TextButton(
-                    onPressed: () {
-                      // Add your sign-up navigation logic here
-                    },
+                    onPressed: () {},
                     child: const Text(
                       "Sign up here",
                       style: TextStyle(
