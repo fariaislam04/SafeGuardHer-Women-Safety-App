@@ -41,9 +41,7 @@ class TrackMeScreenState extends State<TrackMeScreen> {
           ],
         ),
       );
-    }
-    else
-    {
+    } else {
       _getUserLocation();
     }
   }
@@ -82,21 +80,59 @@ class TrackMeScreenState extends State<TrackMeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          const AddContactWidget(),
-          Expanded(
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(26.675200, 85.166800), // Initial position (Dhaka, Bangladesh)
-                zoom: 1.0,
+          Column(
+            children: [
+              const AddContactWidget(),
+              Expanded(
+                child: GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: const CameraPosition(
+                    target: LatLng(26.675200, 85.166800), // Initial position (Dhaka, Bangladesh)
+                    zoom: 1.0,
+                  ),
+                  markers: markers,
+                  mapType: MapType.normal,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                  zoomControlsEnabled: true,
+                ),
               ),
-              markers: markers,
-              mapType: MapType.normal,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              zoomControlsEnabled: true,
+            ],
+          ),
+          Positioned(
+            right: 123.0,
+            bottom: 105.0,
+            child: SizedBox(
+              height: 50,
+              child: TextButton(
+                onPressed: () {
+                  // Handle button press
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color(0xFFCE0450),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.my_location_rounded, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text(
+                      'Track Me',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 14, // Increase font size if needed
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
