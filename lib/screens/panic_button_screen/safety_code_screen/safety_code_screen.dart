@@ -43,7 +43,7 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(30.0),
                 child: Container(
-                  padding: EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.all(24.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
