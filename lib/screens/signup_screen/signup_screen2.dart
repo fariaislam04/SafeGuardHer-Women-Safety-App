@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/signup_screen/signup_screen1.dart';
+import 'package:safeguardher_flutter_app/screens/signup_screen/signup_otp_screen.dart';
 
 class SignUpScreen2 extends StatefulWidget {
   const SignUpScreen2({super.key});
@@ -19,7 +20,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   bool _isChecked = false;
 
   bool get _isButtonEnabled {
-    return _emailController.text == 'faria@gmail.com' &&
+    return _emailController.text == 'f' &&
         _passwordController.text.isNotEmpty &&
         _confirmpasswordController.text.isNotEmpty &&
         _passwordController.text == _confirmpasswordController.text &&
@@ -240,7 +241,11 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ElevatedButton(
                 onPressed: _isButtonEnabled
                     ? () {
-                        // Add your signup logic here
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignUpOTPScreen()),
+                        );
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

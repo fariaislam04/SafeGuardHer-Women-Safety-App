@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:safeguardher_flutter_app/screens/login_screen/login_screen.dart';
 import 'package:safeguardher_flutter_app/screens/signup_screen/signup_screen2.dart';
+import 'package:safeguardher_flutter_app/screens/login_screen/logininfo_screen.dart';
 
 class SignUpScreen1 extends StatefulWidget {
   const SignUpScreen1({super.key});
@@ -13,15 +13,13 @@ class SignUpScreen1 extends StatefulWidget {
 class _SignUpScreen1State extends State<SignUpScreen1> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
   String? _selectedGender;
   IconData _genderIcon = Icons.female; // Default icon
 
   void _updateGenderField(String? newValue) {
     setState(() {
-      _genderController.text = newValue ?? '';
-      _isGenderField = _selectedGender != null;
       _selectedGender = newValue;
+      _isGenderField = newValue != null;
       // Update icon based on selected gender
       if (newValue == 'Male') {
         _genderIcon = Icons.male;
@@ -84,7 +82,8 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => LoginInfoScreen()),
                       );
                     },
                   ),

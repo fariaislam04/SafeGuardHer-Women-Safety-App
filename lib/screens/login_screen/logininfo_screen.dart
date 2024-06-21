@@ -15,6 +15,31 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
 
+  bool get _isButtonEnabled {
+    return _emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_updateButtonState);
+    _passwordController.addListener(_updateButtonState);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _updateButtonState() {
+    setState(() {
+      // Just trigger a rebuild to update the button state
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,16 +174,20 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUpScreen1()),
-                  );
-                },
+                onPressed: _isButtonEnabled
+                    ? () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignUpScreen1()),
+                        );
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD20451), // Button color
+                  backgroundColor:
+                      _isButtonEnabled ? const Color(0xFFD20451) : Colors.grey,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 150, vertical: 15),
+                      const EdgeInsets.symmetric(horizontal: 150, vertical: 14),
                 ),
                 child: const Text(
                   "Login",
