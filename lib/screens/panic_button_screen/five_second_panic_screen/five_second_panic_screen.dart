@@ -15,7 +15,7 @@ class FiveSecondPanicScreen extends StatefulWidget {
 
 class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
   late Timer _timer;
-  int _countdown = 1;
+  int _countdown = 5;
 
   @override
   void initState() {
