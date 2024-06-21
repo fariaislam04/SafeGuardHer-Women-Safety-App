@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+void main() {
+  runApp(const MaterialApp(
+    home: SafetyCodeScreen(),
+  ));
+}
+
 class SafetyCodeScreen extends StatefulWidget {
   const SafetyCodeScreen({super.key});
 
@@ -28,13 +34,14 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () {
-                        // Handle back button logic here
+                      onPressed: ()
+                      {
+
                       },
                     ),
-                    const Spacer(flex: 5),
-                    SvgPicture.asset('assets/logos/logo_dark_theme.svg', height: 80),
-                    const Spacer(flex: 2),
+                    SvgPicture.asset('assets/logos/logo_dark_theme.svg',
+                        height: 60),
+                   //const Spacer(flex: 2),
                   ],
                 ),
               ),
@@ -52,12 +59,6 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(height: 30),
-                      const Text(
-                        'Your close contacts have been\nnotified and help will arrive soon',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black, fontSize: 18),
-                      ),
-                      const SizedBox(height: 40),
                       Container(
                         width: 100,
                         height: 100,
@@ -69,6 +70,13 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                           child: SvgPicture.asset('assets/icons/bell_ring.svg', height: 60),
                         ),
                       ),
+                      const Text(
+                        'Your close contacts have been\nnotified and help will arrive soon',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.black, fontSize: 18),
+                      ),
+                      const SizedBox(height: 40),
+
                       const SizedBox(height: 40),
                       _message.isEmpty
                           ? Row(
