@@ -101,36 +101,39 @@ class TrackMeScreenState extends State<TrackMeScreen> {
               ),
             ],
           ),
-          Positioned(
-            right: 123.0,
-            bottom: 105.0,
-            child: SizedBox(
-              height: 50,
-              child: TextButton(
-                onPressed: () {
-                  // Handle button press
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: const Color(0xFFCE0450),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.my_location_rounded, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text(
-                      'Track Me',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14, // Increase font size if needed
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 110.0),
+              child: SizedBox(
+                height: 50,
+                child: TextButton(
+                  onPressed: ()
+                  {
+                    // Handle button press
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFFCE0450),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                  ],
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.my_location_rounded, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text(
+                        'Track Me',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
