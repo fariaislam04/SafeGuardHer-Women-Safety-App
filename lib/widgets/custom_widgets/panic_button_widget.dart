@@ -1,10 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:safeguardher_flutter_app/screens/panic_button_screen'
-    '/ten_second_panic_screen/ten_second_panic_screen.dart';
-import 'package:safeguardher_flutter_app/screens/panic_button_screen'
-    '/five_second_panic_screen/five_second_panic_screen.dart';
+import 'package:safeguardher_flutter_app/screens/panic_button_screen/ten_second_panic_screen/ten_second_panic_screen.dart';
+import 'package:safeguardher_flutter_app/screens/panic_button_screen/five_second_panic_screen/five_second_panic_screen.dart';
+import 'package:safeguardher_flutter_app/widgets/custom_widgets/custom_snackbar.dart';
 
 class PanicButtonWidget extends StatefulWidget {
   const PanicButtonWidget({super.key});
@@ -15,27 +14,23 @@ class PanicButtonWidget extends StatefulWidget {
 
 class _PanicButtonWidgetState extends State<PanicButtonWidget> {
   int _pressCount = 0;
+  int fixedPressCount = 0;
   bool _isTimerActive = false;
+  bool _buttonPressed = false;
+  OverlayEntry? _overlayEntry;
 
-  /*============================================================================
-   *  PANIC BUTTON HANDLER: If user presses the panic button once, the program
-   *  waits for 2 seconds to see if the user presses anymore. If not, then 10
-   *  second timer starts.
-   *  If the user presses the panic button 3 times, the function triggers 5
-   *  second timer.
-   ============================================================================*/
-
-  void _handlePanicButtonPress()
-  {
+  void _handlePanicButtonPress() {
     setState(() {
       _pressCount++;
+      fixedPressCount = _pressCount;
     });
 
-    if (!_isTimerActive)
-    {
+    if (!_isTimerActive) {
       _isTimerActive = true;
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
+      Future.delayed(const Duration(seconds: 2), ()
+      {
+        setState(()
+        {
           _isTimerActive = false;
           if (_pressCount == 1)
           {
@@ -46,67 +41,109 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
           }
           else if (_pressCount == 3)
           {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const FiveSecondPanicScreen()),
-            );
+            Future.delayed(const Duration(seconds: 1), () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FiveSecondPanicScreen()),
+              );
+            });
           }
+          _removeSnackbar();
           _pressCount = 0;
         });
       });
     }
-    if (kDebugMode)
-    {
+
+    if (kDebugMode) {
       print("Panic button pressed $_pressCount time(s)");
     }
+
+    _overlayEntry = OverlayEntry(
+      builder: (BuildContext context) => Positioned(
+        top: MediaQuery.of(context).size.height * 0.23,
+        child: Material(
+          color: Colors.transparent,
+          child: AnimatedOpacity(
+            duration: const Duration(seconds: 1),
+            opacity: _pressCount == 0 || _pressCount > 3 ? 0.0 : 1.0,
+            child: CustomSnackbar(color: Colors.red, message: "Panic alert "
+                "has been pressed $fixedPressCount time",),
+            ),
+          ),
+        ),
+    );
+    Overlay.of(context)?.insert(_overlayEntry!);
+  }
+
+  void _removeSnackbar()
+  {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Align(
-          alignment: const AlignmentDirectional(0, 0.95),
-          child: SizedBox(
-            width: 85,
-            height: 85,
-            child: FloatingActionButton(
-              onPressed: _handlePanicButtonPress,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              shape: const CircleBorder(),
-              child: Container(
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFD20452), Color(0xFF8E0E3E)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
+    return GestureDetector(
+      onTapDown: (_)
+      {
+        setState(()
+        {
+          _buttonPressed = true;
+        });
+      },
+      onTapUp: (_)
+      {
+        setState(()
+        {
+          _buttonPressed = false;
+        });
+        _handlePanicButtonPress();
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: 85,
+              height: 85,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: _buttonPressed
+                      ? [const Color(0xFF8E0E3E), const Color(0xFFD20452)]
+                  //button is pressed
+                      : [const Color(0xFFD20452), const Color(0xFF8E0E3E)],
+                  //button is not pressed
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
-                child: Center(
-                  child: SvgPicture.asset(
-                    'assets/icons/panic_button_icon.svg',
-                    width: 55,
-                    height: 55,
-                    fit: BoxFit.cover,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 4,
+                    offset: const Offset(0, 0),
                   ),
+                ],
+              ),
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/icons/panic_button_icon.svg',
+                  width: 55,
+                  height: 55,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-        const Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Text(
+          const SizedBox(height: 8),
+          const Text(
             'Panic',
-            style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight:
-            FontWeight.w500),
+            style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
