@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomSnackbar extends StatelessWidget {
   final String message;
   final Color color;
 
-  const CustomSnackbar({required this.message, required this.color});
+  const CustomSnackbar({super.key, required this.message, required this.color});
 
   @override
   Widget build(BuildContext context) {
