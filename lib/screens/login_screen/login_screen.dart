@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:safeguardher_flutter_app/screens/login_screen/logininfo_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -30,7 +31,11 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: () {
-                    // Add your login logic here
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginInfoScreen()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD20451), // Button color
@@ -67,9 +72,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // Add your Google login logic here
-                  },
+                  onPressed: () {},
                   icon: const Icon(Icons.account_circle),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4C85EA), // Button color
@@ -92,7 +95,10 @@ class LoginScreen extends StatelessWidget {
                   children: [
                     const Text(
                       "Don't have an account?",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'Poppins',
+                          fontSize: 12),
                     ),
                     TextButton(
                       onPressed: () {
@@ -100,7 +106,11 @@ class LoginScreen extends StatelessWidget {
                       },
                       child: const Text(
                         "SIgn up here",
-                        style: TextStyle(color: Colors.pink),
+                        style: TextStyle(
+                            color: Colors.pink,
+                            fontFamily: 'Poppins',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
@@ -111,7 +121,10 @@ class LoginScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Want to start right away?',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'Poppins',
+                          fontSize: 12),
                     ),
                     TextButton(
                       onPressed: () {
@@ -119,7 +132,11 @@ class LoginScreen extends StatelessWidget {
                       },
                       child: const Text(
                         'Click here',
-                        style: TextStyle(color: Colors.pink),
+                        style: TextStyle(
+                            color: Colors.pink,
+                            fontFamily: 'Poppins',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
