@@ -25,7 +25,7 @@ class AddContactWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         color: Colors.black,
                       ),
                     ),
