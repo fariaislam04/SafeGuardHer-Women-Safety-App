@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:safeguardher_flutter_app/screens/signup_screen/signup_screen1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -113,7 +113,7 @@ class OnboardingScreen extends StatelessWidget {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('seenOnboarding', true);
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      MaterialPageRoute(builder: (_) => const SignUpScreen1()),
     );
   }
 
