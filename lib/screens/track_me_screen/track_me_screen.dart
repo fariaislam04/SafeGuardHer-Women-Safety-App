@@ -17,7 +17,8 @@ class TrackMeScreenState extends State<TrackMeScreen> {
   Set<Marker> markers = {};
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
     _requestLocationPermission();
   }
