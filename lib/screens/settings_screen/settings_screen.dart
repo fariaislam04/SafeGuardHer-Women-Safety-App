@@ -1,86 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
+import 'package:safeguardher_flutter_app/screens/contacts_screen/contacts_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: const Color(0xFF831D2D),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 0.0, right: 0.0, top: 0.0),
-            child: ClipRRect(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      buildLogo(),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        color: Colors.white,
-                        padding: const EdgeInsets.only(right: 30.0),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10.0),
-                  Expanded(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFF5F5F5),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16.0),
-                          topRight: Radius.circular(16.0),
-                          bottomRight: Radius.circular(0.0),
-                          bottomLeft: Radius.circular(0.0),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0,
-                            vertical: 30.0),
-                        child: Column(
-                          children: [
-                            buildTopContainer(),
-                            Wrap(
-                              spacing: 20.0,
-                              runSpacing: 20.0,
-                              children: [
-                                buildButton(Icons.history, 'History'),
-                                buildButton(Icons.perm_contact_calendar_rounded, 'Contacts'),
-                                buildButton(Icons.security, 'Safety Tips'),
-                                buildButton(Icons.devices_other_rounded, 'Devices'),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+    return SettingsTemplate(
+      child: Column(
+        children: [
+          buildTopContainer(),
+          Wrap(
+            spacing: 20.0,
+            runSpacing: 20.0,
+            children: [
+              buildButton(context, Icons.history, 'History', () {
+                // Handle History button press
+              }),
+              buildButton(
+                  context, Icons.perm_contact_calendar_rounded, 'Contacts', () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ContactsScreen()),
+                );
+              }),
+              buildButton(context, Icons.security, 'Safety Tips', () {
+                // Handle Safety Tips button press
+              }),
+              buildButton(context, Icons.devices_other_rounded, 'Devices', () {
+                // Handle Devices button press
+              }),
+            ],
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget buildButton(IconData icon, String text) {
+  Widget buildButton(BuildContext context, IconData icon, String text,
+      VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: Stack(
         children: [
           ElevatedButton(
-            onPressed: () {
-              //Handle settings option press
-            },
+            onPressed: onPressed,
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(100, 100),
               backgroundColor: Colors.white,
@@ -107,9 +73,14 @@ class SettingsScreen extends StatelessWidget {
             left: 0,
             right: 0,
             child: Center(
-              child: Text(text,
-              style: const TextStyle(color: Color(0xFF6C022A), fontFamily:
-    'Poppins', fontWeight: FontWeight.w500, fontSize: 12),
+              child: Text(
+                text,
+                style: const TextStyle(
+                  color: Color(0xFF6C022A),
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
               ),
             ),
           ),
@@ -117,6 +88,7 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+
   Widget buildTopContainer() {
     return Container(
       height: 100.0,
@@ -140,7 +112,8 @@ class SettingsScreen extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: AssetImage('assets/placeholders/profile.png'),
+                  backgroundImage:
+                      AssetImage('assets/placeholders/profile.png'),
                   radius: 30.0,
                 ),
                 SizedBox(width: 10.0),
@@ -153,7 +126,10 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     Text(
                       'mayeesha.musarrat@gmail.com',
-                      style: TextStyle(fontSize: 11.0, color: Colors.grey, fontFamily: 'Poppins'),
+                      style: TextStyle(
+                          fontSize: 11.0,
+                          color: Colors.grey,
+                          fontFamily: 'Poppins'),
                     ),
                   ],
                 ),
@@ -161,17 +137,6 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget buildLogo()
-  {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20.0, bottom: 20.0, left: 30.0),
-      child: SvgPicture.asset(
-        'assets/logos/logo_dark_theme.svg',
-        height: 60.0,
       ),
     );
   }

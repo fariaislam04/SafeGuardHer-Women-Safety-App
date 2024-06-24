@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:safeguardher_flutter_app/screens/login_screen/logininfo_screen.dart';
 
 class LoginScreen extends StatelessWidget {

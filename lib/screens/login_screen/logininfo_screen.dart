@@ -179,7 +179,7 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpScreen1()),
+                              builder: (context) => const SignUpScreen1()),
                         );
                       }
                     : null,
