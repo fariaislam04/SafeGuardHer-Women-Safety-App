@@ -91,19 +91,23 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF6C022A),
       appBar: AppBar(
+        toolbarHeight: 90,
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: SvgPicture.asset(
-          'assets/logos/logo_dark_theme.svg',
-          height: 50,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: SvgPicture.asset(
+            'assets/logos/logo_dark_theme.svg',
+            height: 70,
+          ),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.only(right: 20.0, left: 20.0),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
