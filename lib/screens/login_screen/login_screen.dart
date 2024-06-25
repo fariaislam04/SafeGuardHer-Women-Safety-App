@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/login_screen/logininfo_screen.dart';
 
+void main() {
+  runApp(LoginScreen());
+}
+
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -31,7 +35,7 @@ class LoginScreen extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => LoginInfoScreen()),
+                          builder: (context) => const LoginInfoScreen()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

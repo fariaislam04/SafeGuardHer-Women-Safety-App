@@ -3,6 +3,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/signup_screen/signup_screen2.dart';
 import 'package:safeguardher_flutter_app/screens/login_screen/logininfo_screen.dart';
 
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: SignUpScreen1(),
+    );
+  }
+}
 class SignUpScreen1 extends StatefulWidget {
   const SignUpScreen1({super.key});
 

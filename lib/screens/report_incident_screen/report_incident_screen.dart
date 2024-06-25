@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,20 +27,11 @@ class _ReportIncidentPageState extends State<ReportIncidentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF831D2D),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Color(0xFF831D2D),
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              SvgPicture.asset(
-                'assets/logo.svg', // replace with your logo file name
-                height: 100,
-              ),
               SizedBox(height: 16.0),
               Container(
                 padding: EdgeInsets.all(16.0),
@@ -50,7 +42,7 @@ class _ReportIncidentPageState extends State<ReportIncidentPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Report Incident',
                       style: TextStyle(
                         fontSize: 24,
@@ -141,13 +133,18 @@ class _ReportIncidentPageState extends State<ReportIncidentPage> {
                         onPressed: () {
                           // Handle Submit button press
                         },
-                        child: Text('Submit'),
+                        child: const Text('Submit', style: TextStyle(fontFamily: 'P'
+                            'oppins', color: Colors.white)),
                       ),
                     ),
                     Center(
                       child: TextButton(
                         onPressed: () {
-                          // Handle Submit Later button press
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const HomeScreen
+                              ()),
+                          );
                         },
                         child: const Text(
                           'Submit Later',

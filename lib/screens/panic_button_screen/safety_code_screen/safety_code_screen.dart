@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:safeguardher_flutter_app/screens/report_incident_screen/report_incident_screen.dart';
+import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -15,7 +18,8 @@ class SafetyCodeScreen extends StatefulWidget {
 }
 
 class SafetyCodeScreenState extends State<SafetyCodeScreen> {
-  final List<TextEditingController> _controllers = List.generate(4, (index) => TextEditingController());
+  final List<TextEditingController> _controllers = List.generate(
+      4, (index) => TextEditingController());
   final String _correctCode = "2001";
   String _message = "";
 
@@ -23,34 +27,11 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF6C022A),
-      body: SafeArea(
+      body: SettingsTemplate(
         child: Stack(
           children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: ()
-                      {
-
-                      },
-                    ),
-                    SvgPicture.asset('assets/logos/logo_dark_theme.svg',
-                        height: 60),
-                   //const Spacer(flex: 2),
-                  ],
-                ),
-              ),
-            ),
             Center(
-              child: Padding(
-                padding: const EdgeInsets.all(30.0),
                 child: Container(
-                  padding: const EdgeInsets.all(24.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -59,33 +40,22 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(height: 30),
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: SvgPicture.asset('assets/icons/bell_ring.svg', height: 60),
-                        ),
-                      ),
                       const Text(
-                        'Your close contacts have been\nnotified and help will arrive soon',
+                        'Your close contacts have been notified and help will'
+                            ' arrive soon',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black, fontSize: 18),
+                        style: TextStyle(color: Colors.black, fontSize: 17,
+                            fontFamily: 'Poppins'),
                       ),
-                      const SizedBox(height: 40),
-
                       const SizedBox(height: 40),
                       _message.isEmpty
                           ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(4, (index) {
                           return Container(
-                            width: 50,
-                            height: 50,
-                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            width: 70,
+                            height: 70,
+                            margin: const EdgeInsets.symmetric(horizontal: 5.0),
                             decoration: BoxDecoration(
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(8),
@@ -96,11 +66,13 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                               maxLength: 1,
                               textAlign: TextAlign.center,
                               decoration: const InputDecoration(
-                                counterText: '',
-                                border: InputBorder.none,
+                              counterText: '',
+                              border: InputBorder.none,
                               ),
-                              onChanged: (value) {
-                                if (value.length == 1 && index < 3) {
+                              onChanged: (value)
+                              {
+                                if (value.length == 1 && index < 3)
+                                {
                                   FocusScope.of(context).nextFocus();
                                 }
                               },
@@ -111,33 +83,58 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                           : Text(
                         _message,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.black, fontSize: 18),
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 20),
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: _verifyCode,
-                        child: const Text('Verify Code'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF831D2D),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        child: const Text('Verify Code',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 13,
+                            color: Colors.white
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 20),
                       TextButton(
-                        onPressed: () {
+                        onPressed: ()
+                        {
                           // Handle resend OTP logic here
                         },
                         child: const Text(
                           'Resend safe OTP',
-                          style: TextStyle(color: Color(0xFF6C022A)),
+                          style: TextStyle(color: Color(0xFF6C022A),
+                              fontFamily: 'Poppins'),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
+
+  Future<void> navigateToReportIncidentPage(BuildContext context) async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ReportIncidentPage()),
+      );
+    }
+  }
+
 
   void _verifyCode() {
     String inputCode = _controllers.map((e) => e.text).join();
@@ -146,8 +143,18 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
         _message =
         "Safe Code Verified!\nYou will be redirected to Report Incident page soon.";
       });
-    } else {
-      setState(() {
+      try {
+        navigateToReportIncidentPage(context);
+      } catch (error) {
+        if (kDebugMode) {
+          print("Error navigating to ReportIncidentPage: $error");
+        }
+        // Handle the error here (e.g., display an error message)
+      }
+    } else
+    {
+      setState(()
+      {
         _message = "Please try again";
       });
       for (var controller in _controllers) {

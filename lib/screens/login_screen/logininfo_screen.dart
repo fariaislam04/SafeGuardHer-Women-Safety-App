@@ -3,6 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/login_screen/login_screen.dart';
 import 'package:safeguardher_flutter_app/screens/signup_screen/signup_screen1.dart';
 
+void main() {
+  runApp(LoginInfoScreen());
+}
+
 class LoginInfoScreen extends StatefulWidget {
   const LoginInfoScreen({super.key});
 

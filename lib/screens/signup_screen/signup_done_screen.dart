@@ -4,6 +4,11 @@ import 'package:safeguardher_flutter_app/screens/login_screen/login_screen.dart'
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:safeguardher_flutter_app/screens/signup_screen/signup_otp_screen.dart';
 
+void main() {
+  runApp(SignUpDoneScreen());
+}
+
+
 class SignUpDoneScreen extends StatefulWidget {
   const SignUpDoneScreen({super.key});
 

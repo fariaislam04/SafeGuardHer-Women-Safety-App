@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:safeguardher_flutter_app/screens/devices_screen/devices_screen.dart';
+import 'package:safeguardher_flutter_app/screens/safety_tips_screen/safety_edu.dart';
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
 import 'package:safeguardher_flutter_app/screens/contacts_screen/contacts_screen.dart';
 
@@ -27,10 +29,17 @@ class SettingsScreen extends StatelessWidget {
                 );
               }),
               buildButton(context, Icons.security, 'Safety Tips', () {
-                // Handle Safety Tips button press
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                builder: (context) => SafetyTipsPage()),
+                );
               }),
               buildButton(context, Icons.devices_other_rounded, 'Devices', () {
-                // Handle Devices button press
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DevicesScreen()),
+                );
               }),
             ],
           ),

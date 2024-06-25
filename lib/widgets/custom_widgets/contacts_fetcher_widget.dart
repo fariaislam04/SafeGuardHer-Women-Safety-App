@@ -44,7 +44,7 @@ class _ContactsFetcherState extends State<ContactsFetcher> {
               itemBuilder: (context, index) {
                 Contact contact = _contacts.elementAt(index);
                 return ListTile(
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     child: Icon(Icons.person),
                   ),
                   title: Text(contact.displayName ?? 'No name'),
