@@ -111,7 +111,7 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(25),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -134,8 +134,20 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
+                      _correctCodeEntered != 1 ?
                       const Text(
                         'Your close contacts have been notified and help will arrive soon',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 13,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                        ),
+                      )
+                      : const Text (
+                        'Safety code verified! You will be redirected to '
+                            'report incident page soon.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
@@ -150,7 +162,7 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                         padding: const EdgeInsets.all(30.0),
                         decoration: BoxDecoration(
                           color: const Color(0xFF6C022A),
-                          borderRadius: BorderRadius.circular(15.0),
+                          borderRadius: BorderRadius.circular(25),
                         ),
                         child: Column(
                           children: [
@@ -244,6 +256,7 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                         ),
                       ) : Container(),
                       const SizedBox(height: 20),
+                      _correctCodeEntered != 1 ?
                       TextButton(
                         onPressed: ()
                         {
@@ -256,7 +269,8 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                             fontFamily: 'Poppins',
                           ),
                         ),
-                      ),
+                      )
+                      : TextButton(onPressed: () {}, child: Container()),
                     ],
                   ),
                 ),

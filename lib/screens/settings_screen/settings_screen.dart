@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:safeguardher_flutter_app/screens/devices_screen/devices_screen.dart';
-import 'package:safeguardher_flutter_app/screens/safety_tips_screen/safety_edu.dart';
+import 'package:safeguardher_flutter_app/screens/settings_screen/safety_tips_screen/safety_edu.dart';
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
-import 'package:safeguardher_flutter_app/screens/contacts_screen/contacts_screen.dart';
+import 'contacts_screen/contacts_screen.dart';
+import 'devices_screen/devices_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

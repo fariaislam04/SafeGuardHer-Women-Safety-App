@@ -1,42 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:safeguardher_flutter_app/screens/signup_screen/signup_screen1.dart';
-import 'package:safeguardher_flutter_app/screens/signup_screen/signup_otp_screen.dart';
+import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_screen2.dart';
+import '../login_screen/logininfo_screen.dart';
 
-class SignUpScreen2 extends StatefulWidget {
-  const SignUpScreen2({super.key});
 
-  @override
-  _SignUpScreen2State createState() => _SignUpScreen2State();
+void main() {
+  runApp(MyApp());
 }
 
-class _SignUpScreen2State extends State<SignUpScreen2> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmpasswordController =
-      TextEditingController();
-  bool _passwordVisible = false;
-  bool _passwordVisible2 = false;
-  bool _isChecked = false;
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: SignUpScreen1(),
+    );
+  }
+}
+class SignUpScreen1 extends StatefulWidget {
+  const SignUpScreen1({super.key});
 
-  bool get _isButtonEnabled {
-    return _emailController.text == 'f' &&
-        _passwordController.text.isNotEmpty &&
-        _confirmpasswordController.text.isNotEmpty &&
-        _passwordController.text == _confirmpasswordController.text &&
-        _isChecked;
+  @override
+  _SignUpScreen1State createState() => _SignUpScreen1State();
+}
+
+class _SignUpScreen1State extends State<SignUpScreen1> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _dobController = TextEditingController();
+  String? _selectedGender;
+  IconData _genderIcon = Icons.female; // Default icon
+
+  void _updateGenderField(String? newValue) {
+    setState(() {
+      _selectedGender = newValue;
+      _isGenderField = newValue != null;
+      // Update icon based on selected gender
+      if (newValue == 'Male') {
+        _genderIcon = Icons.male;
+      } else if (newValue == 'Female') {
+        _genderIcon = Icons.female;
+      } else {
+        _genderIcon = Icons.transgender;
+      }
+    });
   }
 
-  void _updateButtonState() {
-    setState(() {});
+  bool _isUsernameField = false;
+  bool _isDobField = false;
+  bool _isGenderField = false;
+
+  bool get _isButtonEnabled =>
+      _isUsernameField && _isDobField && _isGenderField;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _dobController.text = "${picked.toLocal()}".split(' ')[0];
+        _isDobField = _dobController.text.isNotEmpty;
+      });
+    }
+  }
+
+  void _updateUsernameField() {
+    setState(() {
+      _isUsernameField = _usernameController.text.isNotEmpty;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    _emailController.addListener(_updateButtonState);
-    _passwordController.addListener(_updateButtonState);
-    _confirmpasswordController.addListener(_updateButtonState);
+    _usernameController.addListener(_updateUsernameField);
   }
 
   @override
@@ -47,7 +86,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 40.0),
           child: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
                 children: [
@@ -57,7 +96,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SignUpScreen1()),
+                            builder: (context) => LoginInfoScreen()),
                       );
                     },
                   ),
@@ -70,12 +109,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
               const SizedBox(height: 30),
               SvgPicture.asset(
-                'assets/illustrations/login2.svg',
+                'assets/illustrations/login1.svg',
                 height: 45,
               ),
               const SizedBox(height: 30),
               const Text(
-                'Set Up an Account',
+                'User Information',
                 style: TextStyle(
                   fontSize: 24,
                   fontFamily: 'Poppins',
@@ -84,8 +123,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
               const SizedBox(height: 10),
               const Text(
-                'Please fill up the form below! A confirmation '
-                'code will be sent to the provided email.',
+                'Please fill up some basic information and we can set up your account on SafeGuardHer!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
@@ -95,7 +133,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
               const SizedBox(height: 20),
               const Text(
-                'Email                                                                                  ',
+                'Username                                                                         ',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 13,
@@ -105,10 +143,10 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: _emailController,
+                controller: _usernameController,
                 decoration: InputDecoration(
                   hintText:
-                      'Enter your email', // Placeholder text inside the box
+                      'Enter your username', // Placeholder text inside the box
                   hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
                   prefixIcon: const Icon(Icons.person),
                   filled: true,
@@ -126,9 +164,9 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
               const Text(
-                'Password                                                                          ',
+                'Date of Birth                                                                      ',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 13,
@@ -138,24 +176,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: _passwordController,
+                controller: _dobController,
                 decoration: InputDecoration(
                   hintText:
-                      'Enter your password', // Placeholder text inside the box
+                      'Enter your date of birth', // Placeholder text inside the box
                   hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _passwordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _passwordVisible = !_passwordVisible;
-                      });
-                    },
-                  ),
+                  prefixIcon: const Icon(Icons.calendar_month_outlined),
                   filled: true,
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
@@ -169,11 +195,11 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                         const BorderSide(color: Colors.grey, width: 1.0),
                   ),
                 ),
-                obscureText: !_passwordVisible,
+                onTap: () => _selectDate(context),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
               const Text(
-                'Confirm Password                                                         ',
+                'Gender                                                                                 ',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 13,
@@ -182,25 +208,11 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 ),
               ),
               const SizedBox(height: 8),
-              TextField(
-                controller: _confirmpasswordController,
+              DropdownButtonFormField<String>(
                 decoration: InputDecoration(
-                  hintText:
-                      'Confirm your password', // Placeholder text inside the box
+                  hintText: 'Select your gender',
                   hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _passwordVisible2
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _passwordVisible2 = !_passwordVisible2;
-                      });
-                    },
-                  ),
+                  prefixIcon: Icon(_genderIcon),
                   filled: true,
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
@@ -214,37 +226,31 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                         const BorderSide(color: Colors.grey, width: 1.0),
                   ),
                 ),
-                obscureText: !_passwordVisible2,
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _isChecked,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _isChecked = value ?? false;
-                        _updateButtonState();
-                      });
-                    },
-                  ),
-                  const Text(
-                    '*I accept to the Terms and Conditions',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w300,
+                value: _selectedGender,
+                style: const TextStyle(
+                    color: Colors.black, fontSize: 16, fontFamily: 'Poppins'),
+                items: <String>['Male', 'Female', 'Others'].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontFamily: 'Poppins'),
                     ),
-                  ),
-                ],
+                  );
+                }).toList(),
+                onChanged: _updateGenderField,
               ),
-              const SizedBox(height: 13),
+              const SizedBox(height: 35),
               ElevatedButton(
                 onPressed: _isButtonEnabled
                     ? () {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpOTPScreen()),
+                              builder: (context) => SignUpScreen2()),
                         );
                       }
                     : null,
@@ -252,10 +258,10 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                   backgroundColor:
                       _isButtonEnabled ? const Color(0xFFD20451) : Colors.grey,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 150, vertical: 14),
+                      const EdgeInsets.symmetric(horizontal: 143, vertical: 14),
                 ),
                 child: const Text(
-                  "Signup",
+                  "Continue",
                   style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Poppins',

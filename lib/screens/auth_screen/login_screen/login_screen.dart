@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:safeguardher_flutter_app/screens/login_screen/logininfo_screen.dart';
+import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
+
+import 'logininfo_screen.dart';
+
 
 void main() {
   runApp(LoginScreen());
@@ -129,7 +132,11 @@ class LoginScreen extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
-                        // Add your quick start logic here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeScreen()),
+                        );
                       },
                       child: const Text(
                         'Click here',
