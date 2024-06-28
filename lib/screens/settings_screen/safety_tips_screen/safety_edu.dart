@@ -5,6 +5,10 @@ import 'safety_at_university_page.dart';
 import 'women_safety_online_page.dart';
 import 'safety_on_the_streets_page.dart';
 
+
+
+
+
 class SafetyTipsPage extends StatelessWidget {
   final List<String> safetyTips = [
     'Safety at Work',
@@ -13,6 +17,7 @@ class SafetyTipsPage extends StatelessWidget {
     'Women Safety Online',
     'Safety on the Streets',
   ];
+
 
   final Color customColor = const Color(0xFF6C022A);
 
@@ -81,7 +86,7 @@ class SafetyTipsPage extends StatelessWidget {
       case 3:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => WomenSafetyOnlinePage()),
+          MaterialPageRoute(builder: (context) => WomenSafetyAtOnlinePage()),
         );
         break;
       case 4:
