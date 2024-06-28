@@ -72,7 +72,7 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
           ),
         ),
     );
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   void _removeSnackbar()
