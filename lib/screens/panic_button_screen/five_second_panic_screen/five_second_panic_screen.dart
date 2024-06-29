@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:safeguardher_flutter_app/screens/panic_button_screen/safety_code_screen/safety_code_screen.dart';
 import 'package:safeguardher_flutter_app/screens/panic_button_screen/stop_panic_alert_screen/stop_panic_alert_screen.dart';
 import 'package:vibration/vibration.dart';
-import '../../../constants/util/timer_util.dart';
+import '../../../utils/helpers/timer_util.dart';
+
 
 class FiveSecondPanicScreen extends StatefulWidget {
   const FiveSecondPanicScreen({super.key});

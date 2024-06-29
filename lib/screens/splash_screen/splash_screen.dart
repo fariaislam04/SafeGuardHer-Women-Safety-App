@@ -4,6 +4,8 @@ import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:safeguardher_flutter_app/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import '../../utils/constants/colors/colors.dart';
+import '../../utils/constants/image_strings/image_strings.dart';
 
 /// This screen shows itself the first time the user opens the app. If the
 /// user has not screen onboarding screen yet, then it shows the onboarding screen. Otherwise, it shows the Home screen.
@@ -50,11 +52,10 @@ class SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context)
   {
     return Scaffold(
-      backgroundColor: const Color(0xFF831D2D),
+      backgroundColor: AppColors.primary,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final double logoHeight = constraints.maxHeight * 0.3;
-
           return Stack(
             children: [
               Center(
@@ -64,7 +65,7 @@ class SplashScreenState extends State<SplashScreen>
                      Padding(
                       padding: const EdgeInsets.only(left: 40, right: 40),
                       child: SvgPicture.asset(
-                        'assets/logos/splash_screen_logo.svg',
+                        ImageStrings.splashLogo,
                         height: logoHeight,
                       ),
                     ),

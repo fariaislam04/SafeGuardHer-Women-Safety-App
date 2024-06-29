@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:safeguardher_flutter_app/screens/auth_screen/login_screen/login_screen.dart';
@@ -24,11 +25,11 @@ void main() async {
 
   appOpenedBefore = false; loggedIn = false; //comment this on production
 
-  runApp(SafeGuardHer(
-    appOpenedBefore: appOpenedBefore,
-    loggedIn: loggedIn,
+  runApp(ProviderScope(
+    child: SafeGuardHer(appOpenedBefore: appOpenedBefore, loggedIn: loggedIn),
   ));
 }
+
 
 class SafeGuardHer extends StatelessWidget {
   final bool appOpenedBefore;

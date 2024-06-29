@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../utils/constants/colors/colors.dart';
+import '../../utils/constants/image_strings/image_strings.dart';
 
 class SettingsTemplate extends StatelessWidget {
   final Widget child;
@@ -11,7 +13,7 @@ class SettingsTemplate extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: const Color(0xFF831D2D),
+        backgroundColor: AppColors.primary,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(left: 0.0, right: 0.0, top: 0.0),
@@ -64,7 +66,7 @@ class SettingsTemplate extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 20.0, bottom: 20.0, left: 30.0),
       child: SvgPicture.asset(
-        'assets/logos/logo_dark_theme.svg',
+        ImageStrings.darkAppLogo,
         height: 60.0,
       ),
     );
