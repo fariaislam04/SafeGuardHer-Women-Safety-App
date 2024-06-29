@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:safeguardher_flutter_app/widgets/navigations/app_bar.dart';
 import 'package:safeguardher_flutter_app/widgets/navigations/bottom_navbar.dart';
+import '../map_screen/map_screen.dart';
 import '../record_screen/record_screen.dart';
-import '../track_me_screen/track_me_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,7 +23,7 @@ class HomeScreenState extends State<HomeScreen> {
         child: IndexedStack(
           index: _currentIndex,
           children:  const [
-            TrackMeScreen(),
+            MapScreen(),
             RecordScreen(),
           ],
         ),
