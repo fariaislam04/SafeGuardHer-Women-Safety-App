@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:safeguardher_flutter_app/widgets/notifications/notification_widget.dart';
 import '../../widgets/custom_widgets/add_contact_widget.dart';
 
 class MapScreen extends StatefulWidget {
@@ -86,6 +87,8 @@ class MapScreenState extends State<MapScreen> {
           Column(
             children: [
               const AddContactWidget(),
+             // const NotificationWidget(name: "Binita Sarker", code: "5678")
+              // , // -- Add notification manually
               Expanded(
                 child: GoogleMap(
                   onMapCreated: _onMapCreated,
