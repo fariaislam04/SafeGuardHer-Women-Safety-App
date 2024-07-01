@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../utils/constants/colors/colors.dart';
 import '../auth_screen/login_screen/login_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -32,7 +33,8 @@ class OnboardingScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
-                color: Color(0xFF777B84), // Hex color
+                fontFamily: 'Poppins',
+                color: AppColors.textSecondary
               ),
             ),
           ),
@@ -120,6 +122,7 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IntroductionScreen(
+      globalBackgroundColor: Colors.white,
       pages: pages,
       onDone: () => _onIntroEnd(context),
       showSkipButton: true,
