@@ -54,4 +54,7 @@ class AppColors
   //Badge colors
   static const Color badgePrimary = Color(0xFFCE0450);
 
+  //Notification colors
+  static const Color error = Color(0xFFF84343);
+
 }
