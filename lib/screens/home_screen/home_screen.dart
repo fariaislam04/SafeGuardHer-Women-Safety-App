@@ -4,6 +4,19 @@ import 'package:safeguardher_flutter_app/widgets/navigations/bottom_navbar.dart'
 import '../map_screen/map_screen.dart';
 import '../record_screen/record_screen.dart';
 
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: HomeScreen(),
+    );
+  }
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
