@@ -3,6 +3,7 @@ import 'package:safeguardher_flutter_app/screens/settings_screen/safety_tips_scr
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
 import 'contacts_screen/contacts_screen.dart';
 import 'devices_screen/devices_screen.dart';
+import 'history/history_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -19,10 +20,13 @@ class SettingsScreen extends StatelessWidget {
             runSpacing: 20.0,
             alignment: WrapAlignment.spaceBetween,
             children: [
-              buildButton(context, Icons.history, 'History', ()
-              {
-
-              }),
+              buildButton(context, Icons.history, 'History', () {
+                // Handle History button press
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const HistoryScreen()), // Navigate to History screen
+                );
               buildButton(context, Icons.perm_contact_calendar_rounded, 'Contacts', ()
               {
                 Navigator.push(
