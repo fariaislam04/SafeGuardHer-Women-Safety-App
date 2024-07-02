@@ -13,10 +13,12 @@ class SettingsScreen extends StatelessWidget {
     return SettingsTemplate(
       child: Column(
         children: [
-          buildTopContainer(),
+          buildProfileContainer(),
+          const SizedBox(height: 20.0),
           Wrap(
-            spacing: 20.0,
+            spacing: 30.0,
             runSpacing: 20.0,
+            alignment: WrapAlignment.spaceBetween,
             children: [
               buildButton(context, Icons.history, 'History', () {
                 // Handle History button press
@@ -25,23 +27,22 @@ class SettingsScreen extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => const HistoryScreen()), // Navigate to History screen
                 );
-              }),
-              buildButton(
-                  context, Icons.perm_contact_calendar_rounded, 'Contacts', () {
+              buildButton(context, Icons.perm_contact_calendar_rounded, 'Contacts', ()
+              {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const ContactsScreen()),
+                  MaterialPageRoute(builder: (context) => const ContactsScreen()),
                 );
               }),
-              buildButton(context, Icons.security, 'Safety Tips', () {
+              buildButton(context, Icons.security, 'Safety Tips', ()
+              {
                 Navigator.push(
-                context,
-                MaterialPageRoute(
-                builder: (context) => SafetyTipsPage()),
+                  context,
+                  MaterialPageRoute(builder: (context) => SafetyTipsPage()),
                 );
               }),
-              buildButton(context, Icons.devices_other_rounded, 'Devices', () {
+              buildButton(context, Icons.devices_other_rounded, 'Devices', ()
+              {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const DevicesScreen()),
@@ -54,41 +55,34 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildButton(BuildContext context, IconData icon, String text,
-      VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
-      child: Stack(
-        children: [
-          ElevatedButton(
-            onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(100, 100),
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
+  Widget buildButton(BuildContext context, IconData icon, String text, VoidCallback onPressed) {
+    return SizedBox(
+      width: 120,
+      height: 110,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+          border: Border.all(color: const Color(0XFFE8DCDC), width: 1.0),
+        ),
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
             ),
-            child: const SizedBox(),
           ),
-          Positioned(
-            top: 10.0,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Icon(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
                 icon,
                 color: const Color(0xFF6C022A),
-                size: 50.0,
+                size: 60.0,
               ),
-            ),
-          ),
-          Positioned(
-            bottom: 10.0,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Text(
+              const SizedBox(height: 10),
+              Text(
                 text,
                 style: const TextStyle(
                   color: Color(0xFF6C022A),
@@ -96,26 +90,22 @@ class SettingsScreen extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   fontSize: 12,
                 ),
+                textAlign: TextAlign.center,
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget buildTopContainer() {
+  Widget buildProfileContainer() {
     return Container(
       height: 100.0,
       padding: const EdgeInsets.all(5.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16.0),
-          topRight: Radius.circular(16.0),
-          bottomLeft: Radius.circular(16.0),
-          bottomRight: Radius.circular(16.0),
-        ),
+        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
         border: Border.all(color: const Color(0XFFE8DCDC), width: 1.0),
       ),
       child: const Row(
@@ -127,8 +117,7 @@ class SettingsScreen extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundImage:
-                      AssetImage('assets/placeholders/profile.png'),
+                  backgroundImage: AssetImage('assets/placeholders/profile.png'),
                   radius: 30.0,
                 ),
                 SizedBox(width: 10.0),
@@ -142,9 +131,10 @@ class SettingsScreen extends StatelessWidget {
                     Text(
                       'mayeesha.musarrat@gmail.com',
                       style: TextStyle(
-                          fontSize: 11.0,
-                          color: Colors.grey,
-                          fontFamily: 'Poppins'),
+                        fontSize: 11.0,
+                        color: Colors.grey,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                   ],
                 ),

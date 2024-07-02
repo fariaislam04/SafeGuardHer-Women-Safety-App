@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
+import '../../utils/constants/colors/colors.dart';
+import '../../utils/constants/image_strings/image_strings.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,7 +30,7 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF831D2D),
+      backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
         toolbarHeight: 90,
         backgroundColor: Colors.transparent,
@@ -37,7 +39,7 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
         title: Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: SvgPicture.asset(
-            'assets/logos/logo_dark_theme.svg',
+            ImageStrings.darkAppLogo,
             height: 70,
           ),
         ),
@@ -51,7 +53,7 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
               Container(
                 padding: const EdgeInsets.all(30.0),
                 decoration: BoxDecoration(
-                  color: const Color(0XFFF5F5F5),
+                  color: AppColors.backgroundLight,
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 child: Column(
@@ -132,18 +134,18 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
                           borderSide: const BorderSide(
-                            color: Color(0xFF831D2D),
+                            color: AppColors.borderFocused
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
                           borderSide: const BorderSide(
-                            color: Colors.grey,
+                            color: AppColors.borderPrimary
                           ),
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        focusColor: const Color(0xFF831D2D),
+                        focusColor: AppColors.borderFocused
                       ),
                     ),
                     const SizedBox(height: 24.0),
@@ -166,7 +168,7 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
                           borderSide: const BorderSide(
-                            color: Color(0xFF831D2D),
+                            color: AppColors.borderFocused,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
@@ -185,7 +187,7 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
                         return Center(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF831D2D),
+                              backgroundColor: AppColors.buttonPrimary,
                               padding: const EdgeInsets.symmetric(vertical:
                               14.0),
                               minimumSize: Size(constraints.maxWidth, 40),
@@ -197,12 +199,24 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
                             {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Row(
-                                    children: [
-                                      Icon(Icons.check_circle, color: Colors.white),
-                                      SizedBox(width: 10),
-                                      Text('Your report has been submitted!'),
-                                    ],
+                                  content: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      double width = constraints.maxWidth;
+                                      return Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.check_circle, color: Colors.white),
+                                          const SizedBox(width: 10),
+                                          Flexible(
+                                            child: Text(
+                                              'Your report has been submitted!',
+                                              style: TextStyle(fontSize:
+                                              width * 0.03),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                   backgroundColor: Colors.green,
                                   behavior: SnackBarBehavior.floating,
@@ -245,7 +259,7 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
                           'Submit Later',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Color(0xFF831D2D),
+                            color: AppColors.textEmphasis,
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w600,
                             decoration: TextDecoration.underline,

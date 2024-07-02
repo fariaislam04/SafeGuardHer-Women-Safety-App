@@ -5,10 +5,6 @@ import 'safety_at_university_page.dart';
 import 'women_safety_online_page.dart';
 import 'safety_on_the_streets_page.dart';
 
-
-
-
-
 class SafetyTipsPage extends StatelessWidget {
   final List<String> safetyTips = [
     'Safety at Work',

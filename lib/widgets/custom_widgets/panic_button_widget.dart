@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../utils/constants/colors/colors.dart';
 import 'package:safeguardher_flutter_app/screens/panic_button_screen/ten_second_panic_screen/ten_second_panic_screen.dart';
 import 'package:safeguardher_flutter_app/screens/panic_button_screen/five_second_panic_screen/five_second_panic_screen.dart';
 import 'package:safeguardher_flutter_app/widgets/custom_widgets/custom_snackbar.dart';
@@ -72,7 +73,7 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
           ),
         ),
     );
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   void _removeSnackbar()
@@ -109,15 +110,8 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
               height: 85,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: _buttonPressed
-                      ? [const Color(0xFF8E0E3E), const Color(0xFFD20452)]
-                  //button is pressed
-                      : [const Color(0xFFD20452), const Color(0xFF8E0E3E)],
-                  //button is not pressed
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                gradient: _buttonPressed ? AppColors.panicButtonPressed :
+                AppColors.panicButtonUnpressed,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),

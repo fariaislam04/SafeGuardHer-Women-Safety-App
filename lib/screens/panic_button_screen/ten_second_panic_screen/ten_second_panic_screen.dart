@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 import 'package:toastification/toastification.dart';
-import '../../../constants/util/timer_util.dart';
+import '../../../utils/helpers/timer_util.dart';
 import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 
 import '../safety_code_screen/safety_code_screen.dart';

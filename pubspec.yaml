@@ -9,36 +9,51 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+    # -- Icons and Svgs
   cupertino_icons: ^1.0.6
-  vibration: 1.9.0
-  badges: 3.1.2
   flutter_svg: 2.0.10+1
-  font_awesome_flutter: 10.7.0
+
+  # -- Background services
+  vibration: 1.9.0
   toastification: ^2.0.0
-  permission_handler: ^11.3.1
-  google_fonts: 6.2.1
-  device_info_plus: ^10.1.0
-  awesome_ripple_animation: 2.0.0
   mic_stream: ^0.7.1+2
-  flutter_native_splash: ^2.4.0
+  audioplayers: ^6.0.0
+  just_audio: ^0.9.38
+  contacts_service: ^0.6.3
+  voice_message_package: ^2.2.1
+  flutter_audio_waveforms: ^1.2.1+8
+  photo_view: ^0.15.0
+  awesome_ripple_animation: 2.0.0
+  permission_handler: ^11.3.1
+  device_info_plus: ^10.1.0
+
+  # -- Map packages
+  flutter_polyline_points: ^2.0.1
+  google_maps_flutter: ^2.7.0
+  location: ^7.0.0
+
+  # -- UI packages
+  badges: 3.1.2
+  font_awesome_flutter: 10.7.0
+  google_fonts: 6.2.1
   smooth_page_indicator: ^1.1.0
   onboarding: ^4.0.2
   shared_preferences: ^2.0.6
   introduction_screen: ^3.1.14
-  flutter_audio_waveforms: ^1.2.1+8
+  avatar_glow: ^3.0.1
+
+  # -- Database
   cloud_firestore: ^5.0.1
   firebase_core: ^3.1.0
-  audioplayers: ^6.0.0
-  just_audio: ^0.9.38
+
+  # -- State management
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
-  google_maps_flutter: ^2.7.0
-  voice_message_package: ^2.2.1
   provider: ^6.1.2
-  photo_view: ^0.15.0
-  location: ^6.0.2
-  contacts_service: ^0.6.3
 
+  # -- API
+  dio: 5.4.3+1
 
 dev_dependencies:
   flutter_test:
@@ -49,7 +64,6 @@ dev_dependencies:
   custom_lint: ^0.6.4
   riverpod_lint: ^2.3.10
   test: ^1.25.2
-
 
 flutter:
   uses-material-design: true
