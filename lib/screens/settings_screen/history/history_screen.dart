@@ -1,36 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SafeGuardHer History',
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
-        textTheme: GoogleFonts.poppinsTextTheme(),
-      ),
-      home: HistoryScreen(),
-    );
-  }
-}
+import '../../../utils/constants/colors/colors.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
   @override
-  _HistoryScreenState createState() => _HistoryScreenState();
+  HistoryScreenState createState() => HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderStateMixin {
+class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
@@ -46,11 +29,18 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
             Tab(text: 'My History'),
             Tab(text: 'Connected Contact History'),
           ],
+          indicatorColor: AppColors.secondary,
+          indicatorWeight: 2.0,
+          labelStyle: const TextStyle(fontFamily: 'Poppins', fontWeight:
+          FontWeight.w600),
+          unselectedLabelStyle: const TextStyle(fontFamily: 'Poppins'),
+          labelColor: AppColors.secondary,
+          unselectedLabelColor: AppColors.textSecondary,
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
+        children: const [
           HistoryPage(),
           ConnectedContactHistoryPage(),
         ],
@@ -60,11 +50,13 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
 }
 
 class HistoryPage extends StatelessWidget {
+  const HistoryPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16.0),
-      children: [
+      children: const [
         HistoryItem(
           title: 'Emergency SOS triggered',
           date: '3 June 2024, 1:20 AM',
@@ -89,13 +81,15 @@ class HistoryPage extends StatelessWidget {
 }
 
 class ConnectedContactHistoryPage extends StatelessWidget {
+  const ConnectedContactHistoryPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16.0),
-      children: [
+      children: const [
         ConnectedContactHistoryItem(
-          name: 'Bintea Sarker',
+          name: 'Binita Sarker',
           action: 'SOS alert',
           date: '3 June 2024, 1:20 AM',
           duration: 'Lasted 30 min',
@@ -119,7 +113,7 @@ class HistoryItem extends StatelessWidget {
   final String duration;
   final Color titleColor;
 
-  HistoryItem({
+  const HistoryItem({super.key,
     required this.title,
     required this.date,
     required this.duration,
@@ -140,20 +134,22 @@ class HistoryItem extends StatelessWidget {
         ),
         subtitle: Text(
           '$date\n$duration',
-          style: TextStyle(fontFamily: 'Poppins'),
+          style: const TextStyle(fontFamily: 'Poppins'),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.report),
-              onPressed: () {
+              icon: const Icon(Icons.assignment_late_outlined),
+              onPressed: ()
+              {
                 // Handle Report action
               },
             ),
             IconButton(
-              icon: const Icon(Icons.info),
-              onPressed: () {
+              icon: const Icon(Icons.launch_rounded),
+              onPressed: ()
+              {
                 // Handle Details action
               },
             ),
@@ -171,7 +167,8 @@ class ConnectedContactHistoryItem extends StatelessWidget {
   final String duration;
   final Color actionColor;
 
-  ConnectedContactHistoryItem({
+  const ConnectedContactHistoryItem({
+    super.key,
     required this.name,
     required this.action,
     required this.date,
@@ -183,7 +180,7 @@ class ConnectedContactHistoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: CircleAvatar(
+        leading: const CircleAvatar(
           backgroundImage: AssetImage('assets/placeholders/profile.png'),
         ),
         title: RichText(
@@ -191,7 +188,7 @@ class ConnectedContactHistoryItem extends StatelessWidget {
             children: [
               TextSpan(
                 text: '$name triggered ',
-                style: TextStyle(color: Colors.black, fontFamily: 'Poppins'),
+                style: const TextStyle(color: Colors.black, fontFamily: 'Poppins'),
               ),
               TextSpan(
                 text: action,
@@ -206,11 +203,12 @@ class ConnectedContactHistoryItem extends StatelessWidget {
         ),
         subtitle: Text(
           '$date\n$duration',
-          style: TextStyle(fontFamily: 'Poppins'),
+          style: const TextStyle(fontFamily: 'Poppins'),
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.info),
-          onPressed: () {
+          icon: const Icon(Icons.launch_rounded),
+          onPressed: ()
+          {
             // Handle Details action
           },
         ),

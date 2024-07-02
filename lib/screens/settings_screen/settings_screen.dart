@@ -5,6 +5,19 @@ import 'contacts_screen/contacts_screen.dart';
 import 'devices_screen/devices_screen.dart';
 import 'history/history_screen.dart';
 
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: SettingsScreen(),
+    );
+  }
+}
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -21,28 +34,24 @@ class SettingsScreen extends StatelessWidget {
             alignment: WrapAlignment.spaceBetween,
             children: [
               buildButton(context, Icons.history, 'History', () {
-                // Handle History button press
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const HistoryScreen()), // Navigate to History screen
+                  MaterialPageRoute(builder: (context) => const HistoryScreen()),
                 );
-              buildButton(context, Icons.perm_contact_calendar_rounded, 'Contacts', ()
-              {
+              }),
+              buildButton(context, Icons.perm_contact_calendar_rounded, 'Contacts', () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ContactsScreen()),
                 );
               }),
-              buildButton(context, Icons.security, 'Safety Tips', ()
-              {
+              buildButton(context, Icons.security, 'Safety Tips', () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SafetyTipsPage()),
                 );
               }),
-              buildButton(context, Icons.devices_other_rounded, 'Devices', ()
-              {
+              buildButton(context, Icons.devices_other_rounded, 'Devices', () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const DevicesScreen()),
