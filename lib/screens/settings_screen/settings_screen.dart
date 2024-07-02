@@ -66,7 +66,7 @@ class SettingsScreen extends StatelessWidget {
 
   Widget buildButton(BuildContext context, IconData icon, String text, VoidCallback onPressed) {
     return SizedBox(
-      width: 120,
+      width: 130,
       height: 110,
       child: Container(
         decoration: BoxDecoration(
@@ -88,7 +88,7 @@ class SettingsScreen extends StatelessWidget {
               Icon(
                 icon,
                 color: const Color(0xFF6C022A),
-                size: 60.0,
+                size: 50.0,
               ),
               const SizedBox(height: 10),
               Text(

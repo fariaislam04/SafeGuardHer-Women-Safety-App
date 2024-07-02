@@ -27,12 +27,12 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
           controller: _tabController,
           tabs: const [
             Tab(text: 'My History'),
-            Tab(text: 'Connected Contact History'),
+            Tab(text: 'Contact History'),
           ],
           indicatorColor: AppColors.secondary,
           indicatorWeight: 2.0,
           labelStyle: const TextStyle(fontFamily: 'Poppins', fontWeight:
-          FontWeight.w600),
+          FontWeight.w600, fontSize: 14),
           unselectedLabelStyle: const TextStyle(fontFamily: 'Poppins'),
           labelColor: AppColors.secondary,
           unselectedLabelColor: AppColors.textSecondary,
@@ -58,7 +58,7 @@ class HistoryPage extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       children: const [
         HistoryItem(
-          title: 'Emergency SOS triggered',
+          title: 'SOS triggered',
           date: '3 June 2024, 1:20 AM',
           duration: 'Lasted 30 min',
           titleColor: Colors.red,
@@ -130,11 +130,12 @@ class HistoryItem extends StatelessWidget {
             color: titleColor,
             fontWeight: FontWeight.bold,
             fontFamily: 'Poppins',
+            fontSize: 14,
           ),
         ),
         subtitle: Text(
           '$date\n$duration',
-          style: const TextStyle(fontFamily: 'Poppins'),
+          style: const TextStyle(fontFamily: 'Poppins', fontSize: 12,),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -188,7 +189,8 @@ class ConnectedContactHistoryItem extends StatelessWidget {
             children: [
               TextSpan(
                 text: '$name triggered ',
-                style: const TextStyle(color: Colors.black, fontFamily: 'Poppins'),
+                style: const TextStyle(color: Colors.black, fontFamily: 'Popp'
+                    'ins', fontSize: 14),
               ),
               TextSpan(
                 text: action,
@@ -196,6 +198,7 @@ class ConnectedContactHistoryItem extends StatelessWidget {
                   color: actionColor,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Poppins',
+                  fontSize: 15,
                 ),
               ),
             ],
@@ -203,7 +206,7 @@ class ConnectedContactHistoryItem extends StatelessWidget {
         ),
         subtitle: Text(
           '$date\n$duration',
-          style: const TextStyle(fontFamily: 'Poppins'),
+          style: const TextStyle(fontFamily: 'Poppins', fontSize: 12),
         ),
         trailing: IconButton(
           icon: const Icon(Icons.launch_rounded),
