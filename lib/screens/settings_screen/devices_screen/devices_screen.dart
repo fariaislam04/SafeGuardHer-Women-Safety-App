@@ -87,8 +87,8 @@ class DevicesScreen extends StatelessWidget {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFD20451), // Button color
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 150, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 150, vertical: 8),
               ),
               onPressed: () {
                 // Add your find other devices logic here
