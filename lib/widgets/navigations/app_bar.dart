@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../screens/settings_screen/settings_screen.dart';
+import '../../utils/constants/colors/colors.dart';
+import '../../utils/constants/image_strings/image_strings.dart';
 import '../animations/bottom_to_top_animation.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -25,7 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(2),
               child: SvgPicture.asset(
-                'assets/logos/logo.svg',
+                ImageStrings.lightAppLogo,
                 width: 80,
                 height: 50,
                 fit: BoxFit.contain,
@@ -46,7 +48,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     badgeContent:
                         const Text('3', style: TextStyle(color: Colors.white)),
                     badgeStyle: const badges.BadgeStyle(
-                      badgeColor: Color(0xFFCE0450),
+                      badgeColor: AppColors.badgePrimary,
                       padding: EdgeInsets.all(6),
                       shape: badges.BadgeShape.circle,
                     ),
@@ -57,7 +59,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         }
                       },
                       icon: const Icon(Icons.notifications),
-                      color: const Color(0xFF222222),
+                      color: AppColors.iconPrimary,
                     ),
                   ),
                 ),
@@ -71,7 +73,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       );
                     },
                     icon: const Icon(Icons.menu),
-                    color: const Color(0xFF222222),
+                    color: AppColors.iconPrimary,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -82,7 +84,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
       bottom: const PreferredSize(
         preferredSize: Size.fromHeight(1.0),
-        child: Divider(color: Color(0xFFEDEDED)),
+        child: Divider(color: AppColors.dividerPrimary),
       ),
     );
   }
