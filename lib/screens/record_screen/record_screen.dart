@@ -165,7 +165,8 @@ class _RecordScreenState extends State<RecordScreen>
                 {
                   isListening = false;
                   stopListening();
-                  appHelperFunctions.goTo(context, const ViewRecordingsHistory());
+                  appHelperFunctions.goTo(context, const
+                  ViewRecordingsHistory(uid: '2',));
                 },
                 trailing: const Icon(
                   Icons.arrow_forward_ios,
