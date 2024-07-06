@@ -63,6 +63,7 @@ dependencies:
   flutter_ffmpeg: ^0.4.2
   flutter_background_video_recorder: ^1.0.0+2
   loading_animation_widget: ^1.2.1
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
