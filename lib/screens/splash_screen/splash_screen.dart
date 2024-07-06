@@ -6,6 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import '../../utils/constants/colors/colors.dart';
 import '../../utils/constants/image_strings/image_strings.dart';
+import '../../utils/helpers/helper_functions.dart';
+
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 /// This screen shows itself the first time the user opens the app. If the
 /// user has not screen onboarding screen yet, then it shows the onboarding screen. Otherwise, it shows the Home screen.
@@ -36,15 +39,11 @@ class SplashScreenState extends State<SplashScreen>
 
     if (appOpenedBefore)
     {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
+       appHelperFunctions.goTo(context, const HomeScreen());
     }
     else
     {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) =>  OnboardingScreen()),
-      );
+       appHelperFunctions.goTo(context, OnboardingScreen());
     }
   }
 

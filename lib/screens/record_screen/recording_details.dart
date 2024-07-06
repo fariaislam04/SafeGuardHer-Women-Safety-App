@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:voice_message_package/voice_message_package.dart';
 import 'package:photo_view/photo_view.dart';
+import '../../utils/helpers/helper_functions.dart';
 import '../../widgets/navigations/app_bar.dart';
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class RecordingDetails extends StatelessWidget {
   final String audioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
@@ -10,6 +12,7 @@ class RecordingDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(),
@@ -26,7 +29,7 @@ class RecordingDetails extends StatelessWidget {
                     color: Color(0xFF263238),
                     size: 15,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => appHelperFunctions.goBack(context)
                 ),
                 const Text(
                   'Record History of 12/05/24',
@@ -124,12 +127,7 @@ class PhotoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ZoomableImagePage(imageSrc: src),
-          ),
-        );
+        appHelperFunctions.goTo(context, ZoomableImagePage(imageSrc: src));
       },
       child: Column(
         children: [

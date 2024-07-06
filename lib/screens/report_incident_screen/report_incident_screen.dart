@@ -3,6 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import '../../utils/constants/colors/colors.dart';
 import '../../utils/constants/image_strings/image_strings.dart';
+import '../../utils/helpers/helper_functions.dart';
+
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 void main() {
   runApp(MyApp());
@@ -250,10 +253,7 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
                     Center(
                       child: TextButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const HomeScreen()),
-                          );
+                        appHelperFunctions.goTo(context, const HomeScreen());
                         },
                         child: const Text(
                           'Submit Later',

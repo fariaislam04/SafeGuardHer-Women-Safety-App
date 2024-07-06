@@ -77,7 +77,6 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.account_circle),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4C85EA), // Button color
                     padding: const EdgeInsets.symmetric(

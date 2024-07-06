@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:safeguardher_flutter_app/screens/panic_button_screen/safety_code_screen/safety_code_screen.dart';
 import 'package:safeguardher_flutter_app/screens/panic_button_screen/stop_panic_alert_screen/stop_panic_alert_screen.dart';
 import 'package:vibration/vibration.dart';
+import '../../../utils/helpers/helper_functions.dart';
 import '../../../utils/helpers/timer_util.dart';
+
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 
 class FiveSecondPanicScreen extends StatefulWidget {
@@ -44,12 +47,7 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
       onComplete: ()
       {
         _timer.cancel();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SafetyCodeScreen(),
-          ),
-        );
+        appHelperFunctions.goTo(context, const SafetyCodeScreen());
       },
     );
   }
@@ -155,12 +153,7 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
                 onPressed: () {
                   // Navigate to the Home page if user presses "STOP SOS"
                   _timer.cancel();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                      builder: (context) => const StopPanicAlertScreen(),
-                  )
-                  );
+                  appHelperFunctions.goTo(context, const StopPanicAlertScreen());
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,

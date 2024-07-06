@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../utils/helpers/helper_functions.dart';
 import '../../report_incident_screen/report_incident_screen.dart';
+
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 void main() {
   runApp(const MaterialApp(
@@ -49,10 +52,7 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
     await Future.delayed(const Duration(seconds: 2));
     if (context.mounted)
     {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ReportIncidentPage()),
-      );
+      appHelperFunctions.goTo(context, const ReportIncidentPage());
     }
   }
 

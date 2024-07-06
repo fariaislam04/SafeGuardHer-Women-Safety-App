@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
-import 'package:toastification/toastification.dart';
+import '../../../utils/helpers/helper_functions.dart';
 import '../../../utils/helpers/timer_util.dart';
 import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
-
 import '../safety_code_screen/safety_code_screen.dart';
 import '../stop_panic_alert_screen/stop_panic_alert_screen.dart';
+
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class TenSecondPanicScreen extends StatefulWidget {
   const TenSecondPanicScreen({super.key});
@@ -42,46 +43,13 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
       },
       onComplete: () {
         _countdownTimer.cancel();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SafetyCodeScreen(),
-          ),
-        );
+        appHelperFunctions.goTo(context, const SafetyCodeScreen());
       },
     );
   }
 
   Future<void> _vibrate() async {
     await Vibration.vibrate(duration: 500);
-  }
-
-  void _showCustomToast(BuildContext context) {
-    toastification.showCustom(
-      context: context,
-      autoCloseDuration: const Duration(seconds: 10),
-      alignment: const AlignmentDirectional(-1, -1),
-      builder: (BuildContext context, ToastificationItem holder) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.red,
-          ),
-          padding: const EdgeInsets.all(8),
-          margin: const EdgeInsets.all(8),
-          child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Panic alert aborted',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight
-                    .w600, fontSize: 12),
-              ),
-              SizedBox(height: 5)
-            ],
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -189,12 +157,7 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
                 onPressed: () {
                   _countdownTimer.cancel();
                  // _showCustomToast(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const StopPanicAlertScreen(),
-                      )
-                  );
+                  appHelperFunctions.goTo(context, const StopPanicAlertScreen());
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
