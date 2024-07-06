@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:safeguardher_flutter_app/screens/record_screen/recording_details.dart';
+import '../../utils/formatters/formatters.dart';
+import '../../screens/record_screen/recording_details.dart';
+import '../../utils/helpers/helper_functions.dart';
+
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class RecordedHistoryTile extends StatelessWidget {
   final String date;
-  final String duration;
-
   const RecordedHistoryTile({
     super.key,
     required this.date,
-    required this.duration,
   });
 
   @override
   Widget build(BuildContext context) {
+    String formattedDate = Formatters.formatDateString(date);
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -20,23 +23,17 @@ class RecordedHistoryTile extends StatelessWidget {
       child: ListTile(
         leading: const Icon(Icons.video_library_rounded),
         title: Text(
-          'Recorded on $date',
+          'Recorded on $formattedDate',
           style: const TextStyle(
             fontSize: 13,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w600,
           ),
         ),
-        subtitle: Text('Lasted $duration', style: const TextStyle
-          (fontFamily: 'Poppins', fontSize: 11),),
-        onTap: () {
-          // Navigate to record details page
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-              builder: (context) => const RecordingDetails(),
-          ),
-          );
+        onTap: ()
+        {
+         appHelperFunctions.goToScreen(context, RecordingDetails(uid: ''
+             '2',date: date));
         },
         trailing: const Icon(
           Icons.arrow_forward_ios,
