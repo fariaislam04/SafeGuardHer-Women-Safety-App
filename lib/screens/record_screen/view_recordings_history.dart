@@ -1,29 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:safeguardher_flutter_app/widgets/navigations/app_bar.dart';
+import '../../services/background/storage_service/storage_service.dart';
+import '../../widgets/navigations/app_bar.dart';
 import '../../widgets/tiles/recorded_history_tile.dart';
 
 class ViewRecordingsHistory extends StatefulWidget {
-  const ViewRecordingsHistory({super.key});
+  final String uid;
+  const ViewRecordingsHistory({super.key, required this.uid});
 
   @override
   State<ViewRecordingsHistory> createState() => _ViewRecordingHistoryState();
 }
 
 class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
-  final List<Map<String, dynamic>> recordings = [
-    {'date': '16/05/24', 'duration': '25 minutes'},
-    {'date': '15/05/24', 'duration': '30 seconds'},
-    {'date': '14/05/24', 'duration': '27 minutes'},
-    {'date': '13/05/24', 'duration': '32 minutes'},
-    {'date': '12/05/24', 'duration': '29 seconds'},
-    {'date': '11/05/24', 'duration': '33 seconds'},
-    {'date': '10/05/24', 'duration': '26 minutes'},
-    {'date': '09/05/24', 'duration': '35 minutes'},
-    {'date': '08/05/24', 'duration': '28 minutes'},
-    {'date': '07/05/24', 'duration': '31 seconds'},
-    {'date': '06/05/24', 'duration': '34 minutes'},
-    {'date': '05/05/24', 'duration': '30 seconds'},
-  ];
+  final StorageService _storageService = StorageService();
+  List<String> dateFolders = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDateFolders();
+  }
+
+  Future<void> fetchDateFolders() async {
+    try {
+      List<String> folders = await _storageService.listDateFolders(widget.uid);
+      setState(() {
+        dateFolders = folders;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching date folders: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +78,15 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
             ),
             const Divider(color: Color(0xFFEDEDED)),
             const SizedBox(height: 13),
-            Expanded(
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Expanded(
               child: ListView.builder(
-                itemCount: recordings.length,
+                itemCount: dateFolders.length,
                 itemBuilder: (context, index) {
-                  final recording = recordings[index];
+                  final dateFolder = dateFolders[index];
                   return RecordedHistoryTile(
-                    date: recording['date'],
-                    duration: recording['duration'],
+                    date: dateFolder,
                   );
                 },
               ),
