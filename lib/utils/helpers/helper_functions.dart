@@ -30,6 +30,14 @@ class AppHelperFunctions
     );
   }
 
+  void goToScreen(BuildContext context, Widget nextScreen)
+  {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => nextScreen),
+    );
+  }
+
   void goBack(BuildContext context)
   {
     Navigator.pop(
@@ -64,7 +72,7 @@ class AppHelperFunctions
         child: LoadingAnimationWidget.flickr(
           leftDotColor: AppColors.logoPrimary,
           rightDotColor: AppColors.logoSecondary,
-          size: 100.0,
+          size: 50.0,
         ),
       ),
     );
