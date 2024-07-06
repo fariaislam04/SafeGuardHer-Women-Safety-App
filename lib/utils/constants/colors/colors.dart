@@ -57,4 +57,8 @@ class AppColors
   //Notification colors
   static const Color error = Color(0xFFF84343);
 
+  //App logo colors
+  static const Color logoPrimary = Color(0xFF669DC8);
+  static const Color logoSecondary = Color(0xFFFF735C);
+
 }
