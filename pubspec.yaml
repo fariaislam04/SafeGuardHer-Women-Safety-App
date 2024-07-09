@@ -64,6 +64,9 @@ dependencies:
   flutter_background_video_recorder: ^1.0.0+2
   loading_animation_widget: ^1.2.1
   intl: ^0.19.0
+  soundpool: ^2.4.1
+  audio_wave: ^0.1.5
+  shake_flutter: ^17.0.1
 
 dev_dependencies:
   flutter_test:
