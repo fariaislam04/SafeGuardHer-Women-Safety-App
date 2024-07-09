@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_done_screen.dart';
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_screen2.dart';
 
-
 class SignUpOTPScreen extends StatefulWidget {
   const SignUpOTPScreen({Key? key}) : super(key: key);
 
@@ -126,7 +125,7 @@ class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
                   backgroundColor:
                       _isButtonEnabled ? const Color(0xFFD20451) : Colors.grey,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 143, vertical: 14),
+                      const EdgeInsets.symmetric(horizontal: 120, vertical: 14),
                 ),
                 child: const Text(
                   "Verify",

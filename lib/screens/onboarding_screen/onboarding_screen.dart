@@ -32,10 +32,9 @@ class OnboardingScreen extends StatelessWidget {
               "Share your route with trusted contacts and enable real-time tracking to ensure your safety, whether you're on a short walk or a long journey!",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 15,
-                fontFamily: 'Poppins',
-                color: AppColors.textSecondary
-              ),
+                  fontSize: 15,
+                  fontFamily: 'Poppins',
+                  color: AppColors.textSecondary),
             ),
           ),
         ],
@@ -133,7 +132,7 @@ class OnboardingScreen extends StatelessWidget {
         ),
       ),
       next: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: const Color(0xFFD20451), // Cool background color
           borderRadius: BorderRadius.circular(20), // Rounded corners
