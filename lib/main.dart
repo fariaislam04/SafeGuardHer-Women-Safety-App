@@ -76,7 +76,7 @@ class SafeGuardHer extends StatelessWidget {
   {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool result = prefs.getBool('appOpenedBefore') ?? false;
-    result = true; //Comment this on production
+   // result = true; //Comment this on production
     if (!result)
     {
      await prefs.setBool('appOpenedBefore', true);
