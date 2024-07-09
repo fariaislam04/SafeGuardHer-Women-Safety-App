@@ -108,7 +108,7 @@ class LoginScreen extends StatelessWidget {
                         // Add your sign-up navigation logic here
                       },
                       child: const Text(
-                        "SIgn up here",
+                        "Sign up here",
                         style: TextStyle(
                             color: Colors.pink,
                             fontFamily: 'Poppins',
