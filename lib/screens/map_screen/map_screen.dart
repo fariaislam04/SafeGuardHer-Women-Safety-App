@@ -105,7 +105,8 @@ class MapScreenState extends State<MapScreen> {
                 child: GoogleMap(
                   onMapCreated: _onMapCreated,
                   initialCameraPosition: const CameraPosition(
-                    target: LatLng(26.675200, 85.166800), // Initial position (Dhaka, Bangladesh)
+                    target: LatLng(26.675200,
+                        85.166800), // Initial position (Dhaka, Bangladesh)
                     zoom: 1.0,
                   ),
                   markers: markers,

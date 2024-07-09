@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../signup_screen/signup_screen1.dart';
 import 'login_screen.dart';
 
-
 void main() {
   runApp(LoginInfoScreen());
 }
@@ -63,7 +62,8 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()),
                       );
                     },
                   ),
@@ -193,7 +193,7 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
                   backgroundColor:
                       _isButtonEnabled ? const Color(0xFFD20451) : Colors.grey,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 150, vertical: 14),
+                      const EdgeInsets.symmetric(horizontal: 140, vertical: 14),
                 ),
                 child: const Text(
                   "Login",

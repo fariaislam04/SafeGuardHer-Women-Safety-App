@@ -6,9 +6,9 @@ import 'package:safeguardher_flutter_app/screens/panic_button_screen/stop_panic_
 import 'package:vibration/vibration.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../../../utils/helpers/timer_util.dart';
+import 'package:safeguardher_flutter_app/widgets/custom_widgets/SMSSender.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
-
 
 class FiveSecondPanicScreen extends StatefulWidget {
   const FiveSecondPanicScreen({super.key});
@@ -20,6 +20,7 @@ class FiveSecondPanicScreen extends StatefulWidget {
 class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
   late Timer _timer;
   int _countdown = 5;
+  final SMSSender smsSender = SMSSender();
 
   @override
   void initState() {
@@ -36,24 +37,26 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
   void _startCountdown() {
     _timer = TimerUtil.startCountdown(
       initialCount: _countdown,
-      onTick: (currentCount)
-      {
-        setState(()
-        {
+      onTick: (currentCount) {
+        setState(() {
           _countdown = currentCount;
           _vibrate();
         });
       },
-      onComplete: ()
-      {
+      onComplete: () {
         _timer.cancel();
+        // Send SMS on completion
+        smsSender.sendAndNavigate(
+          context,
+          "Your friend is in danger",
+          ["01719958727"], // Add recipients' phone numbers
+        );
         appHelperFunctions.goTo(context, const SafetyCodeScreen());
       },
     );
   }
 
-  Future<void> _vibrate() async
-  {
+  Future<void> _vibrate() async {
     await Vibration.vibrate(duration: 500);
   }
 
@@ -153,7 +156,8 @@ class FiveSecondPanicScreenState extends State<FiveSecondPanicScreen> {
                 onPressed: () {
                   // Navigate to the Home page if user presses "STOP SOS"
                   _timer.cancel();
-                  appHelperFunctions.goTo(context, const StopPanicAlertScreen());
+                  appHelperFunctions.goTo(
+                      context, const StopPanicAlertScreen());
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
