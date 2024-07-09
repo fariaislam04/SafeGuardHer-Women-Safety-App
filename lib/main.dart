@@ -23,7 +23,7 @@ void main() async {
   bool appOpenedBefore = prefs.getBool('appOpenedBefore') ?? false;
   bool loggedIn = prefs.getBool('loggedIn') ?? false;
 
-  appOpenedBefore = false; loggedIn = false; //comment this on production
+  //appOpenedBefore = false; loggedIn = false; //comment this on production
 
   runApp(ProviderScope(
     child: SafeGuardHer(appOpenedBefore: appOpenedBefore, loggedIn: loggedIn),
