@@ -4,6 +4,10 @@ import 'package:safeguardher_flutter_app/utils/constants/colors/colors.dart';
 import '../../utils/constants/sizes/sizes.dart';
 import '../../widgets/navigations/app_bar.dart';
 
+
+// This screen contains the bottom drawer sheet that contains close contact distance and specs
+
+
 class TrackCloseContact extends StatefulWidget {
   const TrackCloseContact({super.key});
 
