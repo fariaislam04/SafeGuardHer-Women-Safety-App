@@ -17,7 +17,6 @@ class SafetyTipsPage extends StatelessWidget {
     'Safety on the Streets',
   ];
 
-
   final Color customColor = const Color(0xFF6C022A);
 
   SafetyTipsPage({super.key});

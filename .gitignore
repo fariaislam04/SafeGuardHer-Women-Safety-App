@@ -9,7 +9,7 @@
 .history
 .svn
 .env
-lib/env.g.dart
+lib/env/env.g.dart
 migrate_working_dir/
 
 # IntelliJ related
