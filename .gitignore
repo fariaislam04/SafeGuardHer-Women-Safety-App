@@ -7,7 +7,9 @@
 .atom/
 .buildlog/
 .history
-.svn/
+.svn
+.env
+lib/env.g.dart
 migrate_working_dir/
 
 # IntelliJ related

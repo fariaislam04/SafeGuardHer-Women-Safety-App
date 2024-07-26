@@ -44,14 +44,14 @@ class DevicesScreen extends StatelessWidget {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
+                  const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -71,7 +71,7 @@ class DevicesScreen extends StatelessWidget {
                     ],
                   ),
                   IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
                       // Add your delete logic here
                     },
@@ -93,7 +93,7 @@ class DevicesScreen extends StatelessWidget {
               onPressed: () {
                 // Add your find other devices logic here
               },
-              child: Center(
+              child: const Center(
                 child: Text(
                   'Find Other Devices',
                   style: TextStyle(

@@ -6,7 +6,7 @@ import 'logininfo_screen.dart';
 
 
 void main() {
-  runApp(LoginScreen());
+  runApp(const LoginScreen());
 }
 
 class LoginScreen extends StatelessWidget {

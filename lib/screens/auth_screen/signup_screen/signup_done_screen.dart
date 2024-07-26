@@ -4,7 +4,7 @@ import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signu
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 
 void main() {
-  runApp(SignUpDoneScreen());
+  runApp(const SignUpDoneScreen());
 }
 
 class SignUpDoneScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _SignUpDoneScreenState extends State<SignUpDoneScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SignUpOTPScreen()),
+                            builder: (context) => const SignUpOTPScreen()),
                       );
                     },
                   ),
@@ -73,7 +73,7 @@ class _SignUpDoneScreenState extends State<SignUpDoneScreen> {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
                   );
                 },
                 key: null,

@@ -5,7 +5,6 @@ import 'package:location/location.dart';
 import 'package:safeguardher_flutter_app/widgets/notifications/notification_widget.dart';
 import '../../utils/constants/colors.dart';
 import '../../utils/helpers/helper_functions.dart';
-import '../../widgets/custom_widgets/add_contact_widget.dart';
 import '../tracking_screen/track_me_modal.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();

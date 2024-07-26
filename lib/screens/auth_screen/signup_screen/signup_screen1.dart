@@ -4,13 +4,15 @@ import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signu
 import '../login_screen/logininfo_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: SignUpScreen1(),
     );
   }
@@ -96,7 +98,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => LoginInfoScreen()),
+                            builder: (context) => const LoginInfoScreen()),
                       );
                     },
                   ),
@@ -250,7 +252,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpScreen2()),
+                              builder: (context) => const SignUpScreen2()),
                         );
                       }
                     : null,

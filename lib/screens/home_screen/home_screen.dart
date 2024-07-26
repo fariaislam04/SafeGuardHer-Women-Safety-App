@@ -10,10 +10,12 @@ import '../record_screen/record_screen.dart';
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -34,6 +36,7 @@ class HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   int _shakeCount = 0;
 
+  @override
   void initState()
   {
     super.initState();

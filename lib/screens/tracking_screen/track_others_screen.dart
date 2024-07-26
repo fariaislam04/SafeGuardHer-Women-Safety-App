@@ -4,9 +4,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
+import '../../env/env.dart';
 
 class TrackOthersScreen extends StatefulWidget {
-  const TrackOthersScreen({Key? key}) : super(key: key);
+  const TrackOthersScreen({super.key});
 
   @override
   State<TrackOthersScreen> createState() => TrackOthersScreenState();
@@ -19,6 +20,38 @@ class TrackOthersScreenState extends State<TrackOthersScreen> {
   List<LatLng> polylineCoordinates = [];
   LocationData? currentLocationOfTheUser;
   late List<Marker> _markers = [];
+  String googleMapsAPI = Env.googleMapsAPI;
+
+  /*
+  void getPolyPoints() async
+  {
+    PolylinePoints polylinePoints = PolylinePoints();
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      googleApiKey: googleMapsAPI,
+      request: PolylineRequest(
+        origin: PointLatLng(currentLocationOfTheUser!.latitude!,
+            currentLocationOfTheUser!.longitude!),
+        destination: PointLatLng(destination.latitude, destination.longitude),
+        mode: TravelMode.driving,
+        wayPoints: [PolylineWayPoint(location: "Sabo, Yaba Lagos Nigeria")],
+      ),
+    );
+
+    if (kDebugMode) {
+      print(result.points);
+    }
+    if (result.points.isNotEmpty)
+    {
+      for (var point in result.points)
+      {
+        polylineCoordinates.add(
+          LatLng(point.latitude, point.longitude),
+        );
+      }
+      setState(() {});
+    }
+  }
+   */
 
   @override
   void initState() {
@@ -54,7 +87,7 @@ class TrackOthersScreenState extends State<TrackOthersScreen> {
       currentLocationOfTheUser = newLocation;
       googleMapController.animateCamera(CameraUpdate.newCameraPosition
         (CameraPosition(
-        zoom: 16,
+        zoom: 18,
         target: LatLng(
             newLocation.latitude!,
             newLocation.longitude!

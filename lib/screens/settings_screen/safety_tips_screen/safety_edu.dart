@@ -20,11 +20,13 @@ class SafetyTipsPage extends StatelessWidget {
 
   final Color customColor = const Color(0xFF6C022A);
 
+  SafetyTipsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Safety Tips'),
+        title: const Text('Safety Tips'),
         backgroundColor: customColor,
       ),
       body: ListView.builder(
@@ -67,31 +69,31 @@ class SafetyTipsPage extends StatelessWidget {
       case 0:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SafetyAtWorkPage()),
+          MaterialPageRoute(builder: (context) => const SafetyAtWorkPage()),
         );
         break;
       case 1:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SafetyAtHomePage()),
+          MaterialPageRoute(builder: (context) => const SafetyAtHomePage()),
         );
         break;
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SafetyAtUniversityPage()),
+          MaterialPageRoute(builder: (context) => const SafetyAtUniversityPage()),
         );
         break;
       case 3:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => WomenSafetyAtOnlinePage()),
+          MaterialPageRoute(builder: (context) => const WomenSafetyAtOnlinePage()),
         );
         break;
       case 4:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SafetyOnTheStreetsPage()),
+          MaterialPageRoute(builder: (context) => const SafetyOnTheStreetsPage()),
         );
         break;
     }

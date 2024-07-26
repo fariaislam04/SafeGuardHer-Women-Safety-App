@@ -57,7 +57,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SignUpScreen1()),
+                            builder: (context) => const SignUpScreen1()),
                       );
                     },
                   ),
@@ -244,7 +244,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpOTPScreen()),
+                              builder: (context) => const SignUpOTPScreen()),
                         );
                       }
                     : null,

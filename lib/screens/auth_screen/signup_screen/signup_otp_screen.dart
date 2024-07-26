@@ -6,7 +6,7 @@ import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signu
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_screen2.dart';
 
 class SignUpOTPScreen extends StatefulWidget {
-  const SignUpOTPScreen({Key? key}) : super(key: key);
+  const SignUpOTPScreen({super.key});
 
   @override
   _SignUpOTPScreenState createState() => _SignUpOTPScreenState();
@@ -40,7 +40,7 @@ class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
   void startResendTimer() {
     _resendTimer?.cancel(); // Cancel any existing timer
     _resendCountdown = 30; // Reset the countdown
-    _resendTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_resendCountdown > 0) {
         setState(() {
           _resendCountdown--;
@@ -73,7 +73,7 @@ class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SignUpScreen2()),
+                            builder: (context) => const SignUpScreen2()),
                       );
                     },
                   ),
@@ -117,7 +117,7 @@ class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpDoneScreen()),
+                              builder: (context) => const SignUpDoneScreen()),
                         );
                       }
                     : null,

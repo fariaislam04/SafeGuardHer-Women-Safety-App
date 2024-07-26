@@ -5,7 +5,7 @@ import '../signup_screen/signup_screen1.dart';
 import 'login_screen.dart';
 
 void main() {
-  runApp(LoginInfoScreen());
+  runApp(const LoginInfoScreen());
 }
 
 class LoginInfoScreen extends StatefulWidget {

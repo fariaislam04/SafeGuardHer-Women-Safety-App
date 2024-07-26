@@ -110,6 +110,8 @@ class OnboardingScreen extends StatelessWidget {
     ),
   ];
 
+  OnboardingScreen({super.key});
+
   void _onIntroEnd(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('seenOnboarding', true);
