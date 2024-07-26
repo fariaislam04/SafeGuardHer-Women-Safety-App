@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:safeguardher_flutter_app/screens/track_close_contacts_screen/track_close_contact_map.dart';
-import 'package:safeguardher_flutter_app/utils/constants/colors/colors.dart';
-import '../../utils/constants/sizes/sizes.dart';
+import 'package:safeguardher_flutter_app/screens/tracking_screen/track_others_screen.dart';
+import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
+import '../../utils/constants/sizes.dart';
 import '../../widgets/navigations/app_bar.dart';
-
 
 // This screen contains the bottom drawer sheet that contains close contact distance and specs
 
-
-class TrackCloseContact extends StatefulWidget {
+class TrackCloseContact extends StatefulWidget
+{
   const TrackCloseContact({super.key});
 
   @override
@@ -25,7 +24,7 @@ class TrackCloseContactState extends State<TrackCloseContact> {
       appBar: const CustomAppBar(),
       body: Stack(
         children: [
-          const TrackCloseContactMap(),
+          const TrackOthersScreen(),
           DraggableScrollableSheet(
             initialChildSize: 0.4,
             minChildSize: 0.15,

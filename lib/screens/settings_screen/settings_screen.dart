@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:safeguardher_flutter_app/screens/settings_screen/safety_tips_screen/safety_edu.dart';
+import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
+import 'package:safeguardher_flutter_app/utils/helpers/helper_functions.dart';
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
 import 'contacts_screen/contacts_screen.dart';
 import 'devices_screen/devices_screen.dart';
 import 'history/history_screen.dart';
 
-void main() {
-  runApp(MyApp());
-}
+const String userEmail = "musarrat.mayeesha@gmail.com";
+const String userName = "Mayeesha Musarrat";
+const String userProfileImageUrl = "";
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SettingsScreen(),
-    );
-  }
-}
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -34,28 +29,16 @@ class SettingsScreen extends StatelessWidget {
             alignment: WrapAlignment.spaceBetween,
             children: [
               buildButton(context, Icons.history, 'History', () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HistoryScreen()),
-                );
+                appHelperFunctions.goToScreenAndComeBack(context, const HistoryScreen());
               }),
               buildButton(context, Icons.perm_contact_calendar_rounded, 'Contacts', () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ContactsScreen()),
-                );
+                appHelperFunctions.goToScreenAndComeBack(context, const ContactsScreen());
               }),
               buildButton(context, Icons.security, 'Safety Tips', () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SafetyTipsPage()),
-                );
+                appHelperFunctions.goToScreenAndComeBack(context, SafetyTipsPage());
               }),
               buildButton(context, Icons.devices_other_rounded, 'Devices', () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const DevicesScreen()),
-                );
+                appHelperFunctions.goToScreenAndComeBack(context, const DevicesScreen());
               }),
             ],
           ),
@@ -87,14 +70,14 @@ class SettingsScreen extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: const Color(0xFF6C022A),
+                color: AppColors.primary,
                 size: 50.0,
               ),
               const SizedBox(height: 10),
               Text(
                 text,
                 style: const TextStyle(
-                  color: Color(0xFF6C022A),
+                  color: AppColors.primary,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w500,
                   fontSize: 12,
@@ -108,7 +91,8 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildProfileContainer() {
+  Widget buildProfileContainer()
+  {
     return Container(
       height: 100.0,
       padding: const EdgeInsets.all(5.0),
@@ -134,11 +118,11 @@ class SettingsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Mayeesha Musarrat',
+                      userEmail,
                       style: TextStyle(fontSize: 14.0, fontFamily: 'Poppins'),
                     ),
                     Text(
-                      'mayeesha.musarrat@gmail.com',
+                      userName,
                       style: TextStyle(
                         fontSize: 11.0,
                         color: Colors.grey,

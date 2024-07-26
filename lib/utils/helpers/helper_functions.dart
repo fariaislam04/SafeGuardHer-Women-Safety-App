@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:safeguardher_flutter_app/utils/constants/colors/colors.dart';
+import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
 
 class AppHelperFunctions
 {
@@ -22,7 +22,7 @@ class AppHelperFunctions
     return code;
   }
 
-  void goTo(BuildContext context, Widget nextScreen)
+  void goToScreenAndComeBack(BuildContext context, Widget nextScreen)
   {
     Navigator.pushReplacement(
       context,
@@ -30,7 +30,7 @@ class AppHelperFunctions
     );
   }
 
-  void goToScreen(BuildContext context, Widget nextScreen)
+  void goToScreenAndDoNotComeBack(BuildContext context, Widget nextScreen)
   {
     Navigator.push(
       context,

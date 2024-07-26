@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:safeguardher_flutter_app/utils/helpers/helper_functions.dart';
 import 'package:safeguardher_flutter_app/widgets/navigations/app_bar.dart';
+import 'package:shake_detector/shake_detector.dart';
 import 'package:safeguardher_flutter_app/widgets/navigations/bottom_navbar.dart';
 import '../map_screen/map_screen.dart';
+import '../panic_button_screen/ten_second_panic_screen/ten_second_panic_screen.dart';
 import '../record_screen/record_screen.dart';
+
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 void main() {
   runApp(MyApp());
@@ -27,6 +32,32 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  int _shakeCount = 0;
+
+  void initState()
+  {
+    super.initState();
+    ShakeDetector.autoStart(onShake: _handleShake);
+  }
+  void _handleShake()
+  {
+    setState(()
+    {
+      _shakeCount++;
+    });
+    if (_shakeCount >= 3)
+    {
+      _triggerPanicAlert();
+    }
+  }
+
+  void _triggerPanicAlert()
+  {
+    appHelperFunctions.goToScreenAndComeBack(context, const TenSecondPanicScreen());
+    setState(() {
+      _shakeCount = 0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

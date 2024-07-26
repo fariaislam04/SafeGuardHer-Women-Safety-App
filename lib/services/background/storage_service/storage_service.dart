@@ -1,12 +1,27 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-
+import 'package:flutter/foundation.dart';
 import '../../../utils/formatters/formatters.dart';
 
 final FirebaseStorage storage = FirebaseStorage.instance;
 
 class StorageService
 {
+  static Future<void> uploadAudio(Uint8List audioData, String path) async
+  {
+    try
+    {
+        Reference ref = storage.ref().child(path);
+        UploadTask uploadUserAudio = ref.putData(audioData);
+        await uploadUserAudio;
+    }
+    catch (e)
+    {
+      log("Failed to upload audio: $e");
+    }
+  }
+
   static Future<void> uploadImage(String filePath, String storagePath) async
   {
     try
@@ -14,11 +29,15 @@ class StorageService
       final storageRef = FirebaseStorage.instance.ref().child(storagePath);
       final uploadTask = await storageRef.putFile(File(filePath));
       final imageUrl = await uploadTask.ref.getDownloadURL();
-      print('Image uploaded to Firebase Storage: $imageUrl');
+      if (kDebugMode) {
+        print('Image uploaded to Firebase Storage: $imageUrl');
+      }
     }
     catch (e)
     {
-      print('Error uploading image to Firebase Storage: $e');
+      if (kDebugMode) {
+        print('Error uploading image to Firebase Storage: $e');
+      }
     }
   }
 
@@ -35,7 +54,9 @@ class StorageService
     }
     catch (e)
     {
-      print('Error listing date folders: $e');
+      if (kDebugMode) {
+        print('Error listing date folders: $e');
+      }
     }
     return dateFolders;
   }
@@ -55,7 +76,9 @@ class StorageService
     }
     catch (e)
     {
-      print('Error listing image URLs: $e');
+      if (kDebugMode) {
+        print('Error listing image URLs: $e');
+      }
     }
     return imageDatas;
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../utils/constants/colors/colors.dart';
-import '../../utils/constants/image_strings/image_strings.dart';
+import '../../utils/constants/colors.dart';
+import '../../utils/constants/image_strings.dart';
 
 class SettingsTemplate extends StatelessWidget {
   final Widget child;

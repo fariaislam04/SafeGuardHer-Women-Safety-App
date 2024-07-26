@@ -1,120 +1,138 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mic_stream/mic_stream.dart';
+import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
 import 'view_recordings_history.dart';
 import '../../services/background/background_services.dart';
 import '../../utils/helpers/helper_functions.dart';
 
-/// This screen records audio and takes images every 5 seconds from front and
-/// back camera, and stores them in Firebase storage under Recordings folder.
+late String _date;
+const String _uid = '7';
 
-class RecordScreen extends StatefulWidget
-{
+class RecordScreen extends StatefulWidget {
   const RecordScreen({super.key});
 
   @override
   State<RecordScreen> createState() => _RecordScreenState();
 }
 
-class _RecordScreenState extends State<RecordScreen>
-{
+class _RecordScreenState extends State<RecordScreen> {
   StreamSubscription? streamSubscription;
   List<int> samples = [];
   Stream? stream;
   bool isListening = false;
   AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
-  // -- Camera service
+  // Camera service
   late CameraService _cameraService;
-  late String _date;
-  final String _uid = '7';
-  
+
+  // List for storing audio data
+  List<int> audioData = [];
+
   @override
-  void initState() 
-  {
+  void initState() {
     super.initState();
     _initializeServices();
     _date = AppHelperFunctions.extractTodayDate();
   }
 
-  // -- _initializeServices(): This function waits for camera permission, and
-  // if user accepts it, the cameras are initialized
-  Future<void> _initializeServices() async
-  {
+  Future<void> _initializeServices() async {
     PermissionService.requestCameraPermission();
     _cameraService = CameraService();
     await _cameraService.initializeCameras();
     setState(() {});
   }
 
-  // -- startListening(): The app starts toggling between front and back 
-  // cameras, and takes in the audio streams. These occur independently in
-  // case the users want to access only one service.
-  startListening() async
-  {
+  startListening() async {
     _startCameraSwitchTimer();
+    // This part takes input from the user's microphone
     stream = MicStream.microphone(
       sampleRate: 16000,
       audioSource: AudioSource.MIC,
       channelConfig: ChannelConfig.CHANNEL_IN_MONO,
     );
-    if (stream != null)
-    {
-      streamSubscription = stream!.listen((event)
-      {
-        setState(()
-        {
-          samples = event;
+    if (stream != null) {
+      streamSubscription = stream!.listen((event) {
+        setState(() {
+          samples = List.from(event);
+          audioData.addAll(event);
         });
       });
-    }
-    else
-    {
+    } else {
       log("microphone stream is null");
     }
   }
 
-  stopListening()
-  {
+  stopListening() {
     log("stopping");
     streamSubscription?.cancel();
+    _uploadAudioToFirebase();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Recording saved!'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        elevation: 10,
+        margin: const EdgeInsets.fromLTRB(12.0, 60.0, 12.0, 200.0),
+      ),
+    );
   }
 
-  // -- _startCameraSwitchTimer(): If recording is on, cameras toggle
-  // every 5 seconds, images are captured, and stores in firebase storage
-  // service.
-  void _startCameraSwitchTimer()
-  {
-    Timer.periodic(const Duration(seconds: 5), (timer) async
-    {
-      if (isListening)
-      {
+  stopListeningMain() {
+    log("stopping");
+    streamSubscription?.cancel();
+    _uploadAudioToFirebase();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Recording saved!'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        elevation: 10,
+        margin: const EdgeInsets.fromLTRB(12.0, 60.0, 12.0, 200.0),
+      ),
+    );
+  }
+
+  void _startCameraSwitchTimer() {
+    Timer.periodic(const Duration(seconds: 5), (timer) async {
+      if (isListening) {
         final imagePath = await _cameraService.captureImage();
-        if (imagePath != null)
-        {
+        if (imagePath != null) {
           await StorageService.uploadImage(imagePath, 'recordings/images/$_uid/$_date/${DateTime.now()}.jpg');
         }
         await _cameraService.toggleCamera();
-      }
-      else
-      {
+      } else {
         timer.cancel();
       }
     });
   }
 
+  Future<void> _uploadAudioToFirebase() async {
+    final String audioPath = 'recordings/audios/$_uid/$_date/${DateTime.now()}.wav';
+    Uint8List audioBytes = Uint8List.fromList(audioData);
+    await StorageService.uploadAudio(audioBytes, audioPath);
+    audioData.clear();
+  }
+
   @override
-  void dispose()
-  {
+  void dispose() {
     streamSubscription?.cancel();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -132,8 +150,7 @@ class _RecordScreenState extends State<RecordScreen>
             ),
             const SizedBox(height: 10),
             const Text(
-              'Anonymously record audio and capture images without notifying '
-                  'others.',
+              'Anonymously record audio and capture images without notifying others.',
               style: TextStyle(
                 fontSize: 11,
                 fontFamily: 'Poppins',
@@ -161,12 +178,11 @@ class _RecordScreenState extends State<RecordScreen>
                   ),
                 ),
                 subtitle: const Text('Tap to see history'),
-                onTap: ()
-                {
+                onTap: () {
                   isListening = false;
                   stopListening();
-                  appHelperFunctions.goTo(context, const
-                  ViewRecordingsHistory(uid: '2',));
+                  appHelperFunctions.goToScreenAndComeBack(context, const
+                  ViewRecordingsHistory(userID: '7'));
                 },
                 trailing: const Icon(
                   Icons.arrow_forward_ios,
@@ -176,32 +192,27 @@ class _RecordScreenState extends State<RecordScreen>
               ),
             ),
             const SizedBox(height: 0),
-            // Audio Visualizer
-            Row(
-              children: [
-                ...List.generate(
-                  samples.length,
-                      (index) => CustomPaint(
-                    foregroundPainter: LinePainter(samples[index], index * 2),
-                    child: Container(),
+            if (isListening)
+              Row(
+                children: [
+                  ...List.generate(
+                    samples.length,
+                        (index) => CustomPaint(
+                      foregroundPainter: AudioWaves(samples[index], index * 2),
+                      child: Container(),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             const Spacer(flex: 6),
             Center(
               child: ElevatedButton.icon(
-                onPressed: ()
-                {
-                  setState(()
-                  {
-                    if (!isListening)
-                    {
+                onPressed: () {
+                  setState(() {
+                    if (!isListening) {
                       isListening = true;
                       startListening();
-                    }
-                    else
-                    {
+                    } else {
                       isListening = false;
                       stopListening();
                     }
@@ -248,16 +259,16 @@ class _RecordScreenState extends State<RecordScreen>
   }
 }
 
-class LinePainter extends CustomPainter {
+class AudioWaves extends CustomPainter {
   final int height;
   final int gap;
 
-  LinePainter(this.height, this.gap);
+  AudioWaves(this.height, this.gap);
 
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint();
-    paint.color = const Color(0xFFF93F95);
+    paint.color = AppColors.secondary;
     paint.strokeWidth = 1;
 
     canvas.drawLine(

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:safeguardher_flutter_app/widgets/notifications/notification_widget.dart';
-import '../../utils/constants/colors/colors.dart';
+import '../../utils/constants/colors.dart';
 import '../../utils/helpers/helper_functions.dart';
 import '../../widgets/custom_widgets/add_contact_widget.dart';
-import '../track_me_screen/track_me_screen.dart';
+import '../tracking_screen/track_me_modal.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
@@ -20,7 +20,8 @@ class MapScreen extends StatefulWidget {
 class MapScreenState extends State<MapScreen> {
   GoogleMapController? mapController;
   Location location = Location();
-  Set<Marker> markers = {};
+  Set<Marker> markers = {
+  };
 
   @override
   void initState() {
@@ -83,11 +84,13 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
-  void _showTrackMeModal() {
+  void _showTrackMeModal()
+  {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return TrackMeModal();
+      builder: (BuildContext context)
+      {
+        return const TrackMeModal();
       },
     );
   }
@@ -99,8 +102,8 @@ class MapScreenState extends State<MapScreen> {
         children: [
           Column(
             children: [
-              const AddContactWidget(),
-              //const NotificationWidget(name: "Binita Sarker", code: "5678"),
+              //const AddContactWidget(),
+              const NotificationWidget(name: "Binita Sarker", code: "5678"),
               Expanded(
                 child: GoogleMap(
                   onMapCreated: _onMapCreated,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../utils/constants/colors/colors.dart';
+import '../../utils/constants/colors.dart';
 import '../auth_screen/login_screen/login_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {

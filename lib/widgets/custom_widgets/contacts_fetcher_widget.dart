@@ -6,10 +6,10 @@ class ContactsFetcher extends StatefulWidget {
   const ContactsFetcher({super.key});
 
   @override
-  _ContactsFetcherState createState() => _ContactsFetcherState();
+  ContactsFetcherState createState() => ContactsFetcherState();
 }
 
-class _ContactsFetcherState extends State<ContactsFetcher> {
+class ContactsFetcherState extends State<ContactsFetcher> {
   Iterable<Contact> _contacts = [];
 
   @override

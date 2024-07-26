@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../utils/constants/colors/colors.dart';
-import '../../utils/constants/sizes/sizes.dart';
-import '../../screens/track_close_contacts_screen/track_close_contacts.dart';
+import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
+import '../../screens/tracking_screen/track_others_bottom_drawer.dart';
+import '../../utils/constants/colors.dart';
+import '../../utils/constants/sizes.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 
 class NotificationWidget extends StatelessWidget {
@@ -18,12 +19,7 @@ class NotificationWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const TrackCloseContact(),
-          ),
-        );
+        appHelperFunctions.goToScreenAndComeBack(context, const TrackCloseContact());
       },
       child: Container(
         height: 105.0,

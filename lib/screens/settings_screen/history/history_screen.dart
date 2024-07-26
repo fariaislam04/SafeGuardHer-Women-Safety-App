@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../utils/constants/colors/colors.dart';
+import '../../../utils/constants/colors.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -21,6 +21,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('History'),
         bottom: TabBar(

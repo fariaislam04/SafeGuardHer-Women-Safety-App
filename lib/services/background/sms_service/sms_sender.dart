@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:background_sms/background_sms.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:safeguardher_flutter_app/screens/panic_button_screen/safety_code_screen/safety_code_screen.dart';
 
 class SMSSender {
   Future<void> _sendMessage(String phoneNumber, String message,
@@ -13,27 +13,23 @@ class SMSSender {
     );
 
     if (result == SmsStatus.sent) {
-      print("SMS sent to $phoneNumber");
+      if (kDebugMode) {
+        print("SMS sent to $phoneNumber");
+      }
     } else {
-      print("Failed to send SMS to $phoneNumber");
+      if (kDebugMode) {
+        print("Failed to send SMS to $phoneNumber");
+      }
     }
   }
 
   Future<void> sendAndNavigate(
-      BuildContext context, String message, List<String> recipients) async {
+      BuildContext context, String message, List<String> recipients) async
+  {
     if (await Permission.sms.request().isGranted) {
       for (String recipient in recipients) {
         await _sendMessage(recipient, message);
       }
-
-      // Navigate to SafetyCodeScreen
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const SafetyCodeScreen()),
-      );
-    } else {
-      // Handle permission denial
-      print("SMS permission denied");
-    }
+  }
   }
 }

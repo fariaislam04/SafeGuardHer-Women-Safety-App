@@ -4,8 +4,8 @@ import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:safeguardher_flutter_app/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
-import '../../utils/constants/colors/colors.dart';
-import '../../utils/constants/image_strings/image_strings.dart';
+import '../../utils/constants/colors.dart';
+import '../../utils/constants/image_strings.dart';
 import '../../utils/helpers/helper_functions.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
@@ -35,15 +35,17 @@ class SplashScreenState extends State<SplashScreen>
     final prefs = await SharedPreferences.getInstance();
     await Future.delayed(const Duration(seconds: 3));
     bool appOpenedBefore = prefs.getBool('appOpenedBefore') ?? false;
-    appOpenedBefore = false; //comment this on production
+   // appOpenedBefore = false; //comment this on production
 
     if (appOpenedBefore)
     {
-       appHelperFunctions.goTo(context, const HomeScreen());
+       appHelperFunctions.goToScreenAndDoNotComeBack(context, const HomeScreen
+         ());
     }
     else
     {
-       appHelperFunctions.goTo(context, OnboardingScreen());
+       appHelperFunctions.goToScreenAndDoNotComeBack(context, OnboardingScreen
+         ());
     }
   }
 

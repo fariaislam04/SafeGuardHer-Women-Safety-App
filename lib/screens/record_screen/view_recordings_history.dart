@@ -1,44 +1,58 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:safeguardher_flutter_app/screens/record_screen/recording_details.dart';
+import 'package:safeguardher_flutter_app/utils/helpers/helper_functions.dart';
 import '../../services/background/storage_service/storage_service.dart';
+import '../../utils/formatters/formatters.dart';
 import '../../widgets/navigations/app_bar.dart';
-import '../../widgets/tiles/recorded_history_tile.dart';
+
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
+late final String userID;
 
 class ViewRecordingsHistory extends StatefulWidget {
-  final String uid;
-  const ViewRecordingsHistory({super.key, required this.uid});
+  const ViewRecordingsHistory({super.key, required userID});
 
   @override
   State<ViewRecordingsHistory> createState() => _ViewRecordingHistoryState();
 }
 
-class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
+class _ViewRecordingHistoryState extends State<ViewRecordingsHistory>
+{
   final StorageService _storageService = StorageService();
   List<String> dateFolders = [];
   bool isLoading = true;
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
     fetchDateFolders();
   }
 
-  Future<void> fetchDateFolders() async {
+  Future<void> fetchDateFolders() async
+  {
     try {
-      List<String> folders = await _storageService.listDateFolders(widget.uid);
+      List<String> folders = await _storageService.listDateFolders(userID);
       setState(() {
         dateFolders = folders;
         isLoading = false;
       });
-    } catch (e) {
-      print('Error fetching date folders: $e');
-      setState(() {
+    } catch (e)
+    {
+      if (kDebugMode)
+      {
+        print('Error fetching date folders: $e');
+      }
+      setState(()
+      {
         isLoading = false;
       });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(),
@@ -79,7 +93,8 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
             const Divider(color: Color(0xFFEDEDED)),
             const SizedBox(height: 13),
             isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator()) // --
+            // Don't change it. Causes render flex overflow
                 : Expanded(
               child: ListView.builder(
                 itemCount: dateFolders.length,
@@ -92,6 +107,49 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class RecordedHistoryTile extends StatelessWidget
+{
+  final String date;
+  const RecordedHistoryTile({
+    super.key,
+    required this.date,
+  });
+
+  @override
+  Widget build(BuildContext context)
+  {
+    String formattedDate = Formatters.formatDateString(date);
+
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ListTile(
+        leading: const Icon(Icons.video_library_rounded),
+        title: Text(
+          'Recorded on $formattedDate',
+          style: const TextStyle(
+            fontSize: 13,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        onTap: ()
+        {
+          appHelperFunctions.goToScreenAndComeBack(context, RecordingDetails
+            (uid: userID,
+              date: date));
+        },
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          color: Color(0xFF263238),
+          size: 13,
         ),
       ),
     );

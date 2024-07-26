@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
-import '../../utils/constants/colors/colors.dart';
-import '../../utils/constants/image_strings/image_strings.dart';
+import '../../utils/constants/colors.dart';
+import '../../utils/constants/image_strings.dart';
 import '../../utils/helpers/helper_functions.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
@@ -111,11 +111,9 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
                       items: <String>[
                         'Harassment',
                         'Assault',
-                        'Theft',
                         'Robbery',
                         'Stalking',
                         'Violence',
-                        'Domestic Violence',
                         'Other'
                       ].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
@@ -253,7 +251,8 @@ class ReportIncidentPageState extends State<ReportIncidentPage> {
                     Center(
                       child: TextButton(
                         onPressed: () {
-                        appHelperFunctions.goTo(context, const HomeScreen());
+                        appHelperFunctions.goToScreenAndDoNotComeBack(context,
+                            const HomeScreen());
                         },
                         child: const Text(
                           'Submit Later',

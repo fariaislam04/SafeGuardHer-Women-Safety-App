@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../screens/settings_screen/settings_screen.dart';
-import '../../utils/constants/colors/colors.dart';
-import '../../utils/constants/image_strings/image_strings.dart';
+import '../../utils/constants/colors.dart';
+import '../../utils/constants/image_strings.dart';
 import '../animations/bottom_to_top_animation.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {

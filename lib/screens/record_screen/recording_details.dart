@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:voice_message_package/voice_message_package.dart';
 import 'package:photo_view/photo_view.dart';
 import '../../services/background/storage_service/storage_service.dart';
-import '../../utils/constants/colors/colors.dart';
+import '../../utils/constants/colors.dart';
 import '../../utils/formatters/formatters.dart';
 import '../../utils/helpers/helper_functions.dart';
 import '../../widgets/navigations/app_bar.dart';
@@ -28,6 +28,7 @@ class RecordingDetails extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting)
         {
           return Scaffold(
+            backgroundColor: Colors.white,
             appBar: const CustomAppBar(),
             body: Center(
               child: appHelperFunctions.appLoader(context),
@@ -175,7 +176,7 @@ class PhotoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        appHelperFunctions.goTo(context, ZoomableImagePage(imageSrc: data.imageUrl));
+        appHelperFunctions.goToScreenAndComeBack(context, ZoomableImagePage(imageSrc: data.imageUrl));
       },
       child: Column(
         children: [
@@ -211,7 +212,7 @@ class ZoomableImagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Zoomed Image'),
+        title: const Text("Zoomed Image"),
       ),
       body: Center(
         child: PhotoView(

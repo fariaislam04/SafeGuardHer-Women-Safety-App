@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../utils/constants/colors/colors.dart';
+import '../../utils/constants/colors.dart';
 
 class TrackMeModal extends StatefulWidget {
+  const TrackMeModal({super.key});
+
   @override
-  _TrackMeModalState createState() => _TrackMeModalState();
+  TrackMeModalState createState() => TrackMeModalState();
 }
 
-class _TrackMeModalState extends State<TrackMeModal> {
+class TrackMeModalState extends State<TrackMeModal> {
   List<int> selectedContacts = [];
   String searchQuery = "";
   int selectedOption = 1;
@@ -25,6 +27,7 @@ class _TrackMeModalState extends State<TrackMeModal> {
 
     return Container(
       padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 30.0, bottom: 10),
+      color: Colors.white,
       height: 500,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,8 +131,7 @@ class _TrackMeModalState extends State<TrackMeModal> {
           Center(
             child: TextButton(
               onPressed: () {
-                // Handle continue button press
-                Navigator.pop(context); // Close the modal
+                Navigator.pop(context);
               },
               style: TextButton.styleFrom(
                 backgroundColor: AppColors.secondary,
@@ -159,7 +161,7 @@ class RadioButtonRow extends StatelessWidget {
   final int selectedOption;
   final ValueChanged<int?> onChanged;
 
-  const RadioButtonRow({
+  const RadioButtonRow({super.key,
     required this.selectedOption,
     required this.onChanged,
   });

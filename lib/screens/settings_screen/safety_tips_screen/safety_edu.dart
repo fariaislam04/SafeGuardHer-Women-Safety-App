@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:safeguardher_flutter_app/utils/helpers/helper_functions.dart';
 import 'safety_at_work_page.dart';
 import 'safety_at_home_page.dart';
 import 'safety_at_university_page.dart';
 import 'women_safety_online_page.dart';
 import 'safety_on_the_streets_page.dart';
+
+AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class SafetyTipsPage extends StatelessWidget {
   final List<String> safetyTips = [

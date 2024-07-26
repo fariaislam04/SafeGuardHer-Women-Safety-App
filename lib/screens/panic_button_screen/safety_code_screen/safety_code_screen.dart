@@ -52,7 +52,7 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
     await Future.delayed(const Duration(seconds: 2));
     if (context.mounted)
     {
-      appHelperFunctions.goTo(context, const ReportIncidentPage());
+      appHelperFunctions.goToScreenAndComeBack(context, const ReportIncidentPage());
     }
   }
 

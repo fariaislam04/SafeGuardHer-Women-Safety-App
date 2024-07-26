@@ -43,7 +43,7 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
       },
       onComplete: () {
         _countdownTimer.cancel();
-        appHelperFunctions.goTo(context, const SafetyCodeScreen());
+        appHelperFunctions.goToScreenAndComeBack(context, const SafetyCodeScreen());
       },
     );
   }
@@ -156,8 +156,7 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   _countdownTimer.cancel();
-                 // _showCustomToast(context);
-                  appHelperFunctions.goTo(context, const StopPanicAlertScreen());
+                  appHelperFunctions.goToScreenAndComeBack(context, const StopPanicAlertScreen());
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,

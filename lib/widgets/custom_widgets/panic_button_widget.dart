@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../utils/constants/colors/colors.dart';
+import '../../utils/constants/colors.dart';
 import 'package:safeguardher_flutter_app/screens/panic_button_screen/ten_second_panic_screen/ten_second_panic_screen.dart';
-import 'package:safeguardher_flutter_app/screens/panic_button_screen/five_second_panic_screen/five_second_panic_screen.dart';
 import 'package:safeguardher_flutter_app/widgets/custom_widgets/custom_snackbar.dart';
 
 class PanicButtonWidget extends StatefulWidget {
@@ -14,73 +13,47 @@ class PanicButtonWidget extends StatefulWidget {
 }
 
 class _PanicButtonWidgetState extends State<PanicButtonWidget> {
-  int _pressCount = 0;
-  int fixedPressCount = 0;
-  bool _isTimerActive = false;
   bool _buttonPressed = false;
-  OverlayEntry? _overlayEntry;
+  //OverlayEntry? _overlayEntry;
 
-  void _handlePanicButtonPress() {
-    setState(() {
-      _pressCount++;
-      fixedPressCount = _pressCount;
-    });
-
-    if (!_isTimerActive) {
-      _isTimerActive = true;
-      Future.delayed(const Duration(seconds: 2), ()
+  void _handlePanicButtonPress()
+  {
+      setState(()
       {
-        setState(()
-        {
-          _isTimerActive = false;
-          if (_pressCount == 1)
-          {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const TenSecondPanicScreen()),
-            );
-          }
-          else if (_pressCount == 3)
-          {
-            Future.delayed(const Duration(seconds: 1), () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const FiveSecondPanicScreen()),
-              );
-            });
-          }
-          _removeSnackbar();
-          _pressCount = 0;
-        });
+        appHelperFunctions.goToScreenAndComeBack(context, const TenSecondPanicScreen());
+       // _removeSnackbar();
       });
-    }
 
-    if (kDebugMode) {
-      print("Panic button pressed $_pressCount time(s)");
+      /*
+    if (kDebugMode)
+    {
+      print("Panic button pressed");
     }
 
     _overlayEntry = OverlayEntry(
       builder: (BuildContext context) => Positioned(
         top: MediaQuery.of(context).size.height * 0.23,
-        child: Material(
+        child: const Material(
           color: Colors.transparent,
           child: AnimatedOpacity(
-            duration: const Duration(seconds: 1),
-            opacity: _pressCount == 0 || _pressCount > 3 ? 0.0 : 1.0,
+            duration: Duration(seconds: 1),
+            opacity: 1.0,
             child: CustomSnackbar(color: Colors.red, message: "Panic alert "
-                "has been pressed $fixedPressCount time",),
+                "has been pressed.",),
             ),
           ),
         ),
     );
     Overlay.of(context).insert(_overlayEntry!);
+       */
   }
 
+  /*
   void _removeSnackbar()
   {
     _overlayEntry?.remove();
     _overlayEntry = null;
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -121,12 +94,11 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
                   ),
                 ],
               ),
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/icons/panic_button_icon.svg',
-                  width: 55,
-                  height: 55,
-                  fit: BoxFit.cover,
+              child: const Center(
+                child: Icon(
+                  Icons.notifications_on_rounded,
+                  size: 55,
+                  color: Colors.white,
                 ),
               ),
             ),
