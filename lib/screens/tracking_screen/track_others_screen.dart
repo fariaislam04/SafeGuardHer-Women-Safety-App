@@ -1,10 +1,29 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
 import '../../env/env.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Custom Marker Example',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const TrackOthersScreen(),
+    );
+  }
+}
 
 class TrackOthersScreen extends StatefulWidget {
   const TrackOthersScreen({super.key});
@@ -13,111 +32,81 @@ class TrackOthersScreen extends StatefulWidget {
   State<TrackOthersScreen> createState() => TrackOthersScreenState();
 }
 
-class TrackOthersScreenState extends State<TrackOthersScreen> {
+class TrackOthersScreenState extends State<TrackOthersScreen>
+    with SingleTickerProviderStateMixin {
   final Completer<GoogleMapController> _controller = Completer();
   static const LatLng destination = LatLng(23.775236, 90.389916);
 
   List<LatLng> polylineCoordinates = [];
   LocationData? currentLocationOfTheUser;
-  late List<Marker> _markers = [];
+  late BitmapDescriptor userMarkerIcon;
   String googleMapsAPI = Env.googleMapsAPI;
 
-  /*
-  void getPolyPoints() async
-  {
-    PolylinePoints polylinePoints = PolylinePoints();
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      googleApiKey: googleMapsAPI,
-      request: PolylineRequest(
-        origin: PointLatLng(currentLocationOfTheUser!.latitude!,
-            currentLocationOfTheUser!.longitude!),
-        destination: PointLatLng(destination.latitude, destination.longitude),
-        mode: TravelMode.driving,
-        wayPoints: [PolylineWayPoint(location: "Sabo, Yaba Lagos Nigeria")],
-      ),
-    );
-
-    if (kDebugMode) {
-      print(result.points);
-    }
-    if (result.points.isNotEmpty)
-    {
-      for (var point in result.points)
-      {
-        polylineCoordinates.add(
-          LatLng(point.latitude, point.longitude),
-        );
-      }
-      setState(() {});
-    }
-  }
-   */
+  late AnimationController _rippleAnimationController;
+  late Animation<double> _rippleAnimation;
 
   @override
   void initState() {
     super.initState();
     getCurrentUserLocation();
+
+    _rippleAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+
+    _rippleAnimation = Tween<double>(begin: 50.0, end: 70.0).animate(
+      CurvedAnimation(
+        parent: _rippleAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _rippleAnimationController.dispose();
+    super.dispose();
   }
 
   Future<void> getCurrentUserLocation() async {
     Location location = Location();
     currentLocationOfTheUser = await location.getLocation();
 
-    setState(() {
-      _markers = [
-        Marker(
-          markerId: const MarkerId('destination'),
-          position: destination,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        ),
-        Marker(
-          markerId: const MarkerId('source'),
-          position: LatLng(
-            currentLocationOfTheUser!.latitude!,
-            currentLocationOfTheUser!.longitude!,
-          ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
-        ),
-      ];
-    });
+    // Create the user marker
+    await updateUserMarker();
 
     GoogleMapController googleMapController = await _controller.future;
-    location.onLocationChanged.listen((newLocation)
-    {
-      currentLocationOfTheUser = newLocation;
-      googleMapController.animateCamera(CameraUpdate.newCameraPosition
-        (CameraPosition(
-        zoom: 18,
-        target: LatLng(
-            newLocation.latitude!,
-            newLocation.longitude!
-        ),),
-      ),
-      );
-      setState(()
-      {
-        currentLocationOfTheUser = newLocation;
-      });
-    });
 
-/*
-    location.onLocationChanged.listen((newLocation) {
-      // Update the source marker position with the new location
-      setState(() {
-        _markers = [
-          ..._markers.where((marker) => marker.markerId.value != 'source'),
-          Marker(
-            markerId: const MarkerId('source'),
-            position: LatLng(newLocation.latitude!, newLocation.longitude!),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+    location.onLocationChanged.listen((newLocation) async {
+      currentLocationOfTheUser = newLocation;
+      googleMapController.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          zoom: 18,
+          target: LatLng(
+            newLocation.latitude!,
+            newLocation.longitude!,
           ),
-        ];
-      });
-    }); */
+        ),
+      ));
+
+      // Update the user marker with the new location
+      await updateUserMarker();
+    });
 
     getPolyPoints();
   }
 
+  Future<void> updateUserMarker() async {
+    if (currentLocationOfTheUser != null) {
+      userMarkerIcon = await createCustomMarker(
+        currentLocationOfTheUser!.latitude!,
+        currentLocationOfTheUser!.longitude!,
+      );
+
+      setState(() {});
+    }
+  }
 
   void getPolyPoints() {
     List<LatLng> customPoints = [
@@ -142,7 +131,7 @@ class TrackOthersScreenState extends State<TrackOthersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: currentLocationOfTheUser == null
-          ? Center(child: appHelperFunctions.appLoader(context))
+          ? Center(child: CircularProgressIndicator())
           : Stack(
         children: [
           GoogleMap(
@@ -159,13 +148,30 @@ class TrackOthersScreenState extends State<TrackOthersScreen> {
                 points: polylineCoordinates,
                 color: Colors.blueAccent,
                 width: 6,
-              )
+              ),
             },
             onMapCreated: (mapController) {
               _controller.complete(mapController);
             },
-            markers: Set<Marker>.from(_markers),
+            markers: {
+              if (currentLocationOfTheUser != null)
+                Marker(
+                  markerId: const MarkerId('user_location'),
+                  position: LatLng(
+                    currentLocationOfTheUser!.latitude!,
+                    currentLocationOfTheUser!.longitude!,
+                  ),
+                  icon: userMarkerIcon,
+                  infoWindow: const InfoWindow(
+                    title: 'Binita Sarker',
+                    snippet: 'Safe Code: 5678',
+                  ),
+                ),
+            },
             zoomGesturesEnabled: true,
+            scrollGesturesEnabled: true,
+            rotateGesturesEnabled: true,
+            tiltGesturesEnabled: true,
           ),
           Positioned(
             top: 20.0,
@@ -175,7 +181,7 @@ class TrackOthersScreenState extends State<TrackOthersScreen> {
               padding: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
                 color: AppColors.secondary,
-                borderRadius: BorderRadius.circular(40.0),
+                borderRadius: BorderRadius.circular(30.0),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
@@ -197,8 +203,98 @@ class TrackOthersScreenState extends State<TrackOthersScreen> {
               ),
             ),
           ),
+          if (currentLocationOfTheUser != null)
+            AnimatedBuilder(
+              animation: _rippleAnimation,
+              builder: (context, child) {
+                return CustomPaint(
+                  painter: RipplePainter(
+                    radius: _rippleAnimation.value,
+                    center: Offset(
+                      MediaQuery.of(context).size.width / 2,
+                      MediaQuery.of(context).size.height / 2.53,
+                    ),
+                  ),
+                  child: Container(
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );
+  }
+
+  Future<BitmapDescriptor> createCustomMarker(
+      double latitude, double longitude) async {
+    final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
+    final Canvas canvas = Canvas(pictureRecorder);
+    const double radius = 75.0;
+    const double borderWidth = 7.0;
+
+    // Draw the white border circle
+    final borderPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = borderWidth;
+    canvas.drawCircle(Offset(radius, radius), radius + borderWidth / 2, borderPaint);
+
+    // Create a circular path for clipping
+    final path = Path()
+      ..addOval(Rect.fromCircle(center: Offset(radius, radius), radius: radius));
+    canvas.clipPath(path);
+
+    // Load the image
+    final imageProvider = AssetImage('assets/placeholders/binita.png');
+    final Completer<ui.Image> imageCompleter = Completer();
+    final ImageStreamListener listener = ImageStreamListener((imageInfo, synchronousCall) {
+      final image = imageInfo.image;
+      imageCompleter.complete(image);
+    });
+    imageProvider.resolve(ImageConfiguration()).addListener(listener);
+
+    // Wait for the image to load
+    final ui.Image image = await imageCompleter.future;
+
+    // Draw the image, scaling it to fit within the circle
+    canvas.drawImageRect(
+      image,
+      Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+      Rect.fromLTWH(0, 0, radius * 2, radius * 2), // Scale image to fill the circle
+      Paint(),
+    );
+
+    // End the picture and convert to image
+    final img = await pictureRecorder.endRecording()
+        .toImage((radius * 2 + borderWidth).toInt(), (radius * 2 + borderWidth).toInt());
+    final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
+    final pngBytes = byteData!.buffer.asUint8List();
+
+    return BitmapDescriptor.fromBytes(pngBytes);
+  }
+}
+
+class RipplePainter extends CustomPainter {
+  final double radius;
+  final Offset center;
+
+  RipplePainter({required this.radius, required this.center});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          Colors.white.withOpacity(0.0),
+          Colors.red.withOpacity(0.4),
+        ],
+        stops: const [0.0, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: radius));
+    canvas.drawCircle(center, radius, paint);
+  }
+
+  @override
+  bool shouldRepaint(RipplePainter oldDelegate) {
+    return radius != oldDelegate.radius || center != oldDelegate.center;
   }
 }

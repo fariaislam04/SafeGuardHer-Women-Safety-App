@@ -67,8 +67,8 @@ dependencies:
   shake_detector: ^0.1.2
   flutter_svg: ^2.0.10+1
   custom_map_markers: ^0.0.2+1
-
   envied: ^0.5.4+1
+  firebase_messaging: ^15.0.4
 
 dev_dependencies:
   flutter_test:

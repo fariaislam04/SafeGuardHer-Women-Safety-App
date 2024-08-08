@@ -89,7 +89,7 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                                     child: const Row(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        Icon(Icons.share_location_rounded, color: Colors.white, 
+                                        Icon(Icons.share_location_rounded, color: Colors.white,
                                             size: Sizes.iconMedium),
                                         SizedBox(width: 5),
                                         Text(
@@ -176,27 +176,27 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                                   ),
                                   const SizedBox(height: 20),
                                   Container(
-                                    padding: const EdgeInsets.all(8.0),
-                                    width: 500,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    child: const Row(
-                                      children: [Icon(Icons
-                                          .share_location_rounded, color: Colors.white,
-                                          size: Sizes.iconMedium),
-                                      SizedBox(width: 5),
-                                      Text(
-                                        '5.47 Km away',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Poppins',
-                                        ),
+                                      padding: const EdgeInsets.all(8.0),
+                                      width: 500,
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(10.0),
                                       ),
-                                    ]
-                                    )
+                                      child: const Row(
+                                          children: [Icon(Icons
+                                              .share_location_rounded, color: Colors.white,
+                                              size: Sizes.iconMedium),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              '5.47 Km away',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Poppins',
+                                              ),
+                                            ),
+                                          ]
+                                      )
                                   ),
                                   const SizedBox(height: 20),
                                   Row(
@@ -224,7 +224,7 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                                             Icon(Icons.message, color: AppColors.iconPrimary),
                                             SizedBox(height: 8),
                                             Text('Message',style: TextStyle
-                                                (fontFamily: 'Poppins'),),
+                                              (fontFamily: 'Poppins'),),
                                           ],
                                         ),
                                       ),
