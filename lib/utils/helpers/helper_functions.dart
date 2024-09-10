@@ -68,6 +68,7 @@ class AppHelperFunctions
   Widget appLoader(BuildContext context)
   {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: LoadingAnimationWidget.flickr(
           leftDotColor: AppColors.logoPrimary,
