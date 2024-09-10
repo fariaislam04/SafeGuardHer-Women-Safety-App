@@ -131,11 +131,12 @@ class LoginScreen extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
+                        /*
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const HomeScreen()),
-                        );
+                        ); */
                       },
                       child: const Text(
                         'Click here',

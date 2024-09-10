@@ -1,7 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../main.dart';
 
-
 class FirebaseApi {
   // --create an instance of the FCM
   final _firebaseMessaging = FirebaseMessaging.instance;

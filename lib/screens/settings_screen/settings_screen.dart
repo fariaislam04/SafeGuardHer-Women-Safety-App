@@ -1,49 +1,57 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safeguardher_flutter_app/screens/settings_screen/safety_tips_screen/safety_edu.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
 import 'package:safeguardher_flutter_app/utils/helpers/helper_functions.dart';
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
+import '../../models/user_model.dart';
+import '../../providers.dart';
 import 'contacts_screen/contacts_screen.dart';
 import 'devices_screen/devices_screen.dart';
 import 'history/history_screen.dart';
 
-const String userEmail = "musarrat.mayeesha@gmail.com";
-const String userName = "Mayeesha Musarrat";
-const String userProfileImageUrl = "";
-
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return SettingsTemplate(
-      child: Column(
-        children: [
-          buildProfileContainer(),
-          const SizedBox(height: 20.0),
-          Wrap(
-            spacing: 30.0,
-            runSpacing: 20.0,
-            alignment: WrapAlignment.spaceBetween,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsyncValue = ref.watch(userStreamProvider);
+
+    return userAsyncValue.when(
+      data: (user) {
+        return SettingsTemplate(
+          child: Column(
             children: [
-              buildButton(context, Icons.history, 'History', () {
-                appHelperFunctions.goToScreenAndComeBack(context, const HistoryScreen());
-              }),
-              buildButton(context, Icons.perm_contact_calendar_rounded, 'Contacts', () {
-                appHelperFunctions.goToScreenAndComeBack(context, const ContactsScreen());
-              }),
-              buildButton(context, Icons.security, 'Safety Tips', () {
-                appHelperFunctions.goToScreenAndComeBack(context, SafetyTipsPage());
-              }),
-              buildButton(context, Icons.devices_other_rounded, 'Devices', () {
-                appHelperFunctions.goToScreenAndComeBack(context, const DevicesScreen());
-              }),
+              buildProfileContainer(user!),
+              const SizedBox(height: 20.0),
+              Wrap(
+                spacing: 30.0,
+                runSpacing: 20.0,
+                alignment: WrapAlignment.spaceBetween,
+                children: [
+                  buildButton(context, Icons.history, 'History', () {
+                    appHelperFunctions.goToScreenAndComeBack(context, const HistoryScreen());
+                  }),
+                  buildButton(context, Icons.perm_contact_calendar_rounded, 'Contacts', () {
+                    appHelperFunctions.goToScreenAndComeBack(context, const ContactsScreen());
+                  }),
+                  buildButton(context, Icons.security, 'Safety Tips', () {
+                    appHelperFunctions.goToScreenAndComeBack(context, SafetyTipsPage());
+                  }),
+                  buildButton(context, Icons.devices_other_rounded, 'Devices', () {
+                    appHelperFunctions.goToScreenAndComeBack(context, const DevicesScreen());
+                  }),
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, stack) => Center(child: Text('Error: $e')),
     );
   }
 
@@ -91,8 +99,12 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildProfileContainer()
+  Widget buildProfileContainer(User user)
   {
+    final String profilePicUrl = user.profilePic.isNotEmpty
+        ? user.profilePic
+        : 'assets/placeholders/default_profile_pic.png';
+
     return Container(
       height: 100.0,
       padding: const EdgeInsets.all(5.0),
@@ -101,35 +113,49 @@ class SettingsScreen extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(16.0)),
         border: Border.all(color: const Color(0XFFE8DCDC), width: 1.0),
       ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Row(
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
+          const SizedBox(width: 20.0),
+          Flexible(
+            flex: 1,
+            child: CircleAvatar(
+              backgroundImage: profilePicUrl.isNotEmpty
+                  ? AssetImage(profilePicUrl)
+                  : const AssetImage('assets/placeholders/default_profile_pic.png')
+              as ImageProvider,
+              radius: 30.0,
+              onBackgroundImageError: (exception, stackTrace)
+              {
+                if (kDebugMode)
+                {
+                  print('Error loading image: $exception');
+                }
+              },
+            ),
+          ),
+          const SizedBox(width: 10.0),
+          Flexible(
+            flex: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  backgroundImage: AssetImage('assets/placeholders/profile.png'),
-                  radius: 30.0,
+                const SizedBox(height: 20.0),
+                Text(
+                  user.name.isNotEmpty ? user.name : 'No Name',
+                  style: const TextStyle(
+                    fontSize: 13.0,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(width: 10.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userEmail,
-                      style: TextStyle(fontSize: 14.0, fontFamily: 'Poppins'),
-                    ),
-                    Text(
-                      userName,
-                      style: TextStyle(
-                        fontSize: 11.0,
-                        color: Colors.grey,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ],
+                Text(
+                  user.email.isNotEmpty ? user.email : 'No Email',
+                  style: const TextStyle(
+                    fontSize: 11.0,
+                    fontFamily: 'Poppins',
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

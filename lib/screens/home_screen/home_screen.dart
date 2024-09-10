@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safeguardher_flutter_app/models/user_model.dart';
 import 'package:safeguardher_flutter_app/utils/helpers/helper_functions.dart';
 import 'package:safeguardher_flutter_app/widgets/navigations/app_bar.dart';
 import 'package:shake_detector/shake_detector.dart';
@@ -9,24 +10,9 @@ import '../record_screen/record_screen.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
-    );
-  }
-}
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required User user});
 
   @override
   HomeScreenState createState() => HomeScreenState();

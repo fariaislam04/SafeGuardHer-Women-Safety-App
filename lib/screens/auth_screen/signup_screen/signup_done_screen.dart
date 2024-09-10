@@ -71,10 +71,11 @@ class _SignUpDoneScreenState extends State<SignUpDoneScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
+                  /*
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
+                  ); */
                 },
                 key: null,
                 style: ElevatedButton.styleFrom(

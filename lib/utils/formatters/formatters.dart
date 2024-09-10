@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class Formatters {
@@ -51,5 +52,12 @@ class Formatters {
     final String minutes = twoDigits(duration.inMinutes);
     final String seconds = twoDigits(duration.inSeconds.remainder(60));
     return '$minutes minutes, $seconds seconds';
+  }
+
+  static String formatEventTimeStampToDateAndTime(Timestamp timestamp) {
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+      timestamp.seconds * 1000 + timestamp.nanoseconds ~/ 1000000,
+    );
+    return DateFormat('d MMM, yyyy').format(dateTime);
   }
 }

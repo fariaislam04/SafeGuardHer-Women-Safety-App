@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
 
+import '../../models/user_model.dart';
+import '../../screens/home_screen/home_screen.dart';
+
 class AppHelperFunctions
 {
   static String extractTodayDate()
@@ -44,6 +47,17 @@ class AppHelperFunctions
       context
     );
   }
+
+  void goToHomeScreen(BuildContext context, User user)
+  {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(user: user),
+      ),
+    );
+  }
+
 
   static void showAlert(BuildContext context, String title, String message)
   {
