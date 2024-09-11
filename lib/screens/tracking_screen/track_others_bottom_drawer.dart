@@ -6,6 +6,12 @@ import '../../widgets/navigations/app_bar.dart';
 
 // This screen contains the bottom drawer sheet that contains close contact distance and specs
 
+void main() {
+  runApp(const MaterialApp(
+    home: TrackCloseContact(),
+  ));
+}
+
 class TrackCloseContact extends StatefulWidget
 {
   const TrackCloseContact({super.key});

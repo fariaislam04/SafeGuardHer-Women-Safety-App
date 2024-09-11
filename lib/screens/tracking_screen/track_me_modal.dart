@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../models/emergency_contact_model.dart';
+import '../../providers.dart';
 import '../../utils/constants/colors.dart';
 
-class TrackMeModal extends StatefulWidget {
+class TrackMeModal extends ConsumerWidget {
   const TrackMeModal({super.key});
 
   @override
-  TrackMeModalState createState() => TrackMeModalState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final emergencyContacts = ref.watch(emergencyContactsProvider);
+    final selectedContacts = ref.watch(selectedContactsProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+    final selectedOption = ref.watch(selectedOptionProvider);
 
-class TrackMeModalState extends State<TrackMeModal> {
-  List<int> selectedContacts = [];
-  String searchQuery = "";
-  int selectedOption = 1;
-  List<String> contacts = [
-    'Binita Sarker',
-    'Farheen Trisha',
-    'Faria Islam',
-    'Raisa Rahman',
-  ]; // Sample contact names
-
-  @override
-  Widget build(BuildContext context) {
-    List<String> filteredContacts = contacts
-        .where((contact) => contact.toLowerCase().contains(searchQuery.toLowerCase()))
+    List<EmergencyContact> filteredContacts = emergencyContacts
+        .where((contact) => contact.name.toLowerCase().contains(searchQuery.toLowerCase()))
         .toList();
 
     return Container(
@@ -54,9 +47,7 @@ class TrackMeModalState extends State<TrackMeModal> {
                 contentPadding: EdgeInsets.symmetric(vertical: 5.0),
               ),
               onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
+                ref.read(searchQueryProvider.notifier).state = value;
               },
             ),
           ),
@@ -67,15 +58,16 @@ class TrackMeModalState extends State<TrackMeModal> {
               children: List.generate(
                 filteredContacts.length,
                     (index) {
+                  final contact = filteredContacts[index];
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        if (selectedContacts.contains(index)) {
-                          selectedContacts.remove(index);
-                        } else {
-                          selectedContacts.add(index);
-                        }
-                      });
+                      final updatedSelectedContacts = List<int>.from(selectedContacts);
+                      if (updatedSelectedContacts.contains(index)) {
+                        updatedSelectedContacts.remove(index);
+                      } else {
+                        updatedSelectedContacts.add(index);
+                      }
+                      ref.read(selectedContactsProvider.notifier).state = updatedSelectedContacts;
                     },
                     child: Container(
                       margin: const EdgeInsets.only(right: 16),
@@ -83,13 +75,13 @@ class TrackMeModalState extends State<TrackMeModal> {
                         children: [
                           Column(
                             children: [
-                              const CircleAvatar(
-                                backgroundImage: AssetImage('assets/placeholders/profile.png'),
+                              CircleAvatar(
+                                backgroundImage: AssetImage(contact.profilePic),
                                 radius: 40,
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                filteredContacts[index],
+                                contact.name,
                                 style: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 11,
@@ -122,9 +114,9 @@ class TrackMeModalState extends State<TrackMeModal> {
           RadioButtonRow(
             selectedOption: selectedOption,
             onChanged: (value) {
-              setState(() {
-                selectedOption = value!;
-              });
+              if (value != null) {
+                ref.read(selectedOptionProvider.notifier).state = value;
+              }
             },
           ),
           const SizedBox(height: 20),
@@ -157,17 +149,18 @@ class TrackMeModalState extends State<TrackMeModal> {
   }
 }
 
-class RadioButtonRow extends StatelessWidget {
+class RadioButtonRow extends ConsumerWidget {
   final int selectedOption;
   final ValueChanged<int?> onChanged;
 
-  const RadioButtonRow({super.key,
+  const RadioButtonRow({
+    super.key,
     required this.selectedOption,
     required this.onChanged,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [

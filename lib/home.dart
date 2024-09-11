@@ -1,38 +1,11 @@
+// screens/home_screen/home_screen.dart
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/user_model.dart';
-import '../../models/emergency_contact_model.dart';
+import 'package:safeguardher_flutter_app/models/user_model.dart';
 
 class Home extends StatelessWidget {
   final User user;
 
   const Home({super.key, required this.user});
-
-  Future<EmergencyContact> fetchContactDetails(String phoneNumber) async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(phoneNumber)
-          .get();
-      if (doc.exists) {
-        return EmergencyContact.fromFirestore(doc.data()!);
-      } else {
-        print('Emergency contact not found for phone number: $phoneNumber');
-        return EmergencyContact(
-            phone: phoneNumber,
-            name: phoneNumber,
-            profilePic: 'assets/placeholders/default_profile_pic.png'
-        );
-      }
-    } catch (e) {
-      print('Error fetching emergency contact details: $e');
-      return EmergencyContact(
-          phone: phoneNumber,
-          name: phoneNumber,
-          profilePic: 'assets/placeholders/default_profile_pic.png'
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,60 +13,104 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: Text("Welcome, ${user.name}"),
       ),
-      body: Center(
+      body: SingleChildScrollView(  // Use ScrollView to accommodate large data
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // User Basic Info
+            Text(
+              "User Info",
+            ),
+            const SizedBox(height: 10),
+            Text("Name: ${user.name}"),
             Text("Email: ${user.email}"),
             Text("DOB: ${user.dob}"),
-            Text("Emergency Contacts:"),
-            ...user.emergencyContacts.map((phoneNumber) {
-              return FutureBuilder<EmergencyContact>(
-                future: fetchContactDetails(phoneNumber),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else if (!snapshot.hasData) {
-                    return Text('No data found');
-                  } else {
-                    final contact = snapshot.data!;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Name: ${contact.name}"),
-                        Text("Phone: ${contact.phone}"),
-                        Text("Profile Pic: ${contact.profilePic}"),
-                        const SizedBox(height: 8),
-                      ],
-                    );
-                  }
-                },
-              );
-            }).toList(),
-            Text("Unsafe Places:"),
-            ...user.unsafePlaces.map((place) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Type: ${place.type}"),
-                Text("Description: ${place.description}"),
-                Text("Location: ${place.location.latitude}, ${place.location.longitude}"),
-                const SizedBox(height: 8),
-              ],
-            )),
-            Text("Alerts:"),
-            ...user.alerts.map((alert) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Type: ${alert.type}"),
-                Text("Event ID: ${alert.eventID.eventStart}"),
-                Text("Event ID: ${alert.eventID.eventEnd}"),
-                Text("Report Details: ${alert.report.description}"),
-                Text("Report Details: ${alert.report.reportType}"),
-                const SizedBox(height: 8),
-              ],
-            )),
+            Text("Password: ${user.pwd}"),
+            const SizedBox(height: 20),
+
+            // Emergency Contacts Section
+            Text(
+              "Emergency Contacts",
+            ),
+            const SizedBox(height: 10),
+            user.emergencyContacts.isEmpty
+                ? const Text("No emergency contacts available.")
+                : ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: user.emergencyContacts.length,
+              itemBuilder: (context, index) {
+                final contact = user.emergencyContacts[index];
+                return ListTile(
+                  leading: Image.asset(contact.profilePic, height: 40),  // Display contact profile pic
+                  title: Text(contact.name),
+                  subtitle: Text(contact.number),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // Unsafe Places Section
+            Text(
+              "Unsafe Places",
+
+            ),
+            const SizedBox(height: 10),
+            user.unsafePlaces.isEmpty
+                ? const Text("No unsafe places reported.")
+                : ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: user.unsafePlaces.length,
+              itemBuilder: (context, index) {
+                final place = user.unsafePlaces[index];
+                return ListTile(
+                  title: Text("Type: ${place.type}"),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Description: ${place.description}"),
+                      Text(
+                          "Location: Lat ${place.location.latitude}, Long ${place.location.longitude}"),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // Alerts Section
+            Text(
+              "Alerts",
+
+            ),
+            const SizedBox(height: 10),
+            user.alerts.isEmpty
+                ? const Text("No alerts available.")
+                : ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: user.alerts.length,
+              itemBuilder: (context, index) {
+                final alert = user.alerts[index];
+                return ListTile(
+                  title: Text("Type: ${alert.type}"),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          "Event Start: ${alert.eventID?.eventStart ?? 'N/A'}"),
+                      Text("Event End: ${alert.eventID?.eventEnd ?? 'N/A'}"),
+                      Text(
+                          "Report Description: ${alert.report?.description ?? 'No Description'}"),
+                      Text(
+                          "Report Type: ${alert.report?.reportType ?? 'Unknown'}"),
+                    ],
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

@@ -4,50 +4,63 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:safeguardher_flutter_app/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../home.dart';
 import '../../utils/constants/colors.dart';
 import '../../utils/constants/image_strings.dart';
-import '../../providers.dart'; // Import your providers
+import '../../providers.dart';
 
-class SplashScreen extends ConsumerStatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget
+{
   const SplashScreen({super.key});
 
   @override
   SplashScreenState createState() => SplashScreenState();
 }
 
-class SplashScreenState extends ConsumerState<SplashScreen> {
+class SplashScreenState extends ConsumerState<SplashScreen>
+{
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
     _startTimer();
   }
 
-  Future<void> _startTimer() async {
+  Future<void> _startTimer() async
+  {
     final prefs = await SharedPreferences.getInstance();
     await Future.delayed(const Duration(seconds: 3));
     bool appOpenedBefore = prefs.getBool('appOpenedBefore') ?? false;
 
-    if (appOpenedBefore) {
-      // Use Riverpod to fetch user data and navigate
-      ref.read(userStreamProvider.future).then((user) {
-        if (user == null) {
+    if (appOpenedBefore)
+    {
+      ref.read(userStreamProvider.future).then((user)
+      {
+        if (user == null)
+        {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) =>  OnboardingScreen()),
           );
-        } else {
+        }
+        else
+        {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen(user: user)),
           );
         }
-      }).catchError((error) {
+      })
+      .catchError((error)
+      {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) =>  OnboardingScreen()),
         );
       });
-    } else {
+    }
+    else
+    {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) =>  OnboardingScreen()),

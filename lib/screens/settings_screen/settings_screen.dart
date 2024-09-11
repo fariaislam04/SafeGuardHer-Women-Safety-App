@@ -7,6 +7,7 @@ import 'package:safeguardher_flutter_app/utils/helpers/helper_functions.dart';
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
 import '../../models/user_model.dart';
 import '../../providers.dart';
+import '../edit_profile_screen/edit_profile_screen.dart';
 import 'contacts_screen/contacts_screen.dart';
 import 'devices_screen/devices_screen.dart';
 import 'history/history_screen.dart';
@@ -25,12 +26,10 @@ class SettingsScreen extends ConsumerWidget {
         return SettingsTemplate(
           child: Column(
             children: [
-              buildProfileContainer(user!),
+              buildProfileContainer(context, user!),
               const SizedBox(height: 20.0),
-              Wrap(
-                spacing: 30.0,
-                runSpacing: 20.0,
-                alignment: WrapAlignment.spaceBetween,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   buildButton(context, Icons.history, 'History', () {
                     appHelperFunctions.goToScreenAndComeBack(context, const HistoryScreen());
@@ -41,9 +40,10 @@ class SettingsScreen extends ConsumerWidget {
                   buildButton(context, Icons.security, 'Safety Tips', () {
                     appHelperFunctions.goToScreenAndComeBack(context, SafetyTipsPage());
                   }),
+                  /*
                   buildButton(context, Icons.devices_other_rounded, 'Devices', () {
                     appHelperFunctions.goToScreenAndComeBack(context, const DevicesScreen());
-                  }),
+                  }), */
                 ],
               ),
             ],
@@ -57,8 +57,8 @@ class SettingsScreen extends ConsumerWidget {
 
   Widget buildButton(BuildContext context, IconData icon, String text, VoidCallback onPressed) {
     return SizedBox(
-      width: 130,
-      height: 110,
+      width: 110, // Adjusted size
+      height: 100, // Adjusted size
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -79,16 +79,16 @@ class SettingsScreen extends ConsumerWidget {
               Icon(
                 icon,
                 color: AppColors.primary,
-                size: 50.0,
+                size: 40.0, // Adjusted size
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8), // Adjusted spacing
               Text(
                 text,
                 style: const TextStyle(
                   color: AppColors.primary,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w500,
-                  fontSize: 12,
+                  fontSize: 11,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -99,8 +99,7 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget buildProfileContainer(User user)
-  {
+  Widget buildProfileContainer(BuildContext context, User user) {
     final String profilePicUrl = user.profilePic.isNotEmpty
         ? user.profilePic
         : 'assets/placeholders/default_profile_pic.png';
@@ -124,10 +123,8 @@ class SettingsScreen extends ConsumerWidget {
                   : const AssetImage('assets/placeholders/default_profile_pic.png')
               as ImageProvider,
               radius: 30.0,
-              onBackgroundImageError: (exception, stackTrace)
-              {
-                if (kDebugMode)
-                {
+              onBackgroundImageError: (exception, stackTrace) {
+                if (kDebugMode) {
                   print('Error loading image: $exception');
                 }
               },
@@ -159,6 +156,18 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit, color: AppColors.primary),
+            onPressed: () {
+              // Navigate to the edit profile page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EditProfileScreen(), // Replace with actual edit profile screen
+                ),
+              );
+            },
           ),
         ],
       ),

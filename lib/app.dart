@@ -38,9 +38,9 @@ class SafeGuardHer extends ConsumerWidget
             // default placeholders
             return const Center(child: Text('No user data available'));
           }
-         // return loggedIn ? Home(user: user) : const LoginScreen();
+          // return loggedIn ? Home(user: user) : const LoginScreen();
           return HomeScreen(user: user); //TODO: change this logic later
-         // return Home(user: user);
+          // return Home(user: user);
         },
         loading: () => const SplashScreen(),
         error: (error, stackTrace) => Center(child: Text('Error loading data: $error')),
