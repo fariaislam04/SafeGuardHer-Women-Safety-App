@@ -1,62 +1,76 @@
 import 'package:contacts_service/contacts_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
+import '../../../models/emergency_contact_model.dart';
+import '../../../models/user_model.dart';
+import '../../../providers.dart';
 import 'package:safeguardher_flutter_app/widgets/custom_widgets/contacts_fetcher_widget.dart';
 
-class ContactsScreen extends StatelessWidget {
+class ContactsScreen extends ConsumerWidget {
   const ContactsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return SettingsTemplate(
-      child: Column(
-        children: [
-          // Title
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Icon(Icons.arrow_back_ios),
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  'My Close Contacts',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20.0),
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Get user data from the provider
+    final userAsyncValue = ref.watch(userStreamProvider);
 
-          // Contacts List
-          Expanded(
-            child: ListView(
-              children: [
-                contactTile(
-                  context,
-                  'Faria Islam',
-                  '01711897447',
-                  'assets/placeholders/profile.png',
+    return SettingsTemplate(
+      child: userAsyncValue.when(
+        data: (user) {
+          return Column(
+            children: [
+              // Title
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(Icons.arrow_back_ios),
+                    ),
+                    const SizedBox(width: 10),
+                    const Text(
+                      'My Close Contacts',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                contactTile(
-                  context,
-                  'Binita Sarker',
-                  '017114722849',
-                  'assets/placeholders/profile.png',
+              ),
+              const SizedBox(height: 20.0),
+
+              // Contacts List
+              Expanded(
+                child: ListView.builder(
+                  itemCount: user!.emergencyContacts.length +
+                      1, // +1 for the Add Contact tile
+                  itemBuilder: (context, index) {
+                    if (index == user.emergencyContacts.length) {
+                      return addContactTile(context, user);
+                    } else {
+                      final EmergencyContact contact =
+                          user.emergencyContacts[index];
+                      return contactTile(
+                        context,
+                        contact.name,
+                        contact.number,
+                        'assets/placeholders/profile.png', // Use your own image logic here
+                      );
+                    }
+                  },
                 ),
-                addContactTile(context),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, stack) => Center(child: Text('Error: $e')),
       ),
     );
   }
@@ -103,23 +117,20 @@ class ContactsScreen extends StatelessWidget {
     );
   }
 
-  Widget addContactTile(BuildContext context) {
+  Widget addContactTile(BuildContext context, User user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: InkWell(
         onTap: () async {
+          // Navigate to the ContactsFetcher screen and wait for the selected contact
           final Contact? selectedContact = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const ContactsFetcher(),
             ),
           );
-          if (selectedContact != null) {
-            if (kDebugMode) {
-              print('Selected contact: ${selectedContact.displayName}');
-            }
-            // Add the selected contact to your list or state management solution
-          }
+
+          // If a contact was selected, add it to Firestore
         },
         child: const Row(
           children: [

@@ -35,7 +35,8 @@ class FirestoreService {
   }
 
   // Stream to listen for real-time changes in a document
-  Stream<DocumentSnapshot<Object?>> streamDocument(String collectionPath, String documentId) {
+  Stream<DocumentSnapshot<Object?>> streamDocument(
+      String collectionPath, String documentId) {
     return collection(collectionPath).doc(documentId).snapshots();
   }
 }
