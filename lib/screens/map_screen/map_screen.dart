@@ -2,30 +2,34 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:safeguardher_flutter_app/screens/tracking_screen/custom_marker.dart';
 import 'package:safeguardher_flutter_app/widgets/notifications/notification_widget.dart';
+import '../../providers.dart';
 import '../../utils/constants/colors.dart';
 import '../../utils/helpers/helper_functions.dart';
 import '../tracking_screen/track_me_modal.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
-class MapScreen extends StatefulWidget {
+class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
 
   @override
   MapScreenState createState() => MapScreenState();
 }
 
-class MapScreenState extends State<MapScreen> {
+class MapScreenState extends ConsumerState<MapScreen> {
   GoogleMapController? mapController;
   Location location = Location();
-  Set<Marker> markers = {
-  };
+  Set<Marker> markers = {};
+  late Future<BitmapDescriptor> dangerMarkerIconFuture;
 
   @override
   void initState() {
     super.initState();
     _requestLocationPermission();
+    dangerMarkerIconFuture = CustomMarker().createDangerMarker(); // Initialize the Future
   }
 
   Future<void> _requestLocationPermission() async {
@@ -83,12 +87,10 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
-  void _showTrackMeModal()
-  {
+  void _showTrackMeModal() {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context)
-      {
+      builder: (BuildContext context) {
         return const TrackMeModal();
       },
     );
@@ -96,26 +98,74 @@ class MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final unsafePlacesAsyncValue = ref.watch(unsafePlacesStreamProvider);
+
     return Scaffold(
       body: Stack(
         children: [
           Column(
             children: [
-              //const AddContactWidget(),
               const NotificationWidget(name: "Binita Sarker", code: "5678"),
               Expanded(
-                child: GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition: const CameraPosition(
-                    target: LatLng(26.675200,
-                        85.166800), // Initial position (Dhaka, Bangladesh)
-                    zoom: 1.0,
-                  ),
-                  markers: markers,
-                  mapType: MapType.normal,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                  zoomControlsEnabled: true,
+                child: FutureBuilder<BitmapDescriptor>(
+                  future: dangerMarkerIconFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      if (kDebugMode) {
+                        print('Error creating danger marker icon: ${snapshot.error}');
+                      }
+                      return Center(child: Text('Error creating marker icon'));
+                    }
+                    final dangerMarkerIcon = snapshot.data;
+
+                    return GoogleMap(
+                      onMapCreated: _onMapCreated,
+                      initialCameraPosition: const CameraPosition(
+                        target: LatLng(26.675200, 85.166800),
+                        zoom: 1.0,
+                      ),
+                      markers: markers,
+                      mapType: MapType.normal,
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: true,
+                      zoomControlsEnabled: true,
+                      onCameraIdle: () {
+                        unsafePlacesAsyncValue.when(
+                          data: (unsafePlaces)
+                          {
+                            final newMarkers = <Marker>{};
+                            int i = 0;
+
+                            for (var place in unsafePlaces) {
+                              newMarkers.add(
+                                Marker(
+                                  markerId: MarkerId('$i'),
+                                  position: LatLng(place.location.latitude, place.location.longitude),
+                                  infoWindow: InfoWindow(title: place.type, snippet: place.description),
+                                  icon: dangerMarkerIcon!,
+                                ),
+                              );
+                              ++i;
+                            }
+
+                            setState(()
+                            {
+                              markers.addAll(newMarkers);
+                            });
+                          },
+                          loading: () => {},
+                          error: (error, stack) {
+                            if (kDebugMode) {
+                              print('Error fetching unsafe places: $error');
+                            }
+                          },
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ],

@@ -2,95 +2,56 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../utils/constants/colors.dart';
-import 'custom_bubble_marker.dart';
+import '../home_screen/home_screen.dart';
 import 'custom_marker.dart';
-import 'networking.dart'; // Import the networking class for API
+import 'networking.dart';
+import '../../providers.dart';
 
 void main() {
-  runApp(const MaterialApp(
+  runApp(const ProviderScope(child: MaterialApp(
     home: TrackOthersScreen(),
-  ));
+  )));
 }
 
-class TrackOthersScreen extends StatefulWidget {
+class TrackOthersScreen extends ConsumerStatefulWidget
+{
   const TrackOthersScreen({super.key});
 
   @override
-  State<TrackOthersScreen> createState() => _TrackOthersScreenState();
+  ConsumerState<TrackOthersScreen> createState() => _TrackOthersScreenState();
 }
 
-class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTickerProviderStateMixin {
+class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with SingleTickerProviderStateMixin {
   final Completer<GoogleMapController> _controller = Completer();
-  static const LatLng destination = LatLng(23.775236, 90.389920); // Pre-defined destination
+  static const LatLng destination = LatLng(23.775236, 90.389920);
 
-  List<LatLng> polylineCoordinates = []; // For holding the polyline points
-  Set<Polyline> polyLines = {}; // For holding the polyline instance
-  Set<Marker> _markers = {}; // For holding the marker instances
+  List<LatLng> polylineCoordinates = [];
+  Set<Polyline> polyLines = {};
+  final Set<Marker> _markers = {};
 
   LocationData? currentLocationOfTheUser;
   bool loading = true;
-  CustomMarker customMarker = CustomMarker(); // Instance of CustomMarker
-  late AnimationController _controllerRipple;
-  late Animation<double> _rippleAnimation;
-
-  Timer? _rippleTimer;
-  Timer? _destinationUpdateTimer;
+  CustomMarker customMarker = CustomMarker();
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
-
-    _controllerRipple = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    )
-      ..repeat(reverse: true);
-
-    _rippleAnimation = Tween<double>(begin: 70.0, end: 80.0).animate(
-      CurvedAnimation(
-        parent: _controllerRipple,
-        curve: Curves.easeInOut,
-      ),
-    );
-
-    _rippleTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (currentLocationOfTheUser != null) {
-        createAndUpdateCustomMarker();
-      }
-    });
-
-    _destinationUpdateTimer =
-        Timer.periodic(const Duration(minutes: 1), (timer) {
-          // Periodically update the destination marker
-          if (currentLocationOfTheUser != null) {
-            createAndUpdateCustomMarker();
-          }
-        });
-
     getCurrentUserLocation();
   }
 
-  @override
-  void dispose() {
-    _controllerRipple.dispose(); // Dispose of the animation controller
-    _rippleTimer?.cancel(); // Cancel the ripple timer
-    _destinationUpdateTimer?.cancel(); // Cancel the destination update timer
-    super.dispose();
-  }
-
-  Future<void> createAndUpdateCustomMarker() async {
+  Future<void> createAndUpdateCustomMarker() async
+  {
     if (currentLocationOfTheUser == null) return;
 
     BitmapDescriptor customDestinationMarkerIcon = await customMarker
-        .createCustomDestinationMarker(
-      destination.latitude,
-      destination.longitude,
-      _rippleAnimation.value,
-      'assets/placeholders/binita.png',
-    );
+        .createCustomTeardropMarker('assets/placeholders/binita.png',
+        AppColors.secondary);
 
-    setState(() {
+    setState(()
+    {
       _markers.removeWhere((marker) => marker.markerId.value == 'destination');
       _markers.add(
         Marker(
@@ -102,7 +63,8 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
     });
   }
 
-  Future<void> createAndUpdateSourceMarker() async {
+  Future<void> createAndUpdateSourceMarker() async
+  {
     if (currentLocationOfTheUser == null) return;
 
     final center = LatLng(
@@ -110,16 +72,18 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
       currentLocationOfTheUser!.longitude!,
     );
 
-    BitmapDescriptor customSourceMarkerIcon =  await CustomBubbleMarker()
-        .createCustomBubbleMarker('assets/placeholders/profile.png', 'assets/placeholders/pointer.png');
+    BitmapDescriptor customSourceMarkerIcon = await customMarker
+        .createCustomTeardropMarker('assets/placeholders/profile.png', Colors
+        .blue);
 
-    setState(() {
+    setState(()
+    {
       _markers.removeWhere((marker) => marker.markerId.value == 'source');
       _markers.add(
         Marker(
           markerId: const MarkerId('source'),
-          position: center, // Ensure the marker is at the circle's center
-          icon: customSourceMarkerIcon, // Use custom source marker
+          position: center,
+          icon: customSourceMarkerIcon,
           infoWindow: const InfoWindow(
             title: "Source",
           ),
@@ -128,51 +92,45 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
     });
   }
 
-  Future<void> getCurrentUserLocation() async {
+  Future<void> getCurrentUserLocation() async
+  {
     Location location = Location();
 
-    // Fetch the current location of the user
     currentLocationOfTheUser = await location.getLocation();
 
-    setState(() {
-      loading = false; // Stop the loader when the location is fetched
+    setState(()
+    {
+      loading = false;
     });
 
-    // Add marker for current location
     setMarkers();
-
-    // Create and update source marker
     createAndUpdateSourceMarker();
-
-    // Get the polyline between the user's location and the destination
     getRouteData();
 
-    // Update the location on change
-    location.onLocationChanged.listen((newLocation) {
+    location.onLocationChanged.listen((newLocation)
+    {
       if (currentLocationOfTheUser == null ||
           (currentLocationOfTheUser!.latitude != newLocation.latitude ||
               currentLocationOfTheUser!.longitude != newLocation.longitude)) {
-        // Update the current location
         currentLocationOfTheUser = newLocation;
-        setMarkers(); // Update the marker with the new location
-        createAndUpdateSourceMarker(); // Update source marker
-        getRouteData(); // Update the route
-        _goToUserLocation(); // Move camera to the new location
-        setState(() {}); // Refresh the UI
+        setMarkers();
+        createAndUpdateSourceMarker();
+        getRouteData();
+        _goToUserLocation();
+        setState(() {});
       }
     });
   }
 
-  // Function to add markers (for current location and destination)
-  void setMarkers() async {
-    if (currentLocationOfTheUser != null) {
+  void setMarkers() async
+  {
+    if (currentLocationOfTheUser != null)
+    {
       _markers.clear();
 
-      BitmapDescriptor customSourceMarkerIcon =  await CustomBubbleMarker()
-          .createCustomBubbleMarker('assets/placeholders/profile.png', 'asset'
-          's/placeholders/pointer.png');
+      BitmapDescriptor customSourceMarkerIcon = await customMarker.createCustomTeardropMarker(
+          'assets/placeholders/profile.png', Colors.blue);
 
-      // Marker for user's current location
       _markers.add(
         Marker(
           markerId: const MarkerId("current_location"),
@@ -187,16 +145,9 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
         ),
       );
 
-      // Create and set the custom destination marker
-      BitmapDescriptor customDestinationMarkerIcon = await customMarker
-          .createCustomDestinationMarker(
-        destination.latitude,
-        destination.longitude,
-        _rippleAnimation.value,
-        'assets/placeholders/binita.png',
-      );
+      BitmapDescriptor customDestinationMarkerIcon = await customMarker.createCustomTeardropMarker(
+          'assets/placeholders/binita.png', AppColors.secondary);
 
-      // Marker for the destination
       _markers.add(
         Marker(
           markerId: const MarkerId("destination"),
@@ -208,12 +159,37 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
         ),
       );
 
-      setState(() {}); // Refresh the UI with the new markers
+      final asyncValue = ref.watch(unsafePlacesStreamProvider);
+      asyncValue.when(
+        data: (unsafePlaces) async
+        {
+          int i = 0;
+          for (final place in unsafePlaces) {
+            final placeLocation = LatLng(place.location.latitude, place.location.longitude);
+            final dangerMarkerIcon = await customMarker.createDangerMarker(); // Using the custom danger marker
+            final marker = Marker(
+              markerId: MarkerId('$i'),
+              position: placeLocation,
+              icon: dangerMarkerIcon,
+              infoWindow: InfoWindow(
+                title: place.type,
+                snippet: place.description,
+              ),
+            );
+            ++i;
+            _markers.add(marker);
+          }
+
+          setState(() {});
+        },
+        loading: () => null,
+        error: (error, stack) => print("Error fetching unsafe places: $error"),
+      );
     }
   }
 
-  // Function to get route data from OpenRouteService
-  void getRouteData() async {
+  void getRouteData() async
+  {
     if (currentLocationOfTheUser != null) {
       NetworkHelper network = NetworkHelper(
         startLat: currentLocationOfTheUser!.latitude!,
@@ -224,41 +200,42 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
 
       try {
         var data = await network.getData();
-        print("Response Data: $data"); // For debugging
 
-        // Ensure data has expected keys and is valid
-        if (data != null && data['features'] != null &&
-            data['features'].isNotEmpty) {
+        if (data != null && data['features'] != null && data['features'].isNotEmpty)
+        {
           List<dynamic> coordinates = data['features'][0]['geometry']['coordinates'];
+          polylineCoordinates.clear();
 
-          polylineCoordinates.clear(); // Clear old points if any
-
-          // Parse the polyline coordinates
-          for (var point in coordinates) {
+          for (var point in coordinates)
+          {
             polylineCoordinates.add(LatLng(point[1],
-                point[0])); // Remember, OpenRouteService gives [lng, lat]
+                point[0]));
           }
 
-          if (polylineCoordinates.isNotEmpty) {
+          if (polylineCoordinates.isNotEmpty)
+          {
             setPolyLines();
           }
-        } else {
+        }
+        else
+        {
           print("Invalid response structure or empty features.");
         }
-      } catch (e) {
+      }
+      catch (e)
+      {
         print("Error: $e");
       }
     }
   }
 
-  // Function to draw the polyline on the map
-  void setPolyLines() {
+  void setPolyLines()
+  {
     Polyline polyline = Polyline(
       polylineId: const PolylineId("route"),
       points: polylineCoordinates,
-      color: Colors.blueAccent,
-      width: 6,
-      // Set a width for visibility
+      color: Colors.blue,
+      width: 5,
       startCap: Cap.roundCap,
       endCap: Cap.roundCap,
       geodesic: false,
@@ -270,8 +247,10 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
     setState(() {});
   }
 
-  Future<void> _goToUserLocation() async {
-    if (currentLocationOfTheUser != null) {
+  Future<void> _goToUserLocation() async
+  {
+    if (currentLocationOfTheUser != null)
+    {
       final GoogleMapController mapController = await _controller.future;
       mapController.animateCamera(
         CameraUpdate.newCameraPosition(
@@ -288,10 +267,11 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     return Scaffold(
       body: currentLocationOfTheUser == null
-          ? Center(child: CircularProgressIndicator()) // Loader when location is not available
+          ? Center(child: appHelperFunctions.appLoader(context))
           : Stack(
         children: [
           GoogleMap(
@@ -309,15 +289,8 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
             markers: Set<Marker>.from(_markers),
             zoomGesturesEnabled: true,
             trafficEnabled: true,
-            mapType: MapType.normal,
-            buildingsEnabled: true,
-            compassEnabled: true,
-            fortyFiveDegreeImageryEnabled: true,
-            indoorViewEnabled: true,
-            mapToolbarEnabled: true,
-            rotateGesturesEnabled: true,
-            scrollGesturesEnabled: true,
-            tiltGesturesEnabled: true,
+            onCameraIdle: ()
+            {},
           ),
           Positioned(
             top: 20.0,
@@ -350,7 +323,7 @@ class _TrackOthersScreenState extends State<TrackOthersScreen> with SingleTicker
           ),
           Positioned(
             top: 18.0,
-            right: 20.0, // Adjusted the position to be more visible
+            right: 20.0,
             child: FloatingActionButton(
               onPressed: _goToUserLocation,
               backgroundColor: AppColors.secondary,
