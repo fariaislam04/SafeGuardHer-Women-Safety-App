@@ -49,7 +49,7 @@ class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
       number: contact.phones!.isNotEmpty
           ? contact.phones!.first.value ?? 'No Number'
           : 'No Number',
-      profilePic: '',
+      profilePic: 'assets/placeholders/profile.png',
     );
 
     try {
