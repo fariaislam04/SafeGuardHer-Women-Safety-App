@@ -1,45 +1,68 @@
 import 'dart:async';
 import 'dart:ui' as ui;
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class CustomMarker {
-  Future<BitmapDescriptor> createCustomDestinationMarker(
-      double latitude,
-      double longitude,
-      double rippleRadius,
-      String imageUrl) async {
+class CustomMarker
+{
+  Future<BitmapDescriptor> createCustomTeardropMarker(String circleImageUrl,
+      Color color) async
+  {
     final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
-    const double radius = 60.0; // Marker radius
-    const double borderWidth = 6.0; // Border width
-    const double rippleOffset = 90.0; // Ripple offset
 
-    // Draw the wave-like ripple effect circle
-    final ripplePaint = Paint()
-      ..color = Colors.red.withOpacity(0.5)
+    const double circleRadius = 65.0;
+    const double borderWidth = 8.0;
+    const double taperHeight = 25.0;
+    const double shadowOffset = 5.0;
+
+    const double markerWidth = circleRadius * 2.2;
+    const double markerHeight = circleRadius * 2 + taperHeight;
+
+    final Paint shadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.2)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 10.0)
       ..style = PaintingStyle.fill;
 
-    // Draw the ripple effect
-    canvas.drawCircle(
-      Offset(radius + rippleOffset, radius + rippleOffset),
-      rippleRadius,
-      ripplePaint,
+    final Paint borderPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    const Offset circleCenter = Offset(circleRadius, circleRadius);
+
+    final Path shadowPath = Path();
+    shadowPath.addOval(Rect.fromCircle(center: circleCenter.translate(shadowOffset, shadowOffset), radius: circleRadius));
+
+    shadowPath.moveTo(circleRadius - circleRadius, circleRadius + shadowOffset);
+    shadowPath.cubicTo(
+      circleRadius - 80 + shadowOffset, circleRadius - 50 + shadowOffset,
+      circleRadius + 60 + shadowOffset, circleRadius - 50 + shadowOffset,
+      circleRadius + circleRadius + shadowOffset, circleRadius + shadowOffset,
     );
 
-    // Draw the white border circle, centered
-    final borderPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = borderWidth;
-    canvas.drawCircle(
-      Offset(radius + rippleOffset, radius + rippleOffset),
-      radius + borderWidth / 2,
-      borderPaint,
+    shadowPath.lineTo(circleRadius + shadowOffset, circleRadius * 2 + taperHeight + shadowOffset);
+    shadowPath.close();
+
+    canvas.drawPath(shadowPath, shadowPaint);
+
+    final Path teardropPath = Path();
+    teardropPath.addOval(Rect.fromCircle(center: circleCenter, radius: circleRadius));
+
+    teardropPath.moveTo(circleRadius - circleRadius, circleRadius);
+    teardropPath.cubicTo(
+      circleRadius - 80, circleRadius - 50,
+      circleRadius + 60, circleRadius - 20,
+      circleRadius + circleRadius, circleRadius,
     );
 
-    // Load the image
-    final imageProvider = AssetImage(imageUrl);
+    teardropPath.lineTo(circleRadius, circleRadius * 2 + taperHeight);
+    teardropPath.close();
+
+    canvas.drawPath(teardropPath, borderPaint);
+
+    final imageProvider = AssetImage(circleImageUrl);
     final Completer<ui.Image> imageCompleter = Completer();
     final ImageStreamListener listener = ImageStreamListener((imageInfo, synchronousCall) {
       final image = imageInfo.image;
@@ -47,89 +70,40 @@ class CustomMarker {
     });
     imageProvider.resolve(const ImageConfiguration()).addListener(listener);
 
-    // Wait for the image to load
-    final ui.Image image = await imageCompleter.future;
+    final ui.Image circleImage = await imageCompleter.future;
 
-    // Create a circular path for clipping, centered
-    final path = Path()
-      ..addOval(Rect.fromCircle(center: Offset(radius + rippleOffset, radius + rippleOffset), radius: radius));
+    final Path clipPath = Path()
+      ..addOval(Rect.fromCircle(center: circleCenter, radius: circleRadius - borderWidth));
 
-    // Clip the canvas to the circular path
-    canvas.clipPath(path);
+    canvas.clipPath(clipPath);
 
-    // Draw the image, centered within the circle
     canvas.drawImageRect(
-      image,
-      Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+      circleImage,
+      Rect.fromLTWH(0, 0, circleImage.width.toDouble(), circleImage.height.toDouble()),
       Rect.fromCenter(
-        center: Offset(radius + rippleOffset, radius + rippleOffset),
-        width: radius * 2,
-        height: radius * 2,
+        center: circleCenter,
+        width: (circleRadius - borderWidth) * 2,
+        height: (circleRadius - borderWidth) * 2,
       ),
       Paint(),
     );
 
-    // Adjust the size of the canvas to ensure the ripple effect is fully drawn
-    final img = await pictureRecorder.endRecording().toImage(
-        (radius * 2 + borderWidth + rippleOffset * 2).toInt(),
-        (radius * 2 + borderWidth + rippleOffset * 2).toInt());
-    final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
-    final pngBytes = byteData!.buffer.asUint8List();
-
-    return BitmapDescriptor.fromBytes(pngBytes);
-  }
-
-  Future<BitmapDescriptor> createCustomSourceMarker(
-      double latitude, double longitude, String imageUrl) async {
-    final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
-    final Canvas canvas = Canvas(pictureRecorder);
-    const double radius = 60.0; // Marker radius
-
-    // Load the image
-    final imageProvider = AssetImage(imageUrl);
-    final Completer<ui.Image> imageCompleter = Completer();
-    final ImageStreamListener listener = ImageStreamListener((imageInfo, synchronousCall) {
-      final image = imageInfo.image;
-      imageCompleter.complete(image);
-    });
-    imageProvider.resolve(const ImageConfiguration()).addListener(listener);
-
-    // Wait for the image to load
-    final ui.Image image = await imageCompleter.future;
-
-    // Create a circular path for clipping, centered
-    final path = Path()
-      ..addOval(Rect.fromCircle(center: Offset(radius, radius), radius: radius));
-
-    // Clip the canvas to the circular path
-    canvas.clipPath(path);
-
-    // Draw the image, centered within the circle
-    canvas.drawImageRect(
-      image,
-      Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
-      Rect.fromCenter(
-        center: Offset(radius, radius),
-        width: radius * 2,
-        height: radius * 2,
-      ),
-      Paint(),
+    final ui.Image finalImage = await pictureRecorder.endRecording().toImage(
+      markerWidth.toInt(),
+      markerHeight.toInt(),
     );
 
-    // Adjust the size of the canvas to ensure the image is fully drawn
-    final img = await pictureRecorder.endRecording().toImage(
-        (radius * 2).toInt(),
-        (radius * 2).toInt());
-    final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
-    final pngBytes = byteData!.buffer.asUint8List();
+    final ByteData? byteData = await finalImage.toByteData(format: ui.ImageByteFormat.png);
+    final Uint8List pngBytes = byteData!.buffer.asUint8List();
 
     return BitmapDescriptor.fromBytes(pngBytes);
   }
 
-  Future<BitmapDescriptor> createWarningMarker() async {
-    return BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(size: Size(70, 70)),
-      'assets/illustrations/warning.png',
+  Future<BitmapDescriptor> createDangerMarker()
+  {
+    return BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(40, 50)),
+      'assets/illustrations/danger.png',
     );
   }
 }
