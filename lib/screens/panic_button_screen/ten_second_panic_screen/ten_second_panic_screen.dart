@@ -12,6 +12,7 @@ import '../../../services/background/sms_service/sms_sender.dart';
 import '../safety_code_screen/safety_code_screen.dart';
 import '../stop_panic_alert_screen/stop_panic_alert_screen.dart';
 import '../../../utils/helpers/timer_util.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class TenSecondPanicScreen extends ConsumerWidget {
   const TenSecondPanicScreen({super.key});
@@ -22,7 +23,8 @@ class TenSecondPanicScreen extends ConsumerWidget {
     final emergencyContacts = ref.watch(emergencyContactsProvider);
 
     return userAsyncValue.when(
-      data: (_) => _TenSecondPanicScreenBody(emergencyContacts: emergencyContacts),
+      data: (_) =>
+          _TenSecondPanicScreenBody(emergencyContacts: emergencyContacts),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
     );
@@ -35,7 +37,8 @@ class _TenSecondPanicScreenBody extends StatefulWidget {
   const _TenSecondPanicScreenBody({required this.emergencyContacts});
 
   @override
-  State<_TenSecondPanicScreenBody> createState() => _TenSecondPanicScreenBodyState();
+  State<_TenSecondPanicScreenBody> createState() =>
+      _TenSecondPanicScreenBodyState();
 }
 
 class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
@@ -71,7 +74,8 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   }
 
   Future<void> _getUserLocation() async {
-    _userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    _userLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   Future<void> _sendAlertAndNavigate() async {
@@ -82,12 +86,26 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
 
     final locationMessage =
         'SOS Alert! My location: https://maps.google.com/?q=${_userLocation.latitude},${_userLocation.longitude}';
-    final phoneNumbers = widget.emergencyContacts.map((contact) => contact.number).toList();
+    final phoneNumbers =
+        widget.emergencyContacts.map((contact) => contact.number).toList();
 
-    final safetyCodes = widget.emergencyContacts.map((_) => _generateSafetyCode()).toList();
+    final safetyCodes =
+        widget.emergencyContacts.map((_) => _generateSafetyCode()).toList();
 
     await _logAlertToFirestore(safetyCodes); // Pass safetyCodes to this method
     await smsSender.sendAndNavigate(context, locationMessage, phoneNumbers);
+
+    // Check if emergency contacts exist
+    String number;
+    if (widget.emergencyContacts.isEmpty) {
+      _showSnackBar('No emergency contacts available.');
+      number = '9999'; // Default number if no contacts
+    } else {
+      // Get the first emergency contact's number
+      number = widget.emergencyContacts[0].number;
+    }
+    // Call the number
+    await FlutterPhoneDirectCaller.callNumber(number);
 
     Navigator.pushReplacement(
       context,
@@ -114,7 +132,8 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
       }).toList(),
       'type': 'panic',
       'user_locations': {
-        'user_location_start': GeoPoint(_userLocation.latitude, _userLocation.longitude),
+        'user_location_start':
+            GeoPoint(_userLocation.latitude, _userLocation.longitude),
       },
     };
 
@@ -133,8 +152,8 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override

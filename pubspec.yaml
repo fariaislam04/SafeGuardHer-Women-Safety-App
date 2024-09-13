@@ -32,6 +32,7 @@ dependencies:
   intl: ^0.19.0
   soundpool: ^2.4.1
   audio_wave: ^0.1.5
+  flutter_phone_direct_caller: ^2.1.1
 
   # -- Map packages
   google_maps_flutter: ^2.2.8
