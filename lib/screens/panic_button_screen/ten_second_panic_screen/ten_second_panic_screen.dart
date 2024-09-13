@@ -45,82 +45,75 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   final SMSSender smsSender = SMSSender();
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     _getUserLocation();
     _startCountdown();
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     _timer.cancel();
     super.dispose();
   }
 
-  void _startCountdown()
-  {
+  void _startCountdown() {
     _timer = TimerUtil.startCountdown(
       initialCount: _countdown,
-      onTick: (currentCount)
-      {
+      onTick: (currentCount) {
         setState(() => _countdown = currentCount);
         Vibration.vibrate(duration: 500);
       },
-      onComplete: () async
-      {
+      onComplete: () async {
         await _sendAlertAndNavigate();
       },
     );
   }
 
-  Future<void> _getUserLocation() async
-  {
-    _userLocation =
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  Future<void> _getUserLocation() async {
+    _userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
 
-  Future<void> _sendAlertAndNavigate() async
-  {
+  Future<void> _sendAlertAndNavigate() async {
     if (widget.emergencyContacts.isEmpty) {
       _showSnackBar('No emergency contacts available.');
       return;
     }
 
     final locationMessage =
-        'SOS Alert! My location: https://maps.google.com/?q=${_userLocation
-        .latitude},${_userLocation.longitude}';
-    final phoneNumbers = widget.emergencyContacts.map((contact) =>
-    contact.number).toList();
+        'SOS Alert! My location: https://maps.google.com/?q=${_userLocation.latitude},${_userLocation.longitude}';
+    final phoneNumbers = widget.emergencyContacts.map((contact) => contact.number).toList();
 
-    await _logAlertToFirestore();
+    final safetyCodes = widget.emergencyContacts.map((_) => _generateSafetyCode()).toList();
+
+    await _logAlertToFirestore(safetyCodes); // Pass safetyCodes to this method
     await smsSender.sendAndNavigate(context, locationMessage, phoneNumbers);
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const SafetyCodeScreen()),
+      MaterialPageRoute(
+        builder: (context) => SafetyCodeScreen(safetyCodes: safetyCodes),
+      ),
     );
   }
 
-  Future<void> _logAlertToFirestore() async
-  {
+  Future<void> _logAlertToFirestore(List<String> safetyCodes) async {
     String alertId = FirebaseFirestore.instance.collection('alerts').doc().id;
 
-    final alertEntry =
-    {
+    final alertEntry = {
       'alert_id': alertId,
       'alert_duration': {'alert_start': Timestamp.now()},
-      'alerted_contacts': widget.emergencyContacts.map((contact) {
+      'alerted_contacts': widget.emergencyContacts.asMap().entries.map((entry) {
+        int index = entry.key;
+        var contact = entry.value;
         return {
           'alerted_contact_name': contact.name,
           'alerted_contact_number': contact.number,
-          'safety_code': _generateSafetyCode(),
+          'safety_code': safetyCodes[index],
         };
       }).toList(),
       'type': 'panic',
-      'user_locations':
-      {
+      'user_locations': {
         'user_location_start': GeoPoint(_userLocation.latitude, _userLocation.longitude),
       },
     };
@@ -135,21 +128,17 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
     print('Alert created with alert_id: $alertId');
   }
 
-
-  String _generateSafetyCode()
-  {
+  String _generateSafetyCode() {
     return (1000 + Random().nextInt(9000)).toString();
   }
 
-  void _showSnackBar(String message)
-  {
+  void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)));
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Column(

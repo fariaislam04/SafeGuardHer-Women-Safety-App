@@ -6,14 +6,10 @@ import '../../report_incident_screen/report_incident_screen.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
-void main() {
-  runApp(const MaterialApp(
-    home: SafetyCodeScreen(),
-  ));
-}
-
 class SafetyCodeScreen extends StatefulWidget {
-  const SafetyCodeScreen({super.key});
+  final List<String> safetyCodes;
+
+  const SafetyCodeScreen({Key? key, required this.safetyCodes}) : super(key: key);
 
   @override
   SafetyCodeScreenState createState() => SafetyCodeScreenState();
@@ -23,44 +19,37 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
   final List<TextEditingController> _controllers =
   List.generate(4, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
-  final String _correctCode = "2000";
   int _correctCodeEntered = -1;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     _focusNodes[0].requestFocus();
   }
 
   @override
-  void dispose()
-  {
-    for (var controller in _controllers)
-    {
+  void dispose() {
+    for (var controller in _controllers) {
       controller.dispose();
     }
-    for (var focusNode in _focusNodes)
-    {
+    for (var focusNode in _focusNodes) {
       focusNode.dispose();
     }
     super.dispose();
   }
 
-  Future<void> navigateToReportIncidentPage(BuildContext context) async
-  {
+  Future<void> navigateToReportIncidentPage(BuildContext context) async {
     await Future.delayed(const Duration(seconds: 2));
-    if (context.mounted)
-    {
+    if (context.mounted) {
       appHelperFunctions.goToScreenAndComeBack(context, const ReportIncidentPage());
     }
   }
 
-  void _verifyCode()
-  {
+  void _verifyCode() {
     String inputCode = _controllers.map((e) => e.text).join();
-    setState(() {
-      if (inputCode == _correctCode)
+    setState(()
+    {
+      if (widget.safetyCodes.contains(inputCode))
       {
         _correctCodeEntered = 1;
         navigateToReportIncidentPage(context);
@@ -77,11 +66,9 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
     });
   }
 
-  void _checkAndVerifyCode()
-  {
+  void _checkAndVerifyCode() {
     String inputCode = _controllers.map((e) => e.text).join();
-    if (inputCode.length == 4)
-    {
+    if (inputCode.length == 4) {
       _verifyCode();
     }
   }
@@ -134,8 +121,8 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      _correctCodeEntered != 1 ?
-                      const Text(
+                      _correctCodeEntered != 1
+                          ? const Text(
                         'Your close contacts have been notified and help will arrive soon',
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -145,7 +132,7 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       )
-                      : const Text (
+                          : const Text(
                         'Safety code verified! You will be redirected to '
                             'report incident page soon.',
                         textAlign: TextAlign.center,
@@ -157,8 +144,8 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      _correctCodeEntered != 1 ?
-                      Container(
+                      _correctCodeEntered != 1
+                          ? Container(
                         padding: const EdgeInsets.all(30.0),
                         decoration: BoxDecoration(
                           color: const Color(0xFF6C022A),
@@ -223,24 +210,19 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                                     cursorErrorColor: Colors.red,
                                     cursorHeight: 30.0,
                                     enabled: true,
-                                    style: const TextStyle(fontSize: 20,
-                                        fontWeight: FontWeight.w600),
+                                    style: const TextStyle(
+                                        fontSize: 20, fontWeight: FontWeight.w600),
                                     maxLength: 1,
                                     textAlign: TextAlign.center,
                                     decoration: const InputDecoration(
                                       counterText: '',
                                       border: InputBorder.none,
                                     ),
-                                    onChanged: (value)
-                                    {
-                                      if (value.length == 1)
-                                      {
-                                        if (index < 3)
-                                        {
+                                    onChanged: (value) {
+                                      if (value.length == 1) {
+                                        if (index < 3) {
                                           FocusScope.of(context).nextFocus();
-                                        }
-                                        else
-                                        {
+                                        } else {
                                           FocusScope.of(context).unfocus();
                                           _checkAndVerifyCode();
                                         }
@@ -254,12 +236,12 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                             const SizedBox(height: 20),
                           ],
                         ),
-                      ) : Container(),
+                      )
+                          : Container(),
                       const SizedBox(height: 20),
-                      _correctCodeEntered != 1 ?
-                      TextButton(
-                        onPressed: ()
-                        {
+                      _correctCodeEntered != 1
+                          ? TextButton(
+                        onPressed: () {
                           // Handle resend OTP logic here
                         },
                         child: const Text(
@@ -270,7 +252,7 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
                           ),
                         ),
                       )
-                      : TextButton(onPressed: () {}, child: Container()),
+                          : TextButton(onPressed: () {}, child: Container()),
                     ],
                   ),
                 ),
