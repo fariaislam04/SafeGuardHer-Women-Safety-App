@@ -105,26 +105,36 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
 
   Future<void> _logAlertToFirestore() async
   {
-    final alertData = {
-      'alerted_contacts': widget.emergencyContacts.map((contact) =>
-      {
-        'alerted_contact_name': contact.name,
-        'alerted_contact_number': contact.number,
-        'safety_code': _generateSafetyCode(),
+    String alertId = FirebaseFirestore.instance.collection('alerts').doc().id;
+
+    final alertEntry =
+    {
+      'alert_id': alertId,
+      'alert_duration': {'alert_start': Timestamp.now()},
+      'alerted_contacts': widget.emergencyContacts.map((contact) {
+        return {
+          'alerted_contact_name': contact.name,
+          'alerted_contact_number': contact.number,
+          'safety_code': _generateSafetyCode(),
+        };
       }).toList(),
-      'alert_id': {'alert_start': Timestamp.now()},
       'type': 'panic',
-      'user_locations': {
-        'user_location_start': GeoPoint(
-            _userLocation.latitude, _userLocation.longitude)
+      'user_locations':
+      {
+        'user_location_start': GeoPoint(_userLocation.latitude, _userLocation.longitude),
       },
     };
 
     await FirebaseFirestore.instance
         .collection('users')
         .doc('01719958727')
-        .update({'alerts': FieldValue.arrayUnion([alertData])});
+        .update({
+      'alerts': FieldValue.arrayUnion([alertEntry]),
+    });
+
+    print('Alert created with alert_id: $alertId');
   }
+
 
   String _generateSafetyCode()
   {
