@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../screens/home_screen/home_screen.dart';
 import '../../utils/constants/colors.dart';
 import 'package:safeguardher_flutter_app/screens/panic_button_screen/ten_second_panic_screen/ten_second_panic_screen.dart';
 
@@ -13,15 +14,14 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
   bool _buttonPressed = false;
   //OverlayEntry? _overlayEntry;
 
-  void _handlePanicButtonPress()
-  {
-      setState(()
-      {
-        appHelperFunctions.goToScreenAndComeBack(context, const TenSecondPanicScreen());
-       // _removeSnackbar();
-      });
+  void _handlePanicButtonPress() {
+    setState(() {
+      appHelperFunctions.goToScreenAndComeBack(
+          context, const TenSecondPanicScreen());
+      // _removeSnackbar();
+    });
 
-      /*
+    /*
     if (kDebugMode)
     {
       print("Panic button pressed");
@@ -55,17 +55,13 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_)
-      {
-        setState(()
-        {
+      onTapDown: (_) {
+        setState(() {
           _buttonPressed = true;
         });
       },
-      onTapUp: (_)
-      {
-        setState(()
-        {
+      onTapUp: (_) {
+        setState(() {
           _buttonPressed = false;
         });
         _handlePanicButtonPress();
@@ -80,8 +76,9 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
               height: 85,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: _buttonPressed ? AppColors.panicButtonPressed :
-                AppColors.panicButtonUnpressed,
+                gradient: _buttonPressed
+                    ? AppColors.panicButtonPressed
+                    : AppColors.panicButtonUnpressed,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
@@ -103,7 +100,8 @@ class _PanicButtonWidgetState extends State<PanicButtonWidget> {
           const SizedBox(height: 8),
           const Text(
             'Panic',
-            style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),
+            style: TextStyle(
+                fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),
           ),
         ],
       ),

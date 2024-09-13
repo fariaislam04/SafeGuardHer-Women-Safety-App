@@ -24,12 +24,11 @@ class SMSSender {
   }
 
   Future<void> sendAndNavigate(
-      BuildContext context, String message, List<String> recipients) async
-  {
+      BuildContext context, String message, List<String> recipients) async {
     if (await Permission.sms.request().isGranted) {
       for (String recipient in recipients) {
         await _sendMessage(recipient, message);
       }
-  }
+    }
   }
 }

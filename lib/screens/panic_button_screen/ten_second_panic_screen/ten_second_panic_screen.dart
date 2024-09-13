@@ -1,13 +1,11 @@
 import 'dart:async';
+import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
-import '../../../utils/helpers/helper_functions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../utils/helpers/timer_util.dart';
-import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
-import '../safety_code_screen/safety_code_screen.dart';
+import '../../../services/background/sms_service/sms_sender.dart';
 import '../stop_panic_alert_screen/stop_panic_alert_screen.dart';
-
-AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class TenSecondPanicScreen extends StatefulWidget {
   const TenSecondPanicScreen({super.key});
@@ -17,8 +15,9 @@ class TenSecondPanicScreen extends StatefulWidget {
 }
 
 class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
-  late Timer _countdownTimer;
-  int _countdown = 10;
+  late Timer _timer;
+  int _countdown = 3;
+  final SMSSender smsSender = SMSSender(); // Initialize SMSSender
 
   @override
   void initState() {
@@ -28,12 +27,12 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
 
   @override
   void dispose() {
-    _countdownTimer.cancel();
+    _timer.cancel();
     super.dispose();
   }
 
   void _startCountdown() {
-    _countdownTimer = TimerUtil.startCountdown(
+    _timer = TimerUtil.startCountdown(
       initialCount: _countdown,
       onTick: (currentCount) {
         setState(() {
@@ -41,15 +40,78 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
           _vibrate();
         });
       },
-      onComplete: () {
-        _countdownTimer.cancel();
-        appHelperFunctions.goToScreenAndComeBack(context, const SafetyCodeScreen());
+      onComplete: () async {
+        _timer.cancel();
+        await _fetchAndSendEmergencyContacts();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const StopPanicAlertScreen(),
+          ),
+        );
       },
     );
   }
 
   Future<void> _vibrate() async {
     await Vibration.vibrate(duration: 500);
+  }
+
+  final userdoc = 0;
+
+  Future<void> _fetchAndSendEmergencyContacts() async {
+    try {
+      // Fetch user document from Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc('01719958727') // Replace with actual user ID
+          .get();
+
+      if (userDoc.exists) {
+        final userData = userDoc.data();
+        final emergencyContacts =
+            userData?['emergency_contacts'] as List<dynamic>? ?? [];
+
+        if (emergencyContacts.isNotEmpty) {
+          // Extract the emergency contact numbers
+          final phoneNumbers = emergencyContacts.map((contact) {
+            return contact['emergency_contact_number'] as String? ?? '';
+          }).toList();
+
+          // Check if there are valid phone numbers
+          if (phoneNumbers.isNotEmpty) {
+            try {
+              await smsSender.sendAndNavigate(
+                context,
+                "Your emergency message here",
+                phoneNumbers,
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error sending SMS: $e')),
+              );
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('No valid phone numbers available.')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No emergency contacts available.')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User document not found.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch user data: $e')),
+      );
+    }
   }
 
   @override
@@ -63,13 +125,13 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
               key: UniqueKey(),
               repeat: true,
               duration: const Duration(milliseconds: 900),
-              ripplesCount: 8,
-              color: const Color(0xFFF96A66),
-              minRadius: 110,
+              ripplesCount: 5,
+              color: const Color(0xFFFF9B70),
+              minRadius: 100,
               size: const Size(170, 170),
               child: CircleAvatar(
                 radius: 50,
-                backgroundColor: const Color(0xFFEC4A46),
+                backgroundColor: const Color(0xFFFB6829),
                 child: Text(
                   '$_countdown',
                   style: const TextStyle(
@@ -106,23 +168,14 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: '10 seconds',
+                      text: '5 seconds,',
                       style: TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     TextSpan(
-                      text: ', the ',
-                    ),
-                    TextSpan(
-                      text: 'emergency hotlines',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    TextSpan(
-                      text: ' and your ',
+                      text: ' your ',
                     ),
                     TextSpan(
                       text: 'close contacts',
@@ -155,8 +208,13 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
               padding: const EdgeInsets.only(bottom: 50),
               child: ElevatedButton(
                 onPressed: () {
-                  _countdownTimer.cancel();
-                  appHelperFunctions.goToScreenAndComeBack(context, const StopPanicAlertScreen());
+                  _timer.cancel();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StopPanicAlertScreen(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
