@@ -36,37 +36,59 @@ class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Contacts permission is denied.')),
+        const SnackBar(content: Text('Contacts permission is denied.')),
       );
     }
   }
 
   Future<void> _addContactToFirestore(Contact contact) async {
-    final user = ref.read(userStreamProvider); // Adjust as necessary
+    // Get the user's DocumentReference
+    final userAsyncValue = ref.watch(userStreamProvider);
 
-    final emergencyContact = EmergencyContact(
-      name: contact.displayName ?? 'No Name',
-      number: contact.phones!.isNotEmpty
-          ? contact.phones!.first.value ?? 'No Number'
-          : 'No Number',
-      profilePic: 'assets/placeholders/profile.png',
+    userAsyncValue.when(
+      data: (user) async {
+        if (user == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User data is not available.')),
+          );
+          return;
+        }
+
+        final emergencyContact = EmergencyContact(
+          name: contact.displayName ?? 'No Name',
+          number: contact.phones!.isNotEmpty
+              ? contact.phones!.first.value ?? 'No Number'
+              : 'No Number',
+          profilePic: 'assets/placeholders/profile.png',
+        );
+
+        try {
+          // Use the DocumentReference from user
+          await user.documentRef.update({
+            'emergency_contacts':
+                FieldValue.arrayUnion([emergencyContact.toFirestore()]),
+          });
+
+          Navigator.pop(context, contact); // Pop context after adding contact
+        } catch (e) {
+          Navigator.pop(
+              context, contact); // Pop context even if there is an error
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error adding contact: $e')),
+          );
+        }
+      },
+      loading: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Loading user data...')),
+        );
+      },
+      error: (e, stack) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching user data: $e')),
+        );
+      },
     );
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc('01719958727') // Adjust as necessary
-          .update({
-        'emergency_contacts':
-            FieldValue.arrayUnion([emergencyContact.toFirestore()]),
-      });
-      Navigator.pop(context, contact); // Pop context after adding contact
-    } catch (e) {
-      Navigator.pop(context, contact); // Pop context even if there is an error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding contact: $e')),
-      );
-    }
   }
 
   @override
@@ -92,7 +114,6 @@ class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
                       ? contact.phones!.first.value ?? 'No Number'
                       : 'No Number'),
                   onTap: () {
-                    //Navigator.pop(context, contact);
                     _addContactToFirestore(contact);
                   },
                 );

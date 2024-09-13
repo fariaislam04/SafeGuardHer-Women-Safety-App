@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:safeguardher_flutter_app/models/emergency_contact_model.dart';
 import 'alert_model.dart';
 import 'unsafe_place_model.dart';
@@ -11,6 +12,7 @@ class User {
   final List<EmergencyContact> emergencyContacts; // Update type here
   final List<dynamic> alerts;
   final List<UnsafePlace> unsafePlaces;
+  final DocumentReference documentRef;
 
   User({
     required this.name,
@@ -21,6 +23,7 @@ class User {
     required this.emergencyContacts,
     required this.alerts,
     required this.unsafePlaces,
+    required this.documentRef,
   });
 
   factory User.empty() {
@@ -33,21 +36,29 @@ class User {
       emergencyContacts: [],
       alerts: [],
       unsafePlaces: [],
+      documentRef: FirebaseFirestore.instance.collection('users').doc('empty'),
     );
   }
 
-  factory User.fromFirestore(Map<String, dynamic> data) {
+  factory User.fromFirestore(
+      Map<String, dynamic> data, DocumentReference docRef) {
     return User(
       name: data['name'] ?? 'User',
       pwd: data['pwd'] ?? '',
-      profilePic: data['profilePicUrl'] ?? 'assets/placeholders/default_profile_pic.png',
+      profilePic: data['profilePicUrl'] ??
+          'assets/placeholders/default_profile_pic.png',
       email: data['email'] ?? '',
       dob: data['DOB'] ?? '',
       emergencyContacts: (data['emergency_contacts'] as List<dynamic>? ?? [])
           .map((contact) => EmergencyContact.fromFirestore(contact))
           .toList(),
-      alerts: (data['alerts'] as List<dynamic>? ?? []).map((alert) => Alert.fromFirestore(alert)).toList(),
-      unsafePlaces: (data['unsafe_places'] as List<dynamic>? ?? []).map((place) => UnsafePlace.fromFirestore(place)).toList(),
+      alerts: (data['alerts'] as List<dynamic>? ?? [])
+          .map((alert) => Alert.fromFirestore(alert))
+          .toList(),
+      unsafePlaces: (data['unsafe_places'] as List<dynamic>? ?? [])
+          .map((place) => UnsafePlace.fromFirestore(place))
+          .toList(),
+      documentRef: docRef,
     );
   }
 }

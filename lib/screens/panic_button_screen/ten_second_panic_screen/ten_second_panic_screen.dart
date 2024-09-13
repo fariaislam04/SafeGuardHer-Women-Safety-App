@@ -1,21 +1,23 @@
 import 'dart:async';
 import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vibration/vibration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../utils/helpers/timer_util.dart';
 import '../../../services/background/sms_service/sms_sender.dart';
 import '../stop_panic_alert_screen/stop_panic_alert_screen.dart';
 import 'package:geolocator/geolocator.dart';
+import '../../../providers.dart';
 
-class TenSecondPanicScreen extends StatefulWidget {
+class TenSecondPanicScreen extends ConsumerStatefulWidget {
   const TenSecondPanicScreen({super.key});
 
   @override
   TenSecondPanicScreenState createState() => TenSecondPanicScreenState();
 }
 
-class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
+class TenSecondPanicScreenState extends ConsumerState<TenSecondPanicScreen> {
   late Timer _timer;
   int _countdown = 3;
   final SMSSender smsSender = SMSSender(); // Initialize SMSSender
@@ -87,62 +89,88 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
   }
 
   Future<void> _fetchAndSendEmergencyContacts() async {
-    try {
-      // Fetch user document from Firestore
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc('01719958727') // Replace with actual user ID
-          .get();
+    final userAsyncValue = ref.watch(userStreamProvider);
 
-      if (userDoc.exists) {
-        final userData = userDoc.data();
-        final emergencyContacts =
-            userData?['emergency_contacts'] as List<dynamic>? ?? [];
+    userAsyncValue.when(
+      data: (user) async {
+        if (user == null || user.documentRef == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('User data is not available.')),
+          );
+          return;
+        }
 
-        if (emergencyContacts.isNotEmpty) {
-          // Extract the emergency contact numbers
-          final phoneNumbers = emergencyContacts.map((contact) {
-            return contact['emergency_contact_number'] as String? ?? '';
-          }).toList();
+        try {
+          // Fetch user document from Firestore using DocumentReference
+          final userDoc = await user.documentRef.get();
 
-          final Position position = await _determinePosition();
-          final String locationMessage = 'I need help! My current location is: '
-              'https://maps.google.com/?q=${position.latitude},${position.longitude}';
+          if (userDoc.exists) {
+            final userData = userDoc.data()
+                as Map<String, dynamic>?; // Cast to Map<String, dynamic>
+            final emergencyContacts =
+                userData?['emergency_contacts'] as List<dynamic>? ?? [];
 
-          // Check if there are valid phone numbers
-          if (phoneNumbers.isNotEmpty) {
-            try {
-              await smsSender.sendAndNavigate(
-                context,
-                locationMessage,
-                phoneNumbers,
-              );
-            } catch (e) {
+            if (emergencyContacts.isNotEmpty) {
+              // Extract the emergency contact numbers
+              final phoneNumbers = emergencyContacts.map((contact) {
+                return (contact
+                            as Map<String, dynamic>)['emergency_contact_number']
+                        as String? ??
+                    '';
+              }).toList();
+
+              final Position position = await _determinePosition();
+              final String locationMessage =
+                  'I need help! My current location is: '
+                  'https://maps.google.com/?q=${position.latitude},${position.longitude}';
+
+              // Check if there are valid phone numbers
+              if (phoneNumbers.isNotEmpty) {
+                try {
+                  await smsSender.sendAndNavigate(
+                    context,
+                    locationMessage,
+                    phoneNumbers,
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error sending SMS: $e')),
+                  );
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('No valid phone numbers available.')),
+                );
+              }
+            } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error sending SMS: $e')),
+                const SnackBar(
+                    content: Text('No emergency contacts available.')),
               );
             }
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text('No valid phone numbers available.')),
+              const SnackBar(content: Text('User document not found.')),
             );
           }
-        } else {
+        } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No emergency contacts available.')),
+            SnackBar(content: Text('Failed to fetch user data: $e')),
           );
         }
-      } else {
+      },
+      loading: () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User document not found.')),
+          SnackBar(content: Text('Loading user data...')),
         );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch user data: $e')),
-      );
-    }
+      },
+      error: (e, stack) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching user data: $e')),
+        );
+      },
+    );
   }
 
   @override

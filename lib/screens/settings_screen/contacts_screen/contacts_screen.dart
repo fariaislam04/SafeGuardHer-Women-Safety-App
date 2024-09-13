@@ -136,11 +136,8 @@ class ContactsScreen extends ConsumerWidget {
   Future<void> _removeContact(BuildContext context, WidgetRef ref, User user,
       EmergencyContact contact) async {
     try {
-      // Remove the contact from the user's emergency contacts in Firestore
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc('01719958727') // Adjust as necessary
-          .update({
+      // Access the document reference directly from the User object
+      await user.documentRef.update({
         'emergency_contacts': FieldValue.arrayRemove([contact.toFirestore()]),
       });
 
