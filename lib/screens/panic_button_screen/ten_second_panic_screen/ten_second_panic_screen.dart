@@ -1,12 +1,14 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
-import 'package:flutter/material.dart';
-import 'package:vibration/vibration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../utils/helpers/timer_util.dart';
-import '../../../services/background/sms_service/sms_sender.dart';
-import '../stop_panic_alert_screen/stop_panic_alert_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:vibration/vibration.dart';
+import '../../../services/background/sms_service/sms_sender.dart';
+import '../safety_code_screen/safety_code_screen.dart';
+import '../stop_panic_alert_screen/stop_panic_alert_screen.dart';
+import '../../../utils/helpers/timer_util.dart';
 
 class TenSecondPanicScreen extends StatefulWidget {
   const TenSecondPanicScreen({super.key});
@@ -15,14 +17,17 @@ class TenSecondPanicScreen extends StatefulWidget {
   TenSecondPanicScreenState createState() => TenSecondPanicScreenState();
 }
 
-class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
+class TenSecondPanicScreenState extends State<TenSecondPanicScreen>
+{
   late Timer _timer;
   int _countdown = 3;
-  final SMSSender smsSender = SMSSender(); // Initialize SMSSender
+  final SMSSender smsSender = SMSSender();
+  late Position _userLocation;
 
   @override
   void initState() {
     super.initState();
+    _getUserLocation();
     _startCountdown();
   }
 
@@ -47,11 +52,16 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const StopPanicAlertScreen(),
+            builder: (context) => const SafetyCodeScreen(),
           ),
         );
       },
     );
+  }
+
+  String _generateSafeCode() {
+    final random = Random();
+    return (1000 + random.nextInt(9000)).toString();
   }
 
   Future<void> _vibrate() async {
@@ -85,13 +95,18 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
     // If permissions are granted, get the current position
     return await Geolocator.getCurrentPosition();
   }
+  Future<void> _getUserLocation() async {
+    _userLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
 
-  Future<void> _fetchAndSendEmergencyContacts() async {
+  Future<void> _fetchAndSendEmergencyContacts() async
+  {
     try {
       // Fetch user document from Firestore
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
-          .doc('01719958727') // Replace with actual user ID
+          .doc('01719958727')
           .get();
 
       if (userDoc.exists) {
@@ -99,9 +114,35 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen> {
         final emergencyContacts =
             userData?['emergency_contacts'] as List<dynamic>? ?? [];
 
-        if (emergencyContacts.isNotEmpty) {
-          // Extract the emergency contact numbers
-          final phoneNumbers = emergencyContacts.map((contact) {
+        if (emergencyContacts.isNotEmpty)
+        {
+          final alertEntry = {
+            'alerted_contacts': emergencyContacts.map((contact) {
+              return {
+                'alerted_contact_name': contact['emergency_contact_name'],
+                'alerted_contact_number': contact['emergency_contact_number'],
+                'safety_code': _generateSafeCode(),
+              };
+            }).toList(),
+            'alert_id': {
+              'alert_start': Timestamp.now(),
+            },
+            'type': 'panic',
+            'user_locations': {
+              'user_location_start': GeoPoint(
+                  _userLocation.latitude, _userLocation.longitude),
+            },
+          };
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('01719958727')
+              .update({
+            'alerts': FieldValue.arrayUnion([alertEntry])
+          });
+
+          final phoneNumbers = emergencyContacts.map((contact)
+          {
             return contact['emergency_contact_number'] as String? ?? '';
           }).toList();
 

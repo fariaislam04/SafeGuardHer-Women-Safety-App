@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:safeguardher_flutter_app/screens/error_screen/error_screen.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import 'package:safeguardher_flutter_app/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,7 +56,7 @@ class SplashScreenState extends ConsumerState<SplashScreen>
       {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) =>  OnboardingScreen()),
+          MaterialPageRoute(builder: (context) =>  const ErrorScreen()),
         );
       });
     }

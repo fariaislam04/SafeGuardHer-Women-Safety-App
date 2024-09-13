@@ -75,6 +75,9 @@ dependencies:
   geocoding: ^3.0.0
   geolocator: ^13.0.1
   image_picker: ^1.1.2
+  flutter_local_notifications: ^17.2.2
+  firebase_database: ^11.1.2
+  lottie: ^3.1.2
 
 dev_dependencies:
   flutter_test:

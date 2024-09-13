@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../providers.dart';
 
 /*
     This page shows up when the user presses "STOP SOS ALERT" from panic
@@ -8,16 +10,27 @@ import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
     stopped, and returns to the home page after a delay of 2 seconds.
  */
 
-class StopPanicAlertScreen extends StatelessWidget {
+class StopPanicAlertScreen extends ConsumerWidget
+{
   const StopPanicAlertScreen({super.key});
 
-  Future<void> navigateToHome(context) async {
-
+  Future<void> navigateToHome(BuildContext context, WidgetRef ref) async
+  {
+    final user = await ref.read(userStreamProvider.future);
+    if(user != null)
+      {
+        await Future.delayed(const Duration(seconds: 2));
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomeScreen(user: user)),
+        );
+      }
   }
 
   @override
-  Widget build(BuildContext context) {
-    SchedulerBinding.instance.addPostFrameCallback((_) => navigateToHome(context));
+  Widget build(BuildContext context, WidgetRef ref) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      navigateToHome(context, ref);
+    });
 
     return Scaffold(
       backgroundColor: Colors.white,
