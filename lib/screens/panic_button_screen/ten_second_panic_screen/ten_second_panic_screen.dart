@@ -5,189 +5,141 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:vibration/vibration.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../models/emergency_contact_model.dart';
+import '../../../providers.dart';
 import '../../../services/background/sms_service/sms_sender.dart';
 import '../safety_code_screen/safety_code_screen.dart';
 import '../stop_panic_alert_screen/stop_panic_alert_screen.dart';
 import '../../../utils/helpers/timer_util.dart';
 
-class TenSecondPanicScreen extends StatefulWidget {
+class TenSecondPanicScreen extends ConsumerWidget {
   const TenSecondPanicScreen({super.key});
 
   @override
-  TenSecondPanicScreenState createState() => TenSecondPanicScreenState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsyncValue = ref.watch(userStreamProvider);
+    final emergencyContacts = ref.watch(emergencyContactsProvider);
+
+    return userAsyncValue.when(
+      data: (_) => _TenSecondPanicScreenBody(emergencyContacts: emergencyContacts),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(child: Text('Error: $error')),
+    );
+  }
 }
 
-class TenSecondPanicScreenState extends State<TenSecondPanicScreen>
-{
-  late Timer _timer;
-  int _countdown = 3;
-  final SMSSender smsSender = SMSSender();
-  late Position _userLocation;
+class _TenSecondPanicScreenBody extends StatefulWidget {
+  final List<EmergencyContact> emergencyContacts;
+
+  const _TenSecondPanicScreenBody({required this.emergencyContacts});
 
   @override
-  void initState() {
+  State<_TenSecondPanicScreenBody> createState() => _TenSecondPanicScreenBodyState();
+}
+
+class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
+  late Timer _timer;
+  int _countdown = 10;
+  late Position _userLocation;
+  final SMSSender smsSender = SMSSender();
+
+  @override
+  void initState()
+  {
     super.initState();
     _getUserLocation();
     _startCountdown();
   }
 
   @override
-  void dispose() {
+  void dispose()
+  {
     _timer.cancel();
     super.dispose();
   }
 
-  void _startCountdown() {
+  void _startCountdown()
+  {
     _timer = TimerUtil.startCountdown(
       initialCount: _countdown,
-      onTick: (currentCount) {
-        setState(() {
-          _countdown = currentCount;
-          _vibrate();
-        });
+      onTick: (currentCount)
+      {
+        setState(() => _countdown = currentCount);
+        Vibration.vibrate(duration: 500);
       },
-      onComplete: () async {
-        _timer.cancel();
-        await _fetchAndSendEmergencyContacts();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SafetyCodeScreen(),
-          ),
-        );
+      onComplete: () async
+      {
+        await _sendAlertAndNavigate();
       },
     );
   }
 
-  String _generateSafeCode() {
-    final random = Random();
-    return (1000 + random.nextInt(9000)).toString();
-  }
-
-  Future<void> _vibrate() async {
-    await Vibration.vibrate(duration: 500);
-  }
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Check if location services are enabled
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied.');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.',
-      );
-    }
-
-    // If permissions are granted, get the current position
-    return await Geolocator.getCurrentPosition();
-  }
-  Future<void> _getUserLocation() async {
-    _userLocation = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-  }
-
-  Future<void> _fetchAndSendEmergencyContacts() async
+  Future<void> _getUserLocation() async
   {
-    try {
-      // Fetch user document from Firestore
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc('01719958727')
-          .get();
+    _userLocation =
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  }
 
-      if (userDoc.exists) {
-        final userData = userDoc.data();
-        final emergencyContacts =
-            userData?['emergency_contacts'] as List<dynamic>? ?? [];
-
-        if (emergencyContacts.isNotEmpty)
-        {
-          final alertEntry = {
-            'alerted_contacts': emergencyContacts.map((contact) {
-              return {
-                'alerted_contact_name': contact['emergency_contact_name'],
-                'alerted_contact_number': contact['emergency_contact_number'],
-                'safety_code': _generateSafeCode(),
-              };
-            }).toList(),
-            'alert_id': {
-              'alert_start': Timestamp.now(),
-            },
-            'type': 'panic',
-            'user_locations': {
-              'user_location_start': GeoPoint(
-                  _userLocation.latitude, _userLocation.longitude),
-            },
-          };
-
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc('01719958727')
-              .update({
-            'alerts': FieldValue.arrayUnion([alertEntry])
-          });
-
-          final phoneNumbers = emergencyContacts.map((contact)
-          {
-            return contact['emergency_contact_number'] as String? ?? '';
-          }).toList();
-
-          final Position position = await _determinePosition();
-          final String locationMessage = 'I need help! My current location is: '
-              'https://maps.google.com/?q=${position.latitude},${position.longitude}';
-
-          // Check if there are valid phone numbers
-          if (phoneNumbers.isNotEmpty) {
-            try {
-              await smsSender.sendAndNavigate(
-                context,
-                locationMessage,
-                phoneNumbers,
-              );
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error sending SMS: $e')),
-              );
-            }
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text('No valid phone numbers available.')),
-            );
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No emergency contacts available.')),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User document not found.')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch user data: $e')),
-      );
+  Future<void> _sendAlertAndNavigate() async
+  {
+    if (widget.emergencyContacts.isEmpty) {
+      _showSnackBar('No emergency contacts available.');
+      return;
     }
+
+    final locationMessage =
+        'SOS Alert! My location: https://maps.google.com/?q=${_userLocation
+        .latitude},${_userLocation.longitude}';
+    final phoneNumbers = widget.emergencyContacts.map((contact) =>
+    contact.number).toList();
+
+    await _logAlertToFirestore();
+    await smsSender.sendAndNavigate(context, locationMessage, phoneNumbers);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const SafetyCodeScreen()),
+    );
+  }
+
+  Future<void> _logAlertToFirestore() async
+  {
+    final alertData = {
+      'alerted_contacts': widget.emergencyContacts.map((contact) =>
+      {
+        'alerted_contact_name': contact.name,
+        'alerted_contact_number': contact.number,
+        'safety_code': _generateSafetyCode(),
+      }).toList(),
+      'alert_id': {'alert_start': Timestamp.now()},
+      'type': 'panic',
+      'user_locations': {
+        'user_location_start': GeoPoint(
+            _userLocation.latitude, _userLocation.longitude)
+      },
+    };
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc('01719958727')
+        .update({'alerts': FieldValue.arrayUnion([alertData])});
+  }
+
+  String _generateSafetyCode()
+  {
+    return (1000 + Random().nextInt(9000)).toString();
+  }
+
+  void _showSnackBar(String message)
+  {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)));
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     return Scaffold(
       body: Center(
         child: Column(
@@ -197,13 +149,13 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen>
               key: UniqueKey(),
               repeat: true,
               duration: const Duration(milliseconds: 900),
-              ripplesCount: 5,
-              color: const Color(0xFFFF9B70),
+              ripplesCount: 10,
+              color: const Color(0xFFF8BDBB),
               minRadius: 100,
               size: const Size(170, 170),
               child: CircleAvatar(
                 radius: 50,
-                backgroundColor: const Color(0xFFFB6829),
+                backgroundColor: const Color(0xFFEC4A46),
                 child: Text(
                   '$_countdown',
                   style: const TextStyle(
@@ -240,7 +192,7 @@ class TenSecondPanicScreenState extends State<TenSecondPanicScreen>
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: '5 seconds,',
+                      text: '10 seconds,',
                       style: TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.w800,

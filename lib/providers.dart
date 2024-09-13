@@ -9,10 +9,9 @@ import 'models/alert_model.dart';
 final userStreamProvider = StreamProvider<User?>((ref) async* {
   const phoneNumber = '01719958727';
 
-  final userStream = FirebaseFirestore.instance
-      .collection('users')
-      .doc(phoneNumber)
-      .snapshots();
+  final userDocRef =
+      FirebaseFirestore.instance.collection('users').doc(phoneNumber);
+  final userStream = userDocRef.snapshots();
 
   await for (final snapshot in userStream) {
     if (snapshot.exists) {
@@ -53,6 +52,7 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
             .map((alert) => Alert.fromFirestore(alert))
             .toList(),
         unsafePlaces: unsafePlaces,
+        documentRef: userDocRef, // Pass the Firestore document reference here
       );
     } else {
       yield User.empty();
