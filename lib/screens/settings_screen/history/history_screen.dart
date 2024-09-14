@@ -79,12 +79,20 @@ class MyHistoryPage extends StatelessWidget {
                     document.data()! as Map<String, dynamic>;
                 Timestamp startTimestamp =
                     data['alert_duration']['alert_start'] as Timestamp;
-                Timestamp endTimestamp =
-                    data['alert_duration']['alert_end'] as Timestamp;
+                Timestamp? endTimestamp =
+                    data['alert_duration'].containsKey('alert_end')
+                        ? data['alert_duration']['alert_end'] as Timestamp
+                        : null;
 
                 // Calculate the duration
-                Duration duration =
-                    endTimestamp.toDate().difference(startTimestamp.toDate());
+                Duration duration;
+                if (endTimestamp != null) {
+                  duration =
+                      endTimestamp.toDate().difference(startTimestamp.toDate());
+                } else {
+                  duration =
+                      Duration.zero; // Default duration if endTimestamp is null
+                }
                 String formattedDuration = _formatDuration(duration);
 
                 // Format the start timestamp
