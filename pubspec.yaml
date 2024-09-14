@@ -79,6 +79,8 @@ dependencies:
   flutter_local_notifications: ^17.2.2
   firebase_database: ^11.1.2
   lottie: ^3.1.2
+  baseflow_plugin_template: ^2.2.0
+  rxdart: ^0.27.7
 
 dev_dependencies:
   flutter_test:

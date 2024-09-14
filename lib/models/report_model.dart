@@ -1,29 +1,22 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Report {
-  final String description;
   final String reportType;
-  final GeoPoint geolocation; // Assuming you need geolocation as well
+  final String reportDescription;
+  final GeoPoint reportGeolocation;
 
   Report({
-    required this.description,
     required this.reportType,
-    required this.geolocation, // Add this if needed
+    required this.reportDescription,
+    required this.reportGeolocation,
   });
 
   factory Report.fromFirestore(Map<String, dynamic> data) {
     return Report(
-      description: data['description'] ?? '',
-      reportType: data['report_type'] ?? '',
-      geolocation: data['geolocation'] != null ? data['geolocation'] as GeoPoint : const GeoPoint(0, 0), // Handle GeoPoint
+      reportType: data['report_type'] as String,
+      reportDescription: data['report_description'] as String,
+      reportGeolocation: data['report_geolocation'] as GeoPoint,
     );
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      'description': description,
-      'report_type': reportType,
-      'geolocation': geolocation, // Include GeoPoint if needed
-    };
   }
 }

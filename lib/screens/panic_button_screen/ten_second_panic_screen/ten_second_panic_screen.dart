@@ -41,7 +41,7 @@ class _TenSecondPanicScreenBody extends StatefulWidget {
 
 class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   late Timer _timer;
-  int _countdown = 10;
+  int _countdown = 2;
   late Position _userLocation;
   final SMSSender smsSender = SMSSender();
   late String safetyCode;
@@ -121,6 +121,7 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
 
   Future<void> _logAlertToFirestore() async {
     final alertEntry = {
+      'isActive': true,
       'alert_duration': {'alert_start': Timestamp.now()},
       'alerted_contacts': widget.emergencyContacts.map((contact) {
         return {
