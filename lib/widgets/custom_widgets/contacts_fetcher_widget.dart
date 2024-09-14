@@ -63,16 +63,26 @@ class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
         );
 
         try {
-          // Use the DocumentReference from user
+          // Add contact to the user's emergency_contacts
           await user.documentRef.update({
             'emergency_contacts':
-                FieldValue.arrayUnion([emergencyContact.toFirestore()]),
+            FieldValue.arrayUnion([emergencyContact.toFirestore()]),
           });
+
+          // Check if the contact already exists in Firestore
+          final contactDocRef = FirebaseFirestore.instance.collection('users').doc(contact.phones!.first.value);
+          final contactDoc = await contactDocRef.get();
+
+          if (contactDoc.exists) {
+            // Update the 'emergency_contact_of' field in the contact's document
+            await contactDocRef.update({
+              'emergency_contact_of': FieldValue.arrayUnion(['01719958727']),
+            });
+          }
 
           Navigator.pop(context, contact); // Pop context after adding contact
         } catch (e) {
-          Navigator.pop(
-              context, contact); // Pop context even if there is an error
+          Navigator.pop(context, contact); // Pop context even if there is an error
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error adding contact: $e')),
           );
@@ -100,25 +110,24 @@ class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
       body: _contacts.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
-              itemCount: _contacts.length,
-              itemBuilder: (context, index) {
-                final contact = _contacts[index];
-                return ListTile(
-                  leading:
-                      (contact.avatar != null && contact.avatar!.isNotEmpty)
-                          ? CircleAvatar(
-                              backgroundImage: MemoryImage(contact.avatar!))
-                          : const CircleAvatar(child: Icon(Icons.person)),
-                  title: Text(contact.displayName ?? 'No Name'),
-                  subtitle: Text(contact.phones!.isNotEmpty
-                      ? contact.phones!.first.value ?? 'No Number'
-                      : 'No Number'),
-                  onTap: () {
-                    _addContactToFirestore(contact);
-                  },
-                );
-              },
-            ),
+        itemCount: _contacts.length,
+        itemBuilder: (context, index) {
+          final contact = _contacts[index];
+          return ListTile(
+            leading: (contact.avatar != null && contact.avatar!.isNotEmpty)
+                ? CircleAvatar(
+                backgroundImage: MemoryImage(contact.avatar!))
+                : const CircleAvatar(child: Icon(Icons.person)),
+            title: Text(contact.displayName ?? 'No Name'),
+            subtitle: Text(contact.phones!.isNotEmpty
+                ? contact.phones!.first.value ?? 'No Number'
+                : 'No Number'),
+            onTap: () {
+              _addContactToFirestore(contact);
+            },
+          );
+        },
+      ),
     );
   }
 }
