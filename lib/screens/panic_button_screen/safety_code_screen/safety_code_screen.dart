@@ -1,15 +1,24 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../../report_incident_screen/report_incident_screen.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class SafetyCodeScreen extends StatefulWidget {
-  final List<String> safetyCodes;
+  final String safetyCode;
+  final String userId;
+  final String alertId;
 
-  const SafetyCodeScreen({Key? key, required this.safetyCodes}) : super(key: key);
+  const SafetyCodeScreen({
+    super.key,
+    required this.safetyCode,
+    required this.userId,
+    required this.alertId,
+  });
 
   @override
   SafetyCodeScreenState createState() => SafetyCodeScreenState();
@@ -18,13 +27,17 @@ class SafetyCodeScreen extends StatefulWidget {
 class SafetyCodeScreenState extends State<SafetyCodeScreen> {
   final List<TextEditingController> _controllers =
   List.generate(4, (index) => TextEditingController());
-  final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
+  final List<FocusNode> _focusNodes =
+  List.generate(4, (index) => FocusNode());
   int _correctCodeEntered = -1;
+  late Position _userLocation;
+  Timer? _locationUpdateTimer;
 
   @override
   void initState() {
     super.initState();
     _focusNodes[0].requestFocus();
+    _startLocationUpdates();
   }
 
   @override
@@ -35,30 +48,61 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
     for (var focusNode in _focusNodes) {
       focusNode.dispose();
     }
+    _locationUpdateTimer?.cancel();
     super.dispose();
+  }
+
+  void _startLocationUpdates() {
+    _locationUpdateTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      _userLocation = position;
+      await _updateUserLocationInFirestore();
+    });
+  }
+
+  Future<void> _updateUserLocationInFirestore() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .collection('alerts')
+          .doc(widget.alertId)  // Update specific alert document
+          .update({
+        'user_locations.user_location_end': GeoPoint(
+          _userLocation.latitude,
+          _userLocation.longitude,
+        ),
+      });
+    } catch (e) {
+      print('Error updating user location: $e');
+    }
   }
 
   Future<void> navigateToReportIncidentPage(BuildContext context) async {
     await Future.delayed(const Duration(seconds: 2));
     if (context.mounted) {
-      appHelperFunctions.goToScreenAndComeBack(context, const ReportIncidentPage());
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ReportIncidentPage(),
+        ),
+      );
     }
   }
 
   void _verifyCode() {
     String inputCode = _controllers.map((e) => e.text).join();
-    setState(()
-    {
-      if (widget.safetyCodes.contains(inputCode))
-      {
+    setState(() {
+      if (widget.safetyCode == inputCode) {
         _correctCodeEntered = 1;
+        _locationUpdateTimer?.cancel(); // Stop location updates
+        _markAlertAsResolved();  // Mark alert as resolved in Firestore
         navigateToReportIncidentPage(context);
-      }
-      else
-      {
+      } else {
         _correctCodeEntered = 0;
-        for (var controller in _controllers)
-        {
+        for (var controller in _controllers) {
           controller.clear();
         }
         _focusNodes[0].requestFocus();
@@ -70,6 +114,21 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
     String inputCode = _controllers.map((e) => e.text).join();
     if (inputCode.length == 4) {
       _verifyCode();
+    }
+  }
+
+  Future<void> _markAlertAsResolved() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .collection('alerts')
+          .doc(widget.alertId)  // Update specific alert document
+          .update({
+        'alert_duration.alert_end': Timestamp.now(),  // Mark alert end time
+      });
+    } catch (e) {
+      print('Error marking alert as resolved: $e');
     }
   }
 

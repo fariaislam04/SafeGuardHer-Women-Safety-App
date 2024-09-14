@@ -23,8 +23,7 @@ class TenSecondPanicScreen extends ConsumerWidget {
     final emergencyContacts = ref.watch(emergencyContactsProvider);
 
     return userAsyncValue.when(
-      data: (_) =>
-          _TenSecondPanicScreenBody(emergencyContacts: emergencyContacts),
+      data: (_) => _TenSecondPanicScreenBody(emergencyContacts: emergencyContacts),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
     );
@@ -37,21 +36,24 @@ class _TenSecondPanicScreenBody extends StatefulWidget {
   const _TenSecondPanicScreenBody({required this.emergencyContacts});
 
   @override
-  State<_TenSecondPanicScreenBody> createState() =>
-      _TenSecondPanicScreenBodyState();
+  State<_TenSecondPanicScreenBody> createState() => _TenSecondPanicScreenBodyState();
 }
 
 class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   late Timer _timer;
-  int _countdown = 10;
+  int _countdown = 2;
   late Position _userLocation;
   final SMSSender smsSender = SMSSender();
+  late String safetyCode;
+  late String alertId;
 
   @override
   void initState() {
     super.initState();
     _getUserLocation();
     _startCountdown();
+    safetyCode = _generateSafetyCode();
+    alertId = FirebaseFirestore.instance.collection('alerts').doc().id;
   }
 
   @override
@@ -74,75 +76,71 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   }
 
   Future<void> _getUserLocation() async {
-    _userLocation = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    _userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
-
   Future<void> _sendAlertAndNavigate() async {
-    if (widget.emergencyContacts.isEmpty) {
-      _showSnackBar('No emergency contacts available.');
-      return;
-    }
-
-    final locationMessage =
-        'SOS Alert! My location: https://maps.google.com/?q=${_userLocation.latitude},${_userLocation.longitude}';
-    final phoneNumbers =
-        widget.emergencyContacts.map((contact) => contact.number).toList();
-
-    final safetyCodes =
-        widget.emergencyContacts.map((_) => _generateSafetyCode()).toList();
-
-    await _logAlertToFirestore(safetyCodes); // Pass safetyCodes to this method
-    await smsSender.sendAndNavigate(context, locationMessage, phoneNumbers);
-
     // Check if emergency contacts exist
-    String number;
     if (widget.emergencyContacts.isEmpty) {
       _showSnackBar('No emergency contacts available.');
-      number = '9999'; // Default number if no contacts
+      // If no emergency contacts, still proceed with a default emergency number
+      String number = '999'; // Default emergency number if no contacts
+      await FlutterPhoneDirectCaller.callNumber(number);
     } else {
-      // Get the first emergency contact's number
-      number = widget.emergencyContacts[0].number;
-    }
-    // Call the number
-    await FlutterPhoneDirectCaller.callNumber(number);
+      final locationMessage =
+          'SOS Alert! My location: https://maps.google.com/?q=${_userLocation.latitude},${_userLocation.longitude}';
+      final phoneNumbers = widget.emergencyContacts.map((contact) => contact.number).toList();
 
+      try {
+        await _logAlertToFirestore(); // Log alert to Firestore
+
+        // Send SMS to all emergency contacts
+        await smsSender.sendAndNavigate(context, locationMessage, phoneNumbers);
+
+        // Make a call to the first contact
+        String number = widget.emergencyContacts[0].number;
+        await FlutterPhoneDirectCaller.callNumber(number);
+      } catch (e) {
+        _showSnackBar('Failed to send alert: $e');
+        return; // Exit function if an error occurs
+      }
+    }
+
+    // After SMS and phone call, navigate to SafetyCodeScreen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => SafetyCodeScreen(safetyCodes: safetyCodes),
+        builder: (context) => SafetyCodeScreen(
+          safetyCode: safetyCode,
+          userId: '01719958727', // Example userId
+          alertId: alertId,
+        ),
       ),
     );
   }
 
-  Future<void> _logAlertToFirestore(List<String> safetyCodes) async {
-    String alertId = FirebaseFirestore.instance.collection('alerts').doc().id;
 
+  Future<void> _logAlertToFirestore() async {
     final alertEntry = {
-      'alert_id': alertId,
       'alert_duration': {'alert_start': Timestamp.now()},
-      'alerted_contacts': widget.emergencyContacts.asMap().entries.map((entry) {
-        int index = entry.key;
-        var contact = entry.value;
+      'alerted_contacts': widget.emergencyContacts.map((contact) {
         return {
           'alerted_contact_name': contact.name,
           'alerted_contact_number': contact.number,
-          'safety_code': safetyCodes[index],
         };
       }).toList(),
       'type': 'panic',
+      'safety_code': safetyCode,
       'user_locations': {
-        'user_location_start':
-            GeoPoint(_userLocation.latitude, _userLocation.longitude),
+        'user_location_start': GeoPoint(_userLocation.latitude, _userLocation.longitude),
       },
     };
 
     await FirebaseFirestore.instance
         .collection('users')
         .doc('01719958727')
-        .update({
-      'alerts': FieldValue.arrayUnion([alertEntry]),
-    });
+        .collection('alerts')
+        .doc(alertId)
+        .set(alertEntry); // Use set to create the document
 
     print('Alert created with alert_id: $alertId');
   }
@@ -152,11 +150,9 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(

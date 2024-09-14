@@ -10,7 +10,6 @@ import '../record_screen/record_screen.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required User user});
 

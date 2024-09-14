@@ -48,7 +48,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
 
     BitmapDescriptor customDestinationMarkerIcon = await customMarker
         .createCustomTeardropMarker('assets/placeholders/binita.png',
-        AppColors.secondary);
+        const Color(0xFFF4327B));
 
     setState(()
     {
@@ -73,8 +73,8 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
     );
 
     BitmapDescriptor customSourceMarkerIcon = await customMarker
-        .createCustomTeardropMarker('assets/placeholders/profile.png', Colors
-        .blue);
+        .createCustomTeardropMarker('assets/placeholders/profile.png', const
+        Color(0xFF6393F2));
 
     setState(()
     {
@@ -129,7 +129,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
       _markers.clear();
 
       BitmapDescriptor customSourceMarkerIcon = await customMarker.createCustomTeardropMarker(
-          'assets/placeholders/profile.png', Colors.blue);
+          'assets/placeholders/profile.png', const Color(0xFF6393F2));
 
       _markers.add(
         Marker(
@@ -146,7 +146,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
       );
 
       BitmapDescriptor customDestinationMarkerIcon = await customMarker.createCustomTeardropMarker(
-          'assets/placeholders/binita.png', AppColors.secondary);
+          'assets/placeholders/binita.png', const Color(0xFFF4327B));
 
       _markers.add(
         Marker(

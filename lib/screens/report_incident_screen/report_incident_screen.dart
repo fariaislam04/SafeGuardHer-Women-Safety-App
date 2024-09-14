@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 import '../../providers.dart';
 import '../../utils/constants/colors.dart';
@@ -15,6 +17,100 @@ class ReportIncidentPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsyncValue = ref.watch(userStreamProvider);
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Controllers for input fields
+    final TextEditingController descriptionController = TextEditingController();
+    String selectedReportType = 'Harassment'; // Default value
+
+    Future<Map<String, dynamic>?> _fetchAlertData(String alertID) async {
+      try {
+        final alertDoc = await firestore.collection('users').doc("01719958727").collection('alerts').doc(alertID).get();
+        if (alertDoc.exists) {
+          return alertDoc.data();
+        } else {
+          print('Document does not exist.');
+          return null;
+        }
+      } catch (e) {
+        print('Error fetching alert data: $e');
+        return null;
+      }
+    }
+
+    Future<void> _submitReport(String reportType, String reportDescription) async {
+      try {
+        final user = await ref.read(userStreamProvider.future);
+
+        if (user != null)
+        {
+          // Fetch the alert data to get geolocation
+          final alertData = await _fetchAlertData('1');
+          final geolocation = (alertData != null && alertData.containsKey('alert_duration'))
+              ? alertData['alert_duration']['alert_start'] as Map<String, dynamic>
+              : {'latitude': 0.0, 'longitude': 0.0}; // Default geolocation if not available
+
+          await firestore.collection('users').doc("01719958727").collection
+      ('alerts').doc('1').update({
+            'report': {
+              'report_type': reportType,
+              'report_description': reportDescription,
+              'report_geolocation': geolocation,
+            },
+          });
+
+          await firestore.collection('unsafe_places').doc('unsafe_places').set({
+            'report_type': reportType,
+            'report_description': reportDescription,
+            'report_geolocation': geolocation,
+          }, SetOptions(merge: true));
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Your report has been submitted!'),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+
+          Future.delayed(const Duration(seconds: 2), () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeScreen(user: user),
+              ),
+                  (Route<dynamic> route) => false,
+            );
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Failed to retrieve user data.'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Error submitting report.'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        );
+      }
+    }
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
@@ -82,15 +178,16 @@ class ReportIncidentPage extends ConsumerWidget {
               ),
               const SizedBox(height: 8.0),
               DropdownButtonFormField<String>(
-                value: 'Harassment',
+                value: selectedReportType,
                 onChanged: (String? newValue) {
-                  // Handle dropdown change
+                  if (newValue != null) {
+                    selectedReportType = newValue;
+                  }
                 },
                 items: <String>[
                   'Harassment',
                   'Assault',
                   'Robbery',
-                  'Stalking',
                   'Violence',
                   'Other'
                 ].map<DropdownMenuItem<String>>((String value) {
@@ -138,6 +235,7 @@ class ReportIncidentPage extends ConsumerWidget {
               ),
               const SizedBox(height: 8.0),
               TextField(
+                controller: descriptionController,
                 maxLines: 5,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -173,60 +271,10 @@ class ReportIncidentPage extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: LayoutBuilder(
-                              builder: (context, constraints) {
-                                double width = constraints.maxWidth;
-                                return Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(Icons.check_circle, color: Colors.white),
-                                    const SizedBox(width: 10),
-                                    Flexible(
-                                      child: Text(
-                                        'Your report has been submitted!',
-                                        style: TextStyle(fontSize: width * 0.03),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                            backgroundColor: Colors.green,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            duration: const Duration(seconds: 1),
-                          ),
-                        );
-                        Future.delayed(const Duration(seconds: 2), () {
-                          // Use Riverpod to fetch user data and navigate
-                          ref.read(userStreamProvider.future).then((user) {
-                            if (user != null) {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomeScreen(user: user),
-                                ),
-                                    (Route<dynamic> route) => false,
-                              );
-                            } else {
-                              // Handle the case where the user is null
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('Failed to retrieve user data.'),
-                                  backgroundColor: Colors.red,
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                              );
-                            }
-                          });
-                        });
+                        String reportType = selectedReportType;
+                        String reportDescription = descriptionController.text;
+
+                        _submitReport(reportType, reportDescription);
                       },
                       child: const Text(
                         'Submit',
@@ -251,7 +299,6 @@ class ReportIncidentPage extends ConsumerWidget {
                             HomeScreen(user: user),
                           );
                         } else {
-                          // Handle the case where the user is null
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: const Text('Failed to retrieve user data.'),
@@ -265,13 +312,21 @@ class ReportIncidentPage extends ConsumerWidget {
                         }
                       },
                       loading: () {
-                        // Optionally show a loading indicator
-                      },
-                      error: (e, stack) {
-                        // Handle error state
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: const Text('Error retrieving user data.'),
+                            content: const Text('Loading...'),
+                            backgroundColor: Colors.blue,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        );
+                      },
+                      error: (e, stackTrace) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error: $e'),
                             backgroundColor: Colors.red,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
@@ -283,13 +338,11 @@ class ReportIncidentPage extends ConsumerWidget {
                     );
                   },
                   child: const Text(
-                    'Submit Later',
+                    'Go Back',
                     style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textEmphasis,
                       fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.underline,
+                      fontSize: 16,
+                      color: AppColors.buttonPrimary,
                     ),
                   ),
                 ),

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api/firebase_api.dart';
+import 'example.dart';
 import 'firebase_options.dart';
 import 'app.dart';
 
