@@ -1,5 +1,6 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
@@ -19,55 +20,185 @@ class ContactsScreen extends ConsumerWidget {
     return SettingsTemplate(
       child: userAsyncValue.when(
         data: (user) {
-          return Column(
-            children: [
-              // Title
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(Icons.arrow_back_ios),
-                    ),
-                    const SizedBox(width: 10),
-                    const Text(
-                      'My Close Contacts',
+          return SingleChildScrollView(
+            // Wrap the column in a scroll view
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Icon(Icons.arrow_back_ios),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'My Close Contacts',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+
+                // Scrollable Contact List inside Expanded
+                SizedBox(
+                  height: MediaQuery.of(context).size.height *
+                      0.22, // Limit height of list
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics:
+                        const ClampingScrollPhysics(), // Allow smooth scroll within column
+                    itemCount: user!.emergencyContacts.length + 1,
+                    itemBuilder: (context, index) {
+                      return index == user.emergencyContacts.length
+                          ? addContactTile(context, user)
+                          : contactTile(
+                              context,
+                              ref,
+                              user,
+                              user.emergencyContacts[index],
+                              'assets/placeholders/profile.png',
+                            );
+                    },
+                  ),
+                ),
+                // Helpline Text
+                const SizedBox(height: 15),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12.0),
+                  child: Center(
+                    child: Text(
+                      'Helplines',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 18.0,
                         fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20.0),
 
-              // Contacts List
-              Expanded(
-                child: ListView.builder(
-                  itemCount: user!.emergencyContacts.length +
-                      1, // +1 for the Add Contact tile
-                  itemBuilder: (context, index) {
-                    if (index == user.emergencyContacts.length) {
-                      return addContactTile(context, user);
-                    } else {
-                      final EmergencyContact contact =
-                          user.emergencyContacts[index];
-                      return contactTile(
-                        context,
-                        ref, // Pass ref to the tile
-                        user,
-                        contact,
-                        'assets/placeholders/profile.png', // Use your own image logic here
-                      );
-                    }
-                  },
+                // CALL 999 Button
+                // Helpline Box with CALL 999 button
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 0.2),
+                  child: Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white, // Box color
+                      borderRadius:
+                          BorderRadius.circular(6.0), // Rounded corners
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 1.0, // Shadow effect
+                          spreadRadius: 0.5,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'National Emergency Hotline Number',
+                          style: TextStyle(
+                            fontSize: 13.0,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 5.0),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red, // Button color
+                            minimumSize: const Size(double.infinity,
+                                35), // Full-width button inside box
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  8.0), // Set smaller border radius here
+                            ),
+                          ),
+                          onPressed: () async {
+                            await FlutterPhoneDirectCaller.callNumber('9999');
+                          },
+                          child: const Text(
+                            'CALL 9999',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 0.2),
+                  child: Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white, // Box color
+                      borderRadius:
+                          BorderRadius.circular(6.0), // Rounded corners
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 1.0, // Shadow effect
+                          spreadRadius: 0.5,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Government Helpline Number for Violence Against Women',
+                          textAlign: TextAlign.center, // Center-align the text
+                          style: TextStyle(
+                              fontSize: 13.0,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        const SizedBox(height: 5.0),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red, // Button color
+                            minimumSize: const Size(double.infinity,
+                                35), // Full-width button inside box
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  8.0), // Set smaller border radius here
+                            ),
+                          ),
+                          onPressed: () async {
+                            await FlutterPhoneDirectCaller.callNumber('1099');
+                          },
+                          child: const Text(
+                            'CALL 1099',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -153,7 +284,7 @@ class ContactsScreen extends ConsumerWidget {
 
   // Disable the add contact tile if there are already 5 contacts
   Widget addContactTile(BuildContext context, User user) {
-    final bool isMaxContacts = user.emergencyContacts.length >= 5;
+    final bool isMaxContacts = user.emergencyContacts.length >= 10;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -168,8 +299,6 @@ class ContactsScreen extends ConsumerWidget {
                     builder: (context) => const ContactsFetcher(),
                   ),
                 );
-
-                // If a contact was selected, add it to Firestore (implement logic here)
               },
         child: Row(
           children: [
