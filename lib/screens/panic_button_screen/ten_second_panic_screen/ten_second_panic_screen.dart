@@ -41,7 +41,7 @@ class _TenSecondPanicScreenBody extends StatefulWidget {
 
 class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   late Timer _timer;
-  int _countdown = 2;
+  int _countdown = 10;
   late Position _userLocation;
   final SMSSender smsSender = SMSSender();
   late String safetyCode;
