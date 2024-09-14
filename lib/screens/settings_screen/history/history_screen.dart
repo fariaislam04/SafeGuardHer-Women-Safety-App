@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import this package for DateFormat
 import '../../../utils/constants/colors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({super.key});
+class HistoryPage extends StatefulWidget {
+  // Renamed from HistoryScreen to HistoryPage
+  const HistoryPage({super.key});
 
   @override
-  HistoryScreenState createState() => HistoryScreenState();
+  HistoryPageState createState() => HistoryPageState();
 }
 
-class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderStateMixin {
+class HistoryPageState extends State<HistoryPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
@@ -32,8 +35,8 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
           ],
           indicatorColor: AppColors.secondary,
           indicatorWeight: 2.0,
-          labelStyle: const TextStyle(fontFamily: 'Poppins', fontWeight:
-          FontWeight.w600, fontSize: 14),
+          labelStyle: const TextStyle(
+              fontFamily: 'Poppins', fontWeight: FontWeight.w600, fontSize: 14),
           unselectedLabelStyle: const TextStyle(fontFamily: 'Poppins'),
           labelColor: AppColors.secondary,
           unselectedLabelColor: AppColors.textSecondary,
@@ -42,7 +45,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
       body: TabBarView(
         controller: _tabController,
         children: const [
-          HistoryPage(),
+          MyHistoryPage(), // Make sure this is the correct class name
           ConnectedContactHistoryPage(),
         ],
       ),
@@ -50,34 +53,69 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
   }
 }
 
-class HistoryPage extends StatelessWidget {
-  const HistoryPage({super.key});
+class MyHistoryPage extends StatelessWidget {
+  const MyHistoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16.0),
-      children: const [
-        HistoryItem(
-          title: 'SOS triggered',
-          date: '3 June 2024, 1:20 AM',
-          duration: 'Lasted 30 min',
-          titleColor: Colors.red,
-        ),
-        HistoryItem(
-          title: 'Track Me triggered',
-          date: '12 Jan 2024, 12:30 PM',
-          duration: 'Lasted 1 hour',
-          titleColor: Color(0xFF0000CD),
-        ),
-        HistoryItem(
-          title: 'Track Me triggered',
-          date: '10 Jan 2024, 1:40 PM',
-          duration: 'Lasted 2 hours',
-          titleColor: Color(0xFF0000CD),
-        ),
-      ],
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc('01719958727')
+          .collection('alerts')
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return const Text('Loading...');
+          default:
+            return ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                Map<String, dynamic> data =
+                    document.data()! as Map<String, dynamic>;
+                Timestamp startTimestamp =
+                    data['alert_duration']['alert_start'] as Timestamp;
+                Timestamp endTimestamp =
+                    data['alert_duration']['alert_end'] as Timestamp;
+
+                // Calculate the duration
+                Duration duration =
+                    endTimestamp.toDate().difference(startTimestamp.toDate());
+                String formattedDuration = _formatDuration(duration);
+
+                // Format the start timestamp
+                String formattedDate = DateFormat('d MMM yyyy, h:mm a')
+                    .format(startTimestamp.toDate());
+
+                return HistoryItem(
+                  title: data['type'].toString().toUpperCase() + ' triggered',
+                  date: formattedDate,
+                  duration: formattedDuration,
+                  titleColor: Colors.red,
+                );
+              }).toList(),
+            );
+        }
+      },
     );
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitHours = twoDigits(duration.inHours.remainder(24));
+
+    if (duration.inDays > 0) {
+      return '${twoDigits(duration.inDays)}d ${twoDigitHours}h ${twoDigitMinutes}m';
+    } else if (duration.inHours > 0) {
+      return '${twoDigitHours}h ${twoDigitMinutes}m';
+    } else {
+      return '${twoDigitMinutes}m';
+    }
   }
 }
 
@@ -114,12 +152,12 @@ class HistoryItem extends StatelessWidget {
   final String duration;
   final Color titleColor;
 
-  const HistoryItem({super.key,
-    required this.title,
-    required this.date,
-    required this.duration,
-    required this.titleColor,
-  });
+  const HistoryItem(
+      {super.key,
+      required this.title,
+      required this.date,
+      required this.duration,
+      required this.titleColor});
 
   @override
   Widget build(BuildContext context) {
@@ -136,22 +174,20 @@ class HistoryItem extends StatelessWidget {
         ),
         subtitle: Text(
           '$date\n$duration',
-          style: const TextStyle(fontFamily: 'Poppins', fontSize: 12,),
+          style: const TextStyle(fontFamily: 'Poppins', fontSize: 12),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
               icon: const Icon(Icons.assignment_late_outlined),
-              onPressed: ()
-              {
+              onPressed: () {
                 // Handle Report action
               },
             ),
             IconButton(
               icon: const Icon(Icons.launch_rounded),
-              onPressed: ()
-              {
+              onPressed: () {
                 // Handle Details action
               },
             ),
@@ -190,8 +226,8 @@ class ConnectedContactHistoryItem extends StatelessWidget {
             children: [
               TextSpan(
                 text: '$name triggered ',
-                style: const TextStyle(color: Colors.black, fontFamily: 'Popp'
-                    'ins', fontSize: 14),
+                style: const TextStyle(
+                    color: Colors.black, fontFamily: 'Poppins', fontSize: 14),
               ),
               TextSpan(
                 text: action,
@@ -211,8 +247,7 @@ class ConnectedContactHistoryItem extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: const Icon(Icons.launch_rounded),
-          onPressed: ()
-          {
+          onPressed: () {
             // Handle Details action
           },
         ),
