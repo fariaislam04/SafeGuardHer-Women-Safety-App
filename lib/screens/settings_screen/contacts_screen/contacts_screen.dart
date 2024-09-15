@@ -70,7 +70,7 @@ class ContactsScreen extends ConsumerWidget {
                   ),
                 ),
                 // Helpline Text
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12.0),
                   child: Center(
@@ -110,9 +110,9 @@ class ContactsScreen extends ConsumerWidget {
                         const Text(
                           'National Emergency Hotline Number',
                           style: TextStyle(
-                            fontSize: 13.0,
-                            color: Colors.black87,
-                          ),
+                              fontSize: 13.0,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 5.0),
                         ElevatedButton(
@@ -168,7 +168,7 @@ class ContactsScreen extends ConsumerWidget {
                           style: TextStyle(
                               fontSize: 13.0,
                               color: Colors.black87,
-                              fontWeight: FontWeight.w400),
+                              fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 5.0),
                         ElevatedButton(

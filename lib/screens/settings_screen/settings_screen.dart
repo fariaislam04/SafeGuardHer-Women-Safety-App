@@ -32,13 +32,18 @@ class SettingsScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   buildButton(context, Icons.history, 'History', () {
-                    appHelperFunctions.goToScreenAndComeBack(context, const HistoryScreen());
+                    appHelperFunctions.goToScreenAndComeBack(
+                        context, const HistoryPage());
                   }),
-                  buildButton(context, Icons.perm_contact_calendar_rounded, 'Contacts', () {
-                    appHelperFunctions.goToScreenAndComeBack(context, const ContactsScreen());
+                  buildButton(
+                      context, Icons.perm_contact_calendar_rounded, 'Contacts',
+                      () {
+                    appHelperFunctions.goToScreenAndComeBack(
+                        context, const ContactsScreen());
                   }),
                   buildButton(context, Icons.security, 'Safety Tips', () {
-                    appHelperFunctions.goToScreenAndComeBack(context, SafetyTipsPage());
+                    appHelperFunctions.goToScreenAndComeBack(
+                        context, SafetyTipsPage());
                   }),
                   /*
                   buildButton(context, Icons.devices_other_rounded, 'Devices', () {
@@ -55,7 +60,8 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget buildButton(BuildContext context, IconData icon, String text, VoidCallback onPressed) {
+  Widget buildButton(BuildContext context, IconData icon, String text,
+      VoidCallback onPressed) {
     return SizedBox(
       width: 110, // Adjusted size
       height: 100, // Adjusted size
@@ -120,8 +126,9 @@ class SettingsScreen extends ConsumerWidget {
             child: CircleAvatar(
               backgroundImage: profilePicUrl.isNotEmpty
                   ? AssetImage(profilePicUrl)
-                  : const AssetImage('assets/placeholders/default_profile_pic.png')
-              as ImageProvider,
+                  : const AssetImage(
+                          'assets/placeholders/default_profile_pic.png')
+                      as ImageProvider,
               radius: 30.0,
               onBackgroundImageError: (exception, stackTrace) {
                 if (kDebugMode) {
@@ -164,7 +171,8 @@ class SettingsScreen extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const EditProfileScreen(), // Replace with actual edit profile screen
+                  builder: (context) =>
+                      const EditProfileScreen(), // Replace with actual edit profile screen
                 ),
               );
             },
