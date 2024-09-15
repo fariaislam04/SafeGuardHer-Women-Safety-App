@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Import this package for DateFormat
 import '../../../utils/constants/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../history/alert_details.dart';
 
 class HistoryPage extends StatefulWidget {
   // Renamed from HistoryScreen to HistoryPage
@@ -104,6 +105,7 @@ class MyHistoryPage extends StatelessWidget {
                   date: formattedDate,
                   duration: formattedDuration,
                   titleColor: Colors.red,
+                  document: document, // Pass the document here
                 );
               }).toList(),
             );
@@ -159,13 +161,16 @@ class HistoryItem extends StatelessWidget {
   final String date;
   final String duration;
   final Color titleColor;
+  final DocumentSnapshot document; // Add document parameter
 
-  const HistoryItem(
-      {super.key,
-      required this.title,
-      required this.date,
-      required this.duration,
-      required this.titleColor});
+  const HistoryItem({
+    super.key,
+    required this.title,
+    required this.date,
+    required this.duration,
+    required this.titleColor,
+    required this.document, // Add this parameter
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +201,12 @@ class HistoryItem extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.launch_rounded),
               onPressed: () {
-                // Handle Details action
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AlertDetails(document: document),
+                  ),
+                );
               },
             ),
           ],
