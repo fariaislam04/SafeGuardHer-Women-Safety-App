@@ -27,6 +27,56 @@ Future<List<UnsafePlace>> fetchUnsafePlaces() async {
   }
 }
 
+// Fetch user's alerts sub-collection
+Future<List<Alert>> fetchUserAlerts(String phoneNumber) async {
+  try {
+    final alertsSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(phoneNumber)
+        .collection('alerts')
+        .get();
+
+    if (alertsSnapshot.docs.isEmpty) {
+      print('No alerts found for user $phoneNumber.');
+    }
+    final alertsList = alertsSnapshot.docs.map((doc) {
+      final alertData = doc.data();
+      return Alert.fromFirestore(alertData, doc.id); // Include document ID
+    }).toList();
+    return alertsList;
+  } catch (e) {
+    print('Error fetching user alerts: $e');
+    return [];
+  }
+}
+
+// Fetch emergency contact alerts sub-collection
+Future<List<Alert>> fetchEmergencyContactAlerts(List<String> emergencyContactOf) async {
+  List<Alert> emergencyContactAlerts = [];
+  for (String contactNumber in emergencyContactOf) {
+    try {
+      final contactAlertsSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(contactNumber)
+          .collection('alerts')
+          .get();
+
+      if (contactAlertsSnapshot.docs.isEmpty) {
+        print('No alerts found for emergency contact $contactNumber.');
+      }
+      emergencyContactAlerts.addAll(
+        contactAlertsSnapshot.docs.map((doc) {
+          final alertData = doc.data();
+          return Alert.fromFirestore(alertData, doc.id); // Include document ID
+        }).toList(),
+      );
+    } catch (e) {
+      print('Error fetching alerts for contact $contactNumber: $e');
+    }
+  }
+  return emergencyContactAlerts;
+}
+
 // Stream provider for user data
 final userStreamProvider = StreamProvider<User?>((ref) async* {
   const phoneNumber = '01719958727'; // This should be dynamically set if possible
@@ -40,6 +90,7 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
         final userData = snapshot.data()!;
         final unsafePlaces = await fetchUnsafePlaces();
 
+        // Fetch emergency contacts
         List<EmergencyContact> emergencyContacts = [];
         if (userData.containsKey('emergency_contacts')) {
           final contactsList = userData['emergency_contacts'] as List<dynamic>;
@@ -57,6 +108,22 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
           }).toList();
         }
 
+        // Fetch user's alerts from the sub-collection
+        final myAlerts = await fetchUserAlerts(phoneNumber);
+
+        // Fetch emergency contact alerts from their sub-collections
+        List<Alert> myEmergencyContactAlerts = [];
+        if (userData.containsKey('emergency_contact_of')) {
+          final emergencyContactOfList = List<String>.from(userData['emergency_contact_of']);
+          myEmergencyContactAlerts = await fetchEmergencyContactAlerts(emergencyContactOfList);
+        }
+
+        // Fetch the 'emergency_contact_of' field
+        List<String> emergencyContactOf = [];
+        if (userData.containsKey('emergency_contact_of')) {
+          emergencyContactOf = List<String>.from(userData['emergency_contact_of']);
+        }
+
         yield User(
           name: userData['name'] ?? '',
           pwd: userData['pwd'] ?? '',
@@ -64,11 +131,11 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
           email: userData['email'] ?? '',
           dob: userData['DOB'] ?? '',
           emergencyContacts: emergencyContacts,
-          alerts: (userData['alerts'] as List<dynamic>? ?? [])
-              .map((alert) => Alert.fromFirestore(alert))
-              .toList(),
+          myAlerts: myAlerts,
+          myEmergencyContactAlerts: myEmergencyContactAlerts,
           unsafePlaces: unsafePlaces,
           documentRef: userDocRef,
+          emergencyContactOf: emergencyContactOf,
         );
       } catch (e) {
         print('Error processing user data: $e');
@@ -120,3 +187,4 @@ final emergencyContactsProvider = Provider<List<EmergencyContact>>((ref) {
 final selectedContactsProvider = StateProvider<List<int>>((ref) => []);
 final searchQueryProvider = StateProvider<String>((ref) => "");
 final selectedOptionProvider = StateProvider<int>((ref) => 1);
+
