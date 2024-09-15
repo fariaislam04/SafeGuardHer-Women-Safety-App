@@ -1,12 +1,25 @@
 import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_done_screen.dart';
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_screen2.dart';
 
 class SignUpOTPScreen extends StatefulWidget {
-  const SignUpOTPScreen({super.key});
+  final String username;
+  final String phoneNumber;
+  final String gender;
+  final String email;
+  final String password;
+
+  const SignUpOTPScreen({
+    Key? key,
+    required this.username,
+    required this.phoneNumber,
+    required this.gender,
+    required this.email,
+    required this.password,
+  }) : super(key: key);
 
   @override
   _SignUpOTPScreenState createState() => _SignUpOTPScreenState();
@@ -55,6 +68,29 @@ class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
     startResendTimer(); // Reset and start the timer again
   }
 
+  // Function to write to Firestore
+  Future<void> _addUserToFirestore() async {
+    final firestore = FirebaseFirestore.instance;
+
+    // Create a document in the 'users' collection using the phoneNumber as the document ID
+    await firestore.collection('users').doc(widget.phoneNumber).set({
+      'username': widget.username,
+      'phone': widget.phoneNumber,
+      'gender': widget.gender,
+      'email': widget.email,
+      'password':
+          widget.password, // Make sure to encrypt the password in production
+    });
+
+    // After successfully adding to Firestore, navigate to SignUpDoneScreen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignUpDoneScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,7 +109,11 @@ class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const SignUpScreen2()),
+                            builder: (context) => const SignUpScreen2(
+                                  username: '',
+                                  phoneNumber: '',
+                                  gender: '',
+                                )),
                       );
                     },
                   ),
@@ -113,12 +153,8 @@ class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _isButtonEnabled
-                    ? () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SignUpDoneScreen()),
-                        );
+                    ? () async {
+                        await _addUserToFirestore(); // Save data to Firestore
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

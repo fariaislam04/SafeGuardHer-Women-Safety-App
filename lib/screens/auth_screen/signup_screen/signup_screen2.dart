@@ -4,7 +4,16 @@ import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signu
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_screen1.dart';
 
 class SignUpScreen2 extends StatefulWidget {
-  const SignUpScreen2({super.key});
+  final String username;
+  final String phoneNumber;
+  final String gender;
+
+  const SignUpScreen2({
+    Key? key,
+    required this.username,
+    required this.phoneNumber,
+    required this.gender,
+  }) : super(key: key);
 
   @override
   _SignUpScreen2State createState() => _SignUpScreen2State();
@@ -244,7 +253,14 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SignUpOTPScreen()),
+                            builder: (context) => SignUpOTPScreen(
+                              username: widget.username,
+                              phoneNumber: widget.phoneNumber,
+                              gender: widget.gender,
+                              password: _passwordController.text,
+                              email: _emailController.text,
+                            ),
+                          ),
                         );
                       }
                     : null,

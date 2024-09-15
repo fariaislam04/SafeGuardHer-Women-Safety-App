@@ -7,11 +7,11 @@ import 'api/firebase_api.dart';
 import 'example.dart';
 import 'firebase_options.dart';
 import 'app.dart';
+import 'screens/auth_screen/signup_screen/signup_screen1.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-void main() async
-{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -23,12 +23,19 @@ void main() async
   ]);
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool appOpenedBefore = prefs.getBool('appOpenedBefore') ?? false;
-  bool loggedIn = prefs.getBool('loggedIn') ?? false;
+  //bool appOpenedBefore = prefs.getBool('appOpenedBefore') ?? false;
+  //bool loggedIn = prefs.getBool('loggedIn') ?? false;
 
-  runApp(
-    ProviderScope(
-      child: SafeGuardHer(appOpenedBefore: appOpenedBefore, loggedIn: loggedIn),
-    ),
-  );
+  bool appOpenedBefore = false;
+  bool loggedIn = false;
+
+  //runApp(
+  // ProviderScope(
+  //   child: SafeGuardHer(appOpenedBefore: appOpenedBefore, loggedIn: loggedIn),
+  // ),
+  //);
+
+  runApp(const MaterialApp(
+    home: SignUpScreen1(),
+  ));
 }

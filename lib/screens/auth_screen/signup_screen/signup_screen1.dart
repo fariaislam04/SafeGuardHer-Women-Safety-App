@@ -27,7 +27,7 @@ class SignUpScreen1 extends StatefulWidget {
 
 class _SignUpScreen1State extends State<SignUpScreen1> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _dobController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   String? _selectedGender;
   IconData _genderIcon = Icons.female; // Default icon
 
@@ -49,11 +49,12 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
   bool _isUsernameField = false;
   bool _isDobField = false;
   bool _isGenderField = false;
+  bool _isPhoneNumberField = false;
 
   bool get _isButtonEnabled =>
-      _isUsernameField && _isDobField && _isGenderField;
+      _isUsernameField && _isPhoneNumberField && _isGenderField;
 
-  Future<void> _selectDate(BuildContext context) async {
+  /* Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -67,10 +68,12 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
       });
     }
   }
+  */
 
   void _updateUsernameField() {
     setState(() {
       _isUsernameField = _usernameController.text.isNotEmpty;
+      _isPhoneNumberField = _phoneNumberController.text.isNotEmpty;
     });
   }
 
@@ -78,6 +81,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
   void initState() {
     super.initState();
     _usernameController.addListener(_updateUsernameField);
+    _phoneNumberController.addListener(_updateUsernameField);
   }
 
   @override
@@ -168,7 +172,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
               ),
               const SizedBox(height: 20),
               const Text(
-                'Date of Birth                                                                      ',
+                'Phone Number                                                                      ',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 13,
@@ -178,12 +182,12 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: _dobController,
+                controller: _phoneNumberController,
                 decoration: InputDecoration(
                   hintText:
-                      'Enter your date of birth', // Placeholder text inside the box
+                      'Enter your phone number', // Placeholder text inside the box
                   hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                  prefixIcon: const Icon(Icons.calendar_month_outlined),
+                  prefixIcon: const Icon(Icons.phone_android),
                   filled: true,
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
@@ -197,7 +201,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                         const BorderSide(color: Colors.grey, width: 1.0),
                   ),
                 ),
-                onTap: () => _selectDate(context),
+                keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 20),
               const Text(
@@ -252,7 +256,12 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SignUpScreen2()),
+                            builder: (context) => SignUpScreen2(
+                              username: _usernameController.text,
+                              phoneNumber: _phoneNumberController.text,
+                              gender: _selectedGender ?? 'Not specified',
+                            ),
+                          ),
                         );
                       }
                     : null,
