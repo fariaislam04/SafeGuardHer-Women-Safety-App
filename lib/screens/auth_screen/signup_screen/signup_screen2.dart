@@ -298,8 +298,6 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                               ),
                             );
                           } catch (error) {
-                            // Handle any errors during email sending
-                            print('Error sending email: $error');
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(

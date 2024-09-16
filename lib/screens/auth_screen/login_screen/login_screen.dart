@@ -4,7 +4,6 @@ import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
 
 import 'logininfo_screen.dart';
 
-
 void main() {
   runApp(const LoginScreen());
 }
@@ -44,7 +43,7 @@ class LoginScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD20451), // Button color
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 150, vertical: 8),
+                        horizontal: 130, vertical: 8),
                   ),
                   child: const Text(
                     "Login",
@@ -80,7 +79,7 @@ class LoginScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4C85EA), // Button color
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 70, vertical: 10),
+                        horizontal: 60, vertical: 10),
                   ),
                   label: const Text(
                     "Continue using Google",

@@ -76,12 +76,11 @@ class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
 
     // Create a document in the 'users' collection using the phoneNumber as the document ID
     await firestore.collection('users').doc(widget.phoneNumber).set({
-      'username': widget.username,
+      'name': widget.username,
       'phone': widget.phoneNumber,
       'gender': widget.gender,
       'email': widget.email,
-      'password':
-          widget.password, // Make sure to encrypt the password in production
+      'pwd': widget.password,
     });
 
     // After successfully adding to Firestore, navigate to SignUpDoneScreen

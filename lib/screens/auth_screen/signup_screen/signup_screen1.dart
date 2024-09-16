@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore import
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_screen2.dart';
 import '../login_screen/logininfo_screen.dart';
 
@@ -31,11 +32,18 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
   String? _selectedGender;
   IconData _genderIcon = Icons.female; // Default icon
 
+  bool _isUsernameField = false;
+  bool _isPhoneNumberField = false;
+  bool _isGenderField = false;
+  bool _isCheckingPhone = false; // For phone number check loading state
+
+  bool get _isButtonEnabled =>
+      _isUsernameField && _isPhoneNumberField && _isGenderField;
+
   void _updateGenderField(String? newValue) {
     setState(() {
       _selectedGender = newValue;
       _isGenderField = newValue != null;
-      // Update icon based on selected gender
       if (newValue == 'Male') {
         _genderIcon = Icons.male;
       } else if (newValue == 'Female') {
@@ -45,30 +53,6 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
       }
     });
   }
-
-  bool _isUsernameField = false;
-  bool _isDobField = false;
-  bool _isGenderField = false;
-  bool _isPhoneNumberField = false;
-
-  bool get _isButtonEnabled =>
-      _isUsernameField && _isPhoneNumberField && _isGenderField;
-
-  /* Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        _dobController.text = "${picked.toLocal()}".split(' ')[0];
-        _isDobField = _dobController.text.isNotEmpty;
-      });
-    }
-  }
-  */
 
   void _updateUsernameField() {
     setState(() {
@@ -82,6 +66,65 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
     super.initState();
     _usernameController.addListener(_updateUsernameField);
     _phoneNumberController.addListener(_updateUsernameField);
+  }
+
+  // Function to check if phone number already exists in Firestore
+  Future<bool> _isPhoneNumberExists(String phoneNumber) async {
+    setState(() {
+      _isCheckingPhone = true;
+    });
+
+    // Query the 'users' collection in Firestore to see if the phone number exists
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('phone', isEqualTo: phoneNumber)
+        .get();
+
+    setState(() {
+      _isCheckingPhone = false;
+    });
+
+    // If the query has documents, it means the phone number exists
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  void _checkAndProceed() async {
+    final phoneNumber = _phoneNumberController.text;
+
+    // Check if the phone number is already in the database
+    bool exists = await _isPhoneNumberExists(phoneNumber);
+
+    if (exists) {
+      // Show a warning if the phone number exists
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Phone Number In Use'),
+          content:
+              const Text('The phone number you entered is already registered.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // If the phone number doesn't exist, proceed to the next screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUpScreen2(
+            username: _usernameController.text,
+            phoneNumber: phoneNumber,
+            gender: _selectedGender ?? 'Not specified',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -151,8 +194,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
               TextField(
                 controller: _usernameController,
                 decoration: InputDecoration(
-                  hintText:
-                      'Enter your username', // Placeholder text inside the box
+                  hintText: 'Enter your username',
                   hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
                   prefixIcon: const Icon(Icons.person),
                   filled: true,
@@ -184,8 +226,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
               TextField(
                 controller: _phoneNumberController,
                 decoration: InputDecoration(
-                  hintText:
-                      'Enter your phone number', // Placeholder text inside the box
+                  hintText: 'Enter your phone number',
                   hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
                   prefixIcon: const Icon(Icons.phone_android),
                   filled: true,
@@ -251,19 +292,8 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
               ),
               const SizedBox(height: 35),
               ElevatedButton(
-                onPressed: _isButtonEnabled
-                    ? () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SignUpScreen2(
-                              username: _usernameController.text,
-                              phoneNumber: _phoneNumberController.text,
-                              gender: _selectedGender ?? 'Not specified',
-                            ),
-                          ),
-                        );
-                      }
+                onPressed: _isButtonEnabled && !_isCheckingPhone
+                    ? _checkAndProceed
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
@@ -271,14 +301,16 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 110, vertical: 14),
                 ),
-                child: const Text(
-                  "Continue",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                child: _isCheckingPhone
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        "Continue",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
               ),
             ],
           ),
