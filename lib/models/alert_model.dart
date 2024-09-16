@@ -7,8 +7,8 @@ class Alert {
   final Timestamp alertStart;
   final Timestamp alertEnd;
   final Report report;
-  final GeoPoint? userLocationStart;
-  final GeoPoint? userLocationEnd;
+  final GeoPoint userLocationStart;
+  final GeoPoint userLocationEnd;
 
   Alert({
     required this.alertId,
@@ -17,8 +17,8 @@ class Alert {
     required this.alertStart,
     required this.alertEnd,
     required this.report,
-    this.userLocationStart,
-    this.userLocationEnd,
+    required this.userLocationStart,
+    required this.userLocationEnd,
   });
 
   factory Alert.fromFirestore(Map<String, dynamic> data, String id) {
@@ -29,8 +29,8 @@ class Alert {
       alertStart: data['alert_duration']['alert_start'] ?? Timestamp.now(),
       alertEnd: data['alert_duration']['alert_end'] ?? Timestamp.now(),
       report: Report.fromFirestore(data['report'] ?? {}),
-      userLocationStart: data['user_locations']['user_location_start'] as GeoPoint?,
-      userLocationEnd: data['user_locations']['user_location_end'] as GeoPoint?,
+      userLocationStart: data['user_locations']['user_location_start'] as GeoPoint,
+      userLocationEnd: data['user_locations']['user_location_end'] as GeoPoint,
     );
   }
 }

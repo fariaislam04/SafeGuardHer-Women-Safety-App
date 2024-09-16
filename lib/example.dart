@@ -1,57 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'models/alert_model.dart'; // Assuming your Alert model is in this file
-import 'providers.dart'; // Assuming providers.dart contains emergencyContactAlertsStreamProvider and other providers
 
-class AlertsListScreen extends ConsumerWidget {
-  const AlertsListScreen({Key? key}) : super(key: key);
+void main() {
+  runApp(MyApp());
+}
 
+class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Listening to emergencyContactAlertsStreamProvider
-    final emergencyAlertsAsyncValue = ref.watch(emergencyContactAlertsStreamProvider);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Alerts'),
-      ),
-      body: emergencyAlertsAsyncValue.when(
-        data: (alertsWithContacts) {
-          if (alertsWithContacts.isEmpty) {
-            return const Center(child: Text('No alerts found.'));
-          }
-
-          // Display the list of alerts with contact details
-          return ListView.builder(
-            itemCount: alertsWithContacts.length,
-            itemBuilder: (context, index) {
-              final alertWithContact = alertsWithContacts[index];
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(alertWithContact.contactProfilePic),
-                  radius: 24,
-                  backgroundColor: Colors.grey[300],
-                  child: alertWithContact.contactProfilePic.isEmpty
-                      ? Icon(Icons.person, color: Colors.grey[600])
-                      : null,
-                ),
-                title: Text('Alert ID: ${alertWithContact.alert.alertId}'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Contact Name: ${alertWithContact.contactName}'),
-                    Text('Alert Start: ${alertWithContact.alert.alertStart.toDate()}'),
-                    if (alertWithContact.alert.alertEnd != null)
-                      Text('Alert End: ${alertWithContact.alert.alertEnd!.toDate()}'),
-                    Text('Safety Code: ${alertWithContact.alert.safetyCode}'),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.red,
+        body: Column(
+          children: [
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Icon(Icons.close),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    "Binita’s Current Location",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text(
+                        "Shahingbagh, Dhaka (15 Km from here)",
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time, color: Colors.green),
+                      SizedBox(width: 4),
+                      Text(
+                        "Estd. 3 min to reach",
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
