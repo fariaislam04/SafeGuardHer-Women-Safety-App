@@ -46,7 +46,8 @@ class Report {
     this.reportGeopoint,
   });
 
-  factory Report.fromFirestore(Map<String, dynamic> data) {
+  factory Report.fromFirestore(Map<String, dynamic> data)
+  {
     return Report(
       reportDescription: data['report_description'] ?? '',
       reportType: data['report_type'] ?? '',

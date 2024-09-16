@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Import this package for DateFormat
 import '../../../utils/constants/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../history/alert_details.dart';
+
+import 'alert_details.dart';
+
 
 class HistoryPage extends StatefulWidget {
   // Renamed from HistoryScreen to HistoryPage

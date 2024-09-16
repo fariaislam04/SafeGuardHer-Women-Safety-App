@@ -1,16 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:safeguardher_flutter_app/screens/tracking_screen/custom_marker.dart';
 import 'package:safeguardher_flutter_app/widgets/notifications/notification_widget.dart';
+import 'package:safeguardher_flutter_app/widgets/custom_widgets/add_contact_widget.dart';
 import '../../providers.dart';
 import '../../utils/constants/colors.dart';
-import '../../utils/helpers/helper_functions.dart';
+import '../tracking_screen/custom_marker.dart';
 import '../tracking_screen/track_me_modal.dart';
-
-AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -24,12 +23,13 @@ class MapScreenState extends ConsumerState<MapScreen> {
   Location location = Location();
   Set<Marker> markers = {};
   late Future<BitmapDescriptor> dangerMarkerIconFuture;
+  LatLng? userLocation;
 
   @override
   void initState() {
     super.initState();
     _requestLocationPermission();
-    dangerMarkerIconFuture = CustomMarker().createDangerMarker(); // Initialize the Future
+    dangerMarkerIconFuture = CustomMarker().createDangerMarker();
   }
 
   Future<void> _requestLocationPermission() async {
@@ -44,7 +44,6 @@ class MapScreenState extends ConsumerState<MapScreen> {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                _getUserLocation();
                 Navigator.of(context).pop();
               },
             ),
@@ -62,10 +61,13 @@ class MapScreenState extends ConsumerState<MapScreen> {
     });
   }
 
+
+
   Future<void> _getUserLocation() async {
     try {
       var userLocation = await location.getLocation();
       setState(() {
+        this.userLocation = LatLng(userLocation.latitude!, userLocation.longitude!);
         markers.add(
           Marker(
             markerId: const MarkerId('userLocation'),
@@ -96,80 +98,112 @@ class MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
+  void _centerOnUserLocation() {
+    if (userLocation != null && mapController != null) {
+      mapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(userLocation!, 15.0),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final unsafePlacesAsyncValue = ref.watch(unsafePlacesStreamProvider);
+    final emergencyContactAlertsAsyncValue = ref.watch(emergencyContactAlertsStreamProvider);
 
     return Scaffold(
       body: Stack(
         children: [
-          Column(
-            children: [
-              const NotificationWidget(name: "Binita Sarker", code: "5678"),
-              Expanded(
-                child: FutureBuilder<BitmapDescriptor>(
-                  future: dangerMarkerIconFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      if (kDebugMode) {
-                        print('Error creating danger marker icon: ${snapshot.error}');
-                      }
-                      return Center(child: Text('Error creating marker icon'));
-                    }
-                    final dangerMarkerIcon = snapshot.data;
+          // Render the Google Map
+          FutureBuilder<BitmapDescriptor>(
+            future: dangerMarkerIconFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                if (kDebugMode) {
+                  print('Error creating danger marker icon: ${snapshot.error}');
+                }
+                return Center(child: Text('Error creating marker icon'));
+              }
+              final dangerMarkerIcon = snapshot.data;
 
-                    return GoogleMap(
-                      onMapCreated: _onMapCreated,
-                      initialCameraPosition: const CameraPosition(
-                        target: LatLng(26.675200, 85.166800),
-                        zoom: 1.0,
-                      ),
-                      markers: markers,
-                      mapType: MapType.normal,
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: true,
-                      zoomControlsEnabled: true,
-                      onCameraIdle: () {
-                        unsafePlacesAsyncValue.when(
-                          data: (unsafePlaces)
-                          {
-                            final newMarkers = <Marker>{};
-                            int i = 0;
-
-                            for (var place in unsafePlaces) {
-                              newMarkers.add(
-                                Marker(
-                                  markerId: MarkerId('$i'),
-                                  position: LatLng(place.location.latitude, place.location.longitude),
-                                  infoWindow: InfoWindow(title: place.type, snippet: place.description),
-                                  icon: dangerMarkerIcon!,
-                                ),
-                              );
-                              ++i;
-                            }
-
-                            setState(()
-                            {
-                              markers.addAll(newMarkers);
-                            });
-                          },
-                          loading: () => {},
-                          error: (error, stack) {
-                            if (kDebugMode) {
-                              print('Error fetching unsafe places: $error');
-                            }
-                          },
-                        );
-                      },
-                    );
-                  },
+              return GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: const CameraPosition(
+                  target: LatLng(26.675200, 85.166800),
+                  zoom: 10.0,
                 ),
-              ),
-            ],
+                markers: markers,
+                mapType: MapType.normal,
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                zoomControlsEnabled: true,
+                onCameraIdle: () {
+                  unsafePlacesAsyncValue.when(
+                    data: (unsafePlaces) {
+                      final newMarkers = <Marker>{};
+                      int i = 0;
+
+                      for (var place in unsafePlaces) {
+                        newMarkers.add(
+                          Marker(
+                            markerId: MarkerId('$i'),
+                            position: LatLng(place.location.latitude, place.location.longitude),
+                            infoWindow: InfoWindow(title: place.type, snippet: place.description),
+                            icon: dangerMarkerIcon!,
+                          ),
+                        );
+                        ++i;
+                      }
+
+                      setState(() {
+                        markers.addAll(newMarkers);
+                      });
+                    },
+                    loading: () => {},
+                    error: (error, stack) {
+                      if (kDebugMode) {
+                        print('Error fetching unsafe places: $error');
+                      }
+                    },
+                  );
+                },
+              );
+            },
           ),
+          // Render NotificationWidget(s)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: emergencyContactAlertsAsyncValue.when(
+              data: (alertsWithContacts) {
+                if (alertsWithContacts.isEmpty) {
+                  return const AddContactWidget();
+                }
+                return Column(
+                  children: alertsWithContacts.map((alertWithContact) {
+                    return NotificationWidget(
+                      panickedPersonName: alertWithContact.contactName,
+                      panickedPersonProfilePic: alertWithContact.contactProfilePic,
+                      panickedPersonSafetyCode: alertWithContact.alert.safetyCode,
+                      panickedPersonAlertDetails: alertWithContact.alert,
+                    );
+                  }).toList(),
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) {
+                if (kDebugMode) {
+                  print('Error fetching active alerts: $error');
+                }
+                return const Center(child: Text('Error fetching active alerts'));
+              },
+            ),
+          ),
+          // Render Track Me Button
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -202,6 +236,19 @@ class MapScreenState extends ConsumerState<MapScreen> {
                   ),
                 ),
               ),
+            ),
+          ),
+          // Render Location Enabled Button
+          Positioned(
+            top: 120,
+            right: 16,
+            child: FloatingActionButton(
+              onPressed: _centerOnUserLocation,
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: const Icon(Icons.my_location, color: Colors.black38),
             ),
           ),
         ],
