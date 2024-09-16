@@ -1,21 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: TrackOthersAppBar(),
-        body: Center(child: Text('Main Content')),
-      ),
-    );
-  }
-}
-
 class TrackOthersAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
@@ -25,7 +9,7 @@ class TrackOthersAppBar extends StatelessWidget implements PreferredSizeWidget {
       flexibleSpace: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -35,7 +19,7 @@ class TrackOthersAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ],
         ),
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.only(top: 10.0, left: 16.0, right: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -89,6 +73,5 @@ class TrackOthersAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(170); // Set the height of the
-// custom app bar
+  Size get preferredSize => Size.fromHeight(170); // Set the height of the custom app bar
 }

@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
                     "Binita’s Current Location",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 16,
                     ),
                   ),
                   SizedBox(height: 8),
@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
                         "Shahingbagh, Dhaka (15 Km from here)",
                         style: TextStyle(
                           color: Colors.black,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -57,11 +58,6 @@ class MyApp extends StatelessWidget {
                     ],
                   ),
                 ],
-              ),
-            ),
-            Expanded(
-              child: Container(
-                color: Colors.red,
               ),
             ),
           ],

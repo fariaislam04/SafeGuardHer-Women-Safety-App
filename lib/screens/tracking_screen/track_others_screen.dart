@@ -9,15 +9,17 @@ import 'custom_marker.dart';
 import 'networking.dart';
 import '../../providers.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MaterialApp(
-    home: TrackOthersScreen(),
-  )));
-}
+class TrackOthersScreen extends ConsumerStatefulWidget {
+  const TrackOthersScreen({
+    super.key,
+    required this.panickedPersonName,
+    required this.panickedPersonProfilePic,
+    required this.panickedPersonSafetyCode,
+  });
 
-class TrackOthersScreen extends ConsumerStatefulWidget
-{
-  const TrackOthersScreen({super.key});
+  final String panickedPersonName;
+  final String panickedPersonProfilePic;
+  final String panickedPersonSafetyCode;
 
   @override
   ConsumerState<TrackOthersScreen> createState() => _TrackOthersScreenState();
@@ -25,7 +27,7 @@ class TrackOthersScreen extends ConsumerStatefulWidget
 
 class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with SingleTickerProviderStateMixin {
   final Completer<GoogleMapController> _controller = Completer();
-  static const LatLng destination = LatLng(23.775236, 90.389920);
+  LatLng destination = LatLng(23.775236, 90.389920);
 
   List<LatLng> polylineCoordinates = [];
   Set<Polyline> polyLines = {};
@@ -36,22 +38,22 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
   CustomMarker customMarker = CustomMarker();
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     getCurrentUserLocation();
   }
 
-  Future<void> createAndUpdateCustomMarker() async
-  {
+  Future<void> createAndUpdateCustomMarker() async {
     if (currentLocationOfTheUser == null) return;
 
-    BitmapDescriptor customDestinationMarkerIcon = await customMarker
-        .createCustomTeardropMarker('assets/placeholders/binita.png',
-        const Color(0xFFF4327B));
+    String profilePicUrl = widget.panickedPersonProfilePic.isNotEmpty
+        ? widget.panickedPersonProfilePic
+        : 'assets/placeholders/default_profile_pic.png';
 
-    setState(()
-    {
+    BitmapDescriptor customDestinationMarkerIcon = await customMarker
+        .createCustomTeardropMarker(profilePicUrl, const Color(0xFFF4327B));
+
+    setState(() {
       _markers.removeWhere((marker) => marker.markerId.value == 'destination');
       _markers.add(
         Marker(
@@ -63,8 +65,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
     });
   }
 
-  Future<void> createAndUpdateSourceMarker() async
-  {
+  Future<void> createAndUpdateSourceMarker() async {
     if (currentLocationOfTheUser == null) return;
 
     final center = LatLng(
@@ -73,11 +74,9 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
     );
 
     BitmapDescriptor customSourceMarkerIcon = await customMarker
-        .createCustomTeardropMarker('assets/placeholders/profile.png', const
-        Color(0xFF6393F2));
+        .createCustomTeardropMarker('assets/placeholders/profile.png', const Color(0xFF6393F2));
 
-    setState(()
-    {
+    setState(() {
       _markers.removeWhere((marker) => marker.markerId.value == 'source');
       _markers.add(
         Marker(
@@ -92,14 +91,12 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
     });
   }
 
-  Future<void> getCurrentUserLocation() async
-  {
+  Future<void> getCurrentUserLocation() async {
     Location location = Location();
 
     currentLocationOfTheUser = await location.getLocation();
 
-    setState(()
-    {
+    setState(() {
       loading = false;
     });
 
@@ -107,8 +104,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
     createAndUpdateSourceMarker();
     getRouteData();
 
-    location.onLocationChanged.listen((newLocation)
-    {
+    location.onLocationChanged.listen((newLocation) {
       if (currentLocationOfTheUser == null ||
           (currentLocationOfTheUser!.latitude != newLocation.latitude ||
               currentLocationOfTheUser!.longitude != newLocation.longitude)) {
@@ -122,10 +118,8 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
     });
   }
 
-  void setMarkers() async
-  {
-    if (currentLocationOfTheUser != null)
-    {
+  void setMarkers() async {
+    if (currentLocationOfTheUser != null) {
       _markers.clear();
 
       BitmapDescriptor customSourceMarkerIcon = await customMarker.createCustomTeardropMarker(
@@ -145,49 +139,51 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
         ),
       );
 
-      BitmapDescriptor customDestinationMarkerIcon = await customMarker.createCustomTeardropMarker(
-          'assets/placeholders/binita.png', const Color(0xFFF4327B));
-
-      _markers.add(
-        Marker(
-          markerId: const MarkerId("destination"),
-          position: destination,
-          icon: customDestinationMarkerIcon,
-          infoWindow: const InfoWindow(
-            title: "Destination",
-          ),
-        ),
-      );
-
-      final asyncValue = ref.watch(unsafePlacesStreamProvider);
+      final asyncValue = ref.watch(emergencyContactAlertsStreamProvider);
       asyncValue.when(
-        data: (unsafePlaces) async
-        {
-          int i = 0;
-          for (final place in unsafePlaces) {
-            final placeLocation = LatLng(place.location.latitude, place.location.longitude);
-            final dangerMarkerIcon = await customMarker.createDangerMarker(); // Using the custom danger marker
-            final marker = Marker(
-              markerId: MarkerId('$i'),
-              position: placeLocation,
-              icon: dangerMarkerIcon,
-              infoWindow: InfoWindow(
-                title: place.type,
-                snippet: place.description,
-              ),
+        data: (alerts) async {
+          final alert = alerts.isNotEmpty ? alerts.first : null;
+          if (alert != null) {
+            destination = LatLng(
+              alert.alert.userLocationEnd.latitude,
+              alert.alert.userLocationEnd.longitude,
             );
-            ++i;
-            _markers.add(marker);
+
+            await createAndUpdateCustomMarker();
           }
 
-          setState(() {});
+          final asyncValue = ref.watch(unsafePlacesStreamProvider);
+          asyncValue.when(
+            data: (unsafePlaces) async {
+              int i = 0;
+
+              for (final place in unsafePlaces) {
+                final placeLocation = LatLng(place.location.latitude, place.location.longitude);
+                final dangerMarkerIcon = await customMarker.createDangerMarker(); // Using the custom danger marker
+                final marker = Marker(
+                  markerId: MarkerId('$i'),
+                  position: placeLocation,
+                  icon: dangerMarkerIcon,
+                  infoWindow: InfoWindow(
+                    title: place.type,
+                    snippet: place.description,
+                  ),
+                );
+                ++i;
+                _markers.add(marker);
+              }
+
+              setState(() {});
+            },
+            loading: () => null,
+            error: (error, stack) => print("Error fetching unsafe places: $error"),
+          );
         },
-        loading: () => null,
-        error: (error, stack) => print("Error fetching unsafe places: $error"),
+        error: (Object error, StackTrace stackTrace) {},
+        loading: () {},
       );
     }
   }
-
   void getRouteData() async
   {
     if (currentLocationOfTheUser != null) {
@@ -229,8 +225,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
     }
   }
 
-  void setPolyLines()
-  {
+  void setPolyLines() {
     Polyline polyline = Polyline(
       polylineId: const PolylineId("route"),
       points: polylineCoordinates,
@@ -244,13 +239,14 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
 
     polyLines.clear();
     polyLines.add(polyline);
-    setState(() {});
+    setState(() {
+      print("Polyline set with ${polylineCoordinates.length} points."); // Debugging line
+    });
   }
 
-  Future<void> _goToUserLocation() async
-  {
-    if (currentLocationOfTheUser != null)
-    {
+
+  Future<void> _goToUserLocation() async {
+    if (currentLocationOfTheUser != null) {
       final GoogleMapController mapController = await _controller.future;
       mapController.animateCamera(
         CameraUpdate.newCameraPosition(
@@ -267,8 +263,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       body: currentLocationOfTheUser == null
           ? Center(child: appHelperFunctions.appLoader(context))
@@ -289,8 +284,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
             markers: Set<Marker>.from(_markers),
             zoomGesturesEnabled: true,
             trafficEnabled: true,
-            onCameraIdle: ()
-            {},
+            onCameraIdle: () {},
           ),
           Positioned(
             top: 20.0,
@@ -310,15 +304,16 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
                   ),
                 ],
               ),
-              child: const Text(
-                'Safe Code: 5678',
+              child: Text(
+                'Safe Code: ${widget.panickedPersonSafetyCode}',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
             ),
           ),
           Positioned(

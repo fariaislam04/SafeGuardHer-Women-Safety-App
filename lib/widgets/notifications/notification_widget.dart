@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
 import 'package:safeguardher_flutter_app/utils/constants/sizes.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import '../../models/alert_model.dart';
 import '../../screens/tracking_screen/track_others_bottom_drawer.dart';
 
-class NotificationWidget extends StatelessWidget {
+class NotificationWidget extends ConsumerWidget {
   final String panickedPersonName;
-  final String? panickedPersonProfilePic; // Now nullable
+  final String panickedPersonProfilePic; // Nullable
   final String panickedPersonSafetyCode;
   final Alert panickedPersonAlertDetails;
 
   const NotificationWidget({
     super.key,
     required this.panickedPersonName,
-    this.panickedPersonProfilePic,
+    required this.panickedPersonProfilePic,
     required this.panickedPersonSafetyCode,
     required this.panickedPersonAlertDetails,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => TrackCloseContact(
+            builder: (context) => TrackOthersBottomDrawer(
               panickedPersonName: panickedPersonName,
               panickedPersonProfilePic: panickedPersonProfilePic,
               panickedPersonSafetyCode: panickedPersonSafetyCode,
