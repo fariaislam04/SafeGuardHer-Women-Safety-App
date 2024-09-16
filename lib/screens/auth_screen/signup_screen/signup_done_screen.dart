@@ -88,7 +88,7 @@ class _SignUpDoneScreenState extends State<SignUpDoneScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD20451),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 143, vertical: 14),
+                      const EdgeInsets.symmetric(horizontal: 110, vertical: 14),
                 ),
                 child: const Text(
                   "Begin",

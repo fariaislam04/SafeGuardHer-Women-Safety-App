@@ -269,7 +269,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                   backgroundColor:
                       _isButtonEnabled ? const Color(0xFFD20451) : Colors.grey,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 130, vertical: 14),
+                      const EdgeInsets.symmetric(horizontal: 110, vertical: 14),
                 ),
                 child: const Text(
                   "Continue",

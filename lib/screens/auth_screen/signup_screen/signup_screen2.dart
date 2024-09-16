@@ -247,7 +247,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                   const Text(
                     '*I accept to the Terms and Conditions',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w300,
                     ),
@@ -342,7 +342,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                   backgroundColor:
                       _isButtonEnabled ? const Color(0xFFD20451) : Colors.grey,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 140, vertical: 14),
+                      const EdgeInsets.symmetric(horizontal: 120, vertical: 14),
                 ),
                 child: const Text(
                   "Signup",

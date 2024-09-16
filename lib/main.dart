@@ -29,14 +29,12 @@ void main() async {
   bool appOpenedBefore = false;
   bool loggedIn = false;
 
-  runApp(
-   ProviderScope(
-     child: SafeGuardHer(appOpenedBefore: appOpenedBefore, loggedIn: loggedIn),
-   ),
-  );
-
-  /*
+  //runApp(
+  //ProviderScope(
+  //  child: SafeGuardHer(appOpenedBefore: appOpenedBefore, loggedIn: loggedIn),
+  //),
+  //);
   runApp(const MaterialApp(
     home: SignUpScreen1(),
-  )); */
+  ));
 }
