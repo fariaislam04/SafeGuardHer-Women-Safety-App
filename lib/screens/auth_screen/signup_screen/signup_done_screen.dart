@@ -29,7 +29,20 @@ class _SignUpDoneScreenState extends State<SignUpDoneScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back_ios_new),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpOTPScreen(
+                                  username: '',
+                                  phoneNumber: '',
+                                  gender: '',
+                                  email: '',
+                                  password: '',
+                                  otpCode: '',
+                                )),
+                      );
+                    },
                   ),
                 ],
               ),

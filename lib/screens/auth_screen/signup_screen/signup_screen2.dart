@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:emailjs/emailjs.dart' as emailjs;
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_otp_screen.dart';
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_screen1.dart';
 
@@ -27,9 +30,14 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   bool _passwordVisible = false;
   bool _passwordVisible2 = false;
   bool _isChecked = false;
+  late String otpCode = _generateSafetyCode();
+
+  String _generateSafetyCode() {
+    return (1000 + Random().nextInt(9000)).toString();
+  }
 
   bool get _isButtonEnabled {
-    return _emailController.text == 'f' &&
+    return _emailController.text.isNotEmpty &&
         _passwordController.text.isNotEmpty &&
         _confirmpasswordController.text.isNotEmpty &&
         _passwordController.text == _confirmpasswordController.text &&
@@ -249,19 +257,85 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               const SizedBox(height: 13),
               ElevatedButton(
                 onPressed: _isButtonEnabled
-                    ? () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SignUpOTPScreen(
-                              username: widget.username,
-                              phoneNumber: widget.phoneNumber,
-                              gender: widget.gender,
-                              password: _passwordController.text,
-                              email: _emailController.text,
+                    ? () async {
+                        if (_emailController.text.isNotEmpty &&
+                            _passwordController.text ==
+                                _confirmpasswordController.text) {
+                          // Prepare template parameters for the email
+                          Map<String, dynamic> templateParams = {
+                            'name': widget.username,
+                            'email': _emailController.text,
+                            'message': otpCode,
+                          };
+
+                          try {
+                            // Sending the email using emailjs
+                            await emailjs.send(
+                              'service_7yhjxvg', // Your EmailJS service ID
+                              'template_66yihk3', // Your EmailJS template ID
+                              templateParams,
+                              const emailjs.Options(
+                                publicKey: 'FjbpWqPaNlRVTl0tE',
+                                privateKey: 'cM4Qmp_XYFBJVfno-RZpX',
+                              ),
+                            );
+
+                            // Print success for debugging
+                            print('SUCCESS! Email sent.');
+
+                            // Navigate to OTP screen if email is sent successfully
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SignUpOTPScreen(
+                                  email: _emailController.text,
+                                  username: widget.username,
+                                  phoneNumber: widget.phoneNumber,
+                                  gender: widget.gender,
+                                  password: _passwordController.text,
+                                  otpCode: otpCode,
+                                ),
+                              ),
+                            );
+                          } catch (error) {
+                            // Handle any errors during email sending
+                            print('Error sending email: $error');
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Error'),
+                                content: const Text(
+                                    'Failed to send confirmation email.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        } else {
+                          // Show error if validation fails
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Error'),
+                              content: const Text(
+                                  'Please ensure all fields are filled correctly and passwords match.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
                             ),
-                          ),
-                        );
+                          );
+                        }
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

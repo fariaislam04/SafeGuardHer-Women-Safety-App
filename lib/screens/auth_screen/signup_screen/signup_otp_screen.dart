@@ -11,6 +11,7 @@ class SignUpOTPScreen extends StatefulWidget {
   final String gender;
   final String email;
   final String password;
+  final String otpCode;
 
   const SignUpOTPScreen({
     Key? key,
@@ -19,6 +20,7 @@ class SignUpOTPScreen extends StatefulWidget {
     required this.gender,
     required this.email,
     required this.password,
+    required this.otpCode,
   }) : super(key: key);
 
   @override
@@ -28,7 +30,7 @@ class SignUpOTPScreen extends StatefulWidget {
 class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
   final List<TextEditingController> _controllers =
       List.generate(4, (index) => TextEditingController());
-  final String _correctCode = "2000";
+  late final String _correctCode = widget.otpCode;
 
   bool get _isButtonEnabled =>
       _controllers.every((controller) => controller.text.isNotEmpty) &&

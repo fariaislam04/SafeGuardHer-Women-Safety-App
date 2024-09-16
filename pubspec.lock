@@ -513,6 +513,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  emailjs:
+    dependency: "direct main"
+    description:
+      name: emailjs
+      sha256: bca1cdde15b4413a754815a0a784e6907b2cab5f2d43b753ff492493f8be55c8
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   envied:
     dependency: "direct main"
     description:
