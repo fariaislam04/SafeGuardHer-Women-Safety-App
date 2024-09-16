@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rxdart/rxdart.dart';
+import 'models/alert_with_contact_model.dart';
 import 'models/emergency_contact_model.dart';
 import 'models/user_model.dart';
 import 'models/unsafe_place_model.dart';
@@ -26,6 +28,58 @@ Future<List<UnsafePlace>> fetchUnsafePlaces() async {
     return [];
   }
 }
+
+final emergencyContactAlertsStreamProvider = StreamProvider<List<AlertWithContact>>((ref) async* {
+  final userAsyncValue = ref.watch(userStreamProvider);
+
+  if (userAsyncValue.value == null) {
+    yield [];
+    return;
+  }
+
+  final List<String> emergencyContactOf = userAsyncValue.value?.emergencyContactOf ?? [];
+
+  if (emergencyContactOf.isEmpty) {
+    yield [];
+    return;
+  }
+
+  final streams = emergencyContactOf.map((contactNumber) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(contactNumber)
+        .collection('alerts')
+        .where('isActive', isEqualTo: true)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final alerts = snapshot.docs.map((doc) {
+        final alertData = doc.data();
+        return Alert.fromFirestore(alertData, doc.id);
+      }).toList();
+
+      // Fetch contact details
+      final contactDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(contactNumber)
+          .get();
+      final contactData = contactDoc.data() ?? {};
+      final contactName = contactData['name'] ?? 'Unknown';
+      final contactProfilePic = contactData['profilePicUrl'] ?? 'assets/placeholders/default_profile_pic.png';
+
+      // Combine alerts with contact details
+      return alerts.map((alert) => AlertWithContact(
+        alert: alert,
+        contactName: contactName,
+        contactProfilePic: contactProfilePic,
+      )).toList();
+    });
+  }).toList();
+
+  yield* CombineLatestStream.list<List<AlertWithContact>>(streams).map((listOfAlertsLists) {
+    return listOfAlertsLists.expand((alerts) => alerts).toList();
+  });
+});
+
 
 // Fetch user's alerts sub-collection
 Future<List<Alert>> fetchUserAlerts(String phoneNumber) async {
@@ -187,4 +241,3 @@ final emergencyContactsProvider = Provider<List<EmergencyContact>>((ref) {
 final selectedContactsProvider = StateProvider<List<int>>((ref) => []);
 final searchQueryProvider = StateProvider<String>((ref) => "");
 final selectedOptionProvider = StateProvider<int>((ref) => 1);
-

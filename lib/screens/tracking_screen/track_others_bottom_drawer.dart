@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:safeguardher_flutter_app/screens/tracking_screen/track_others_screen.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
-import '../../utils/constants/sizes.dart';
+import 'package:safeguardher_flutter_app/utils/constants/sizes.dart';
 import '../../widgets/navigations/app_bar.dart';
+import '../../models/alert_model.dart'; // Import the Alert model if it's not already imported
 
-// This screen contains the bottom drawer sheet that contains close contact distance and specs
+// This screen contains the bottom drawer sheet that displays contact distance and details.
 
-void main() {
-  runApp(const MaterialApp(
-    home: TrackCloseContact(),
-  ));
-}
+class TrackCloseContact extends StatefulWidget {
+  final String panickedPersonName;
+  final String? panickedPersonProfilePic;
+  final String panickedPersonSafetyCode;
+  final Alert panickedPersonAlertDetails;
 
-class TrackCloseContact extends StatefulWidget
-{
-  const TrackCloseContact({super.key});
+  const TrackCloseContact({
+    super.key,
+    required this.panickedPersonName,
+    this.panickedPersonProfilePic,
+    required this.panickedPersonSafetyCode,
+    required this.panickedPersonAlertDetails,
+  });
 
   @override
-  TrackCloseContactState createState() =>
-      TrackCloseContactState();
+  TrackCloseContactState createState() => TrackCloseContactState();
 }
 
 class TrackCloseContactState extends State<TrackCloseContact> {
@@ -64,8 +68,7 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                     controller: scrollController,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 20, bottom: 13.0,
-                            left: 20.0, right: 20.0),
+                        padding: const EdgeInsets.all(20.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -81,7 +84,6 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                                 ),
                               ),
                             const SizedBox(height: 10),
-                            //-- Shrunk drawer
                             if (_currentChildSize <= 0.2)
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -92,15 +94,15 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                                       color: Colors.red,
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        Icon(Icons.share_location_rounded, color: Colors.white,
-                                            size: Sizes.iconMedium),
-                                        SizedBox(width: 5),
+                                        Icon(Icons.share_location_rounded, color: Colors.white, size: Sizes.iconMedium),
+                                        const SizedBox(width: 5),
                                         Text(
-                                          '5.47 Km away',
-                                          style: TextStyle(
+                                          '10 km away',
+                                         // '${widget.panickedPersonAlertDetails.distance} Km away',
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600,
@@ -113,33 +115,29 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                                   Row(
                                     children: [
                                       GestureDetector(
-                                        onTap: ()
-                                        {
-
+                                        onTap: () {
+                                          // Handle call action
+                                          _handleCall();
                                         },
                                         child: const Column(
                                           children: [
                                             Icon(Icons.call),
                                             SizedBox(height: 8),
-                                            Text('Call', style: TextStyle
-                                              (fontFamily: 'Poppins',
-                                                fontSize: 11),),
+                                            Text('Call', style: TextStyle(fontFamily: 'Poppins', fontSize: 11)),
                                           ],
                                         ),
                                       ),
                                       const SizedBox(width: 30),
                                       GestureDetector(
-                                        onTap: ()
-                                        {
-
+                                        onTap: () {
+                                          // Handle share action
+                                          _handleShare();
                                         },
                                         child: const Column(
                                           children: [
                                             Icon(Icons.share),
                                             SizedBox(height: 8),
-                                            Text('Share',style: TextStyle
-                                              (fontFamily: 'Poppins',
-                                                fontSize: 11)),
+                                            Text('Share', style: TextStyle(fontFamily: 'Poppins', fontSize: 11)),
                                           ],
                                         ),
                                       ),
@@ -150,31 +148,30 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                             AnimatedOpacity(
                               opacity: _currentChildSize > 0.2 ? 1.0 : 0.0,
                               duration: const Duration(milliseconds: 100),
-                              // -- Expanded Drawer
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    'Binita Sarker',
-                                    style: TextStyle(
+                                  Text(
+                                    widget.panickedPersonName,
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                  const Text(
-                                    'Alert sent on Tues, June 4 2024 1:30 AM',
-                                    style: TextStyle(
+                                  Text(
+                                    'Alert sent on ${widget.panickedPersonAlertDetails.alertStart}',
+                                    style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w500,
                                       fontFamily: 'Poppins',
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  const Text(
-                                    'Lalbagh, Dhaka district',
-                                    style: TextStyle(
+                                  Text(
+                                    widget.panickedPersonAlertDetails.userLocationStart as String,
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey,
                                       fontFamily: 'Poppins',
@@ -182,27 +179,27 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                                   ),
                                   const SizedBox(height: 20),
                                   Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      width: 500,
-                                      decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius: BorderRadius.circular(10.0),
-                                      ),
-                                      child: const Row(
-                                          children: [Icon(Icons
-                                              .share_location_rounded, color: Colors.white,
-                                              size: Sizes.iconMedium),
-                                            SizedBox(width: 5),
-                                            Text(
-                                              '5.47 Km away',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Poppins',
-                                              ),
-                                            ),
-                                          ]
-                                      )
+                                    padding: const EdgeInsets.all(8.0),
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.share_location_rounded, color: Colors.white, size: Sizes.iconMedium),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                         // '${widget.panickedPersonAlertDetails.distance} Km away',
+                                          '10 km away',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   const SizedBox(height: 20),
                                   Row(
@@ -211,40 +208,39 @@ class TrackCloseContactState extends State<TrackCloseContact> {
                                       GestureDetector(
                                         onTap: () {
                                           // Handle call action
+                                          _handleCall();
                                         },
                                         child: const Column(
                                           children: [
                                             Icon(Icons.call, color: AppColors.iconPrimary),
                                             SizedBox(height: 8),
-                                            Text('Call', style: TextStyle
-                                              (fontFamily: 'Poppins'),),
+                                            Text('Call', style: TextStyle(fontFamily: 'Poppins')),
                                           ],
                                         ),
                                       ),
                                       GestureDetector(
                                         onTap: () {
                                           // Handle message action
+                                          _handleMessage();
                                         },
                                         child: const Column(
                                           children: [
                                             Icon(Icons.message, color: AppColors.iconPrimary),
                                             SizedBox(height: 8),
-                                            Text('Message',style: TextStyle
-                                              (fontFamily: 'Poppins'),),
+                                            Text('Message', style: TextStyle(fontFamily: 'Poppins')),
                                           ],
                                         ),
                                       ),
                                       GestureDetector(
-                                        onTap: ()
-                                        {
-
+                                        onTap: () {
+                                          // Handle share action
+                                          _handleShare();
                                         },
                                         child: const Column(
                                           children: [
                                             Icon(Icons.share, color: AppColors.iconPrimary),
                                             SizedBox(height: 8),
-                                            Text('Share', style: TextStyle
-                                              (fontFamily: 'Poppins'),),
+                                            Text('Share', style: TextStyle(fontFamily: 'Poppins')),
                                           ],
                                         ),
                                       ),
@@ -265,5 +261,17 @@ class TrackCloseContactState extends State<TrackCloseContact> {
         ],
       ),
     );
+  }
+
+  void _handleCall() {
+    // Implement call action here
+  }
+
+  void _handleMessage() {
+    // Implement message action here
+  }
+
+  void _handleShare() {
+    // Implement share action here
   }
 }

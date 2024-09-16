@@ -1,25 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
-import '../../screens/tracking_screen/track_others_bottom_drawer.dart';
-import '../../utils/constants/colors.dart';
-import '../../utils/constants/sizes.dart';
+import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
+import 'package:safeguardher_flutter_app/utils/constants/sizes.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import '../../models/alert_model.dart';
+import '../../screens/tracking_screen/track_others_bottom_drawer.dart';
 
 class NotificationWidget extends StatelessWidget {
-  final String name;
-  final String code;
+  final String panickedPersonName;
+  final String? panickedPersonProfilePic; // Now nullable
+  final String panickedPersonSafetyCode;
+  final Alert panickedPersonAlertDetails;
 
   const NotificationWidget({
     super.key,
-    required this.name,
-    required this.code,
+    required this.panickedPersonName,
+    this.panickedPersonProfilePic,
+    required this.panickedPersonSafetyCode,
+    required this.panickedPersonAlertDetails,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        appHelperFunctions.goToScreenAndComeBack(context, const TrackCloseContact());
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TrackCloseContact(
+              panickedPersonName: panickedPersonName,
+              panickedPersonProfilePic: panickedPersonProfilePic,
+              panickedPersonSafetyCode: panickedPersonSafetyCode,
+              panickedPersonAlertDetails: panickedPersonAlertDetails,
+            ),
+          ),
+        );
       },
       child: Container(
         height: 105.0,
@@ -42,9 +56,9 @@ class NotificationWidget extends StatelessWidget {
                 child: CircleAvatar(
                   backgroundColor: Colors.grey[100],
                   radius: 30.0,
-                  backgroundImage: const AssetImage(
-                    'assets/placeholders/binita.png',
-                  ),
+                  backgroundImage: panickedPersonProfilePic != null && panickedPersonProfilePic!.isNotEmpty
+                      ? AssetImage(panickedPersonProfilePic!)
+                      : const AssetImage('assets/placeholders/default_profile_pic.png') as ImageProvider,
                 ),
               ),
             ),
@@ -55,7 +69,7 @@ class NotificationWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    name,
+                    panickedPersonName,
                     style: const TextStyle(
                       color: Colors.white,
                       fontFamily: 'Poppins',
@@ -98,7 +112,7 @@ class NotificationWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  code,
+                  panickedPersonSafetyCode,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: Sizes.fontLarge,
