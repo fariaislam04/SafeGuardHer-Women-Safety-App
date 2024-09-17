@@ -42,24 +42,24 @@ class StorageService
   }
 
   // -- Extract folders date-wise from storage
-  Future<List<String>> listDateFolders(String uid) async
-  {
+  Future<List<String>> listDateFolders(String uid) async {
     List<String> dateFolders = [];
-    try
-    {
+    try {
       ListResult result = await storage.ref('recordings/images/$uid').listAll();
       for (var prefix in result.prefixes) {
         dateFolders.add(prefix.name);
       }
-    }
-    catch (e)
-    {
-      if (kDebugMode) {
-        print('Error listing date folders: $e');
+    } catch (e) {
+      if (e is FirebaseException) {
+        log('FirebaseException: ${e.message}');
+        log('Error code: ${e.code}');
+      } else {
+        log('Unexpected error: $e');
       }
     }
     return dateFolders;
   }
+
 
   // -- extract image src, date and time from the storage
   Future<List<ImageData>> listImagesForEachDate(String uid, String date) async {

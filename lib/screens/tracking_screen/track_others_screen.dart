@@ -27,7 +27,7 @@ class TrackOthersScreen extends ConsumerStatefulWidget {
 
 class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with SingleTickerProviderStateMixin {
   final Completer<GoogleMapController> _controller = Completer();
-  LatLng destination = LatLng(23.775236, 90.389920);
+  LatLng destination = LatLng(23.775236, 90.389920); // Default destination
 
   List<LatLng> polylineCoordinates = [];
   Set<Polyline> polyLines = {};
@@ -184,8 +184,8 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
       );
     }
   }
-  void getRouteData() async
-  {
+
+  void getRouteData() async {
     if (currentLocationOfTheUser != null) {
       NetworkHelper network = NetworkHelper(
         startLat: currentLocationOfTheUser!.latitude!,
@@ -197,29 +197,21 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
       try {
         var data = await network.getData();
 
-        if (data != null && data['features'] != null && data['features'].isNotEmpty)
-        {
+        if (data != null && data['features'] != null && data['features'].isNotEmpty) {
           List<dynamic> coordinates = data['features'][0]['geometry']['coordinates'];
           polylineCoordinates.clear();
 
-          for (var point in coordinates)
-          {
-            polylineCoordinates.add(LatLng(point[1],
-                point[0]));
+          for (var point in coordinates) {
+            polylineCoordinates.add(LatLng(point[1], point[0]));
           }
 
-          if (polylineCoordinates.isNotEmpty)
-          {
+          if (polylineCoordinates.isNotEmpty) {
             setPolyLines();
           }
-        }
-        else
-        {
+        } else {
           print("Invalid response structure or empty features.");
         }
-      }
-      catch (e)
-      {
+      } catch (e) {
         print("Error: $e");
       }
     }
@@ -239,11 +231,8 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
 
     polyLines.clear();
     polyLines.add(polyline);
-    setState(() {
-      print("Polyline set with ${polylineCoordinates.length} points."); // Debugging line
-    });
+    setState(() {});
   }
-
 
   Future<void> _goToUserLocation() async {
     if (currentLocationOfTheUser != null) {
@@ -313,19 +302,6 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
-            ),
-          ),
-          Positioned(
-            top: 18.0,
-            right: 20.0,
-            child: FloatingActionButton(
-              onPressed: _goToUserLocation,
-              backgroundColor: AppColors.secondary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: const Icon(Icons.my_location, color: Colors.white),
             ),
           ),
         ],

@@ -10,7 +10,7 @@ import '../../services/background/background_services.dart';
 import '../../utils/helpers/helper_functions.dart';
 
 late String _date;
-const String _uid = '7';
+const String _uid = '01719958727';
 
 class RecordScreen extends StatefulWidget {
   const RecordScreen({super.key});
@@ -180,9 +180,14 @@ class _RecordScreenState extends State<RecordScreen> {
                 subtitle: const Text('Tap to see history'),
                 onTap: () {
                   isListening = false;
-                  stopListening();
-                  appHelperFunctions.goToScreenAndComeBack(context, const
-                  ViewRecordingsHistory(userID: '7'));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ViewRecordingsHistory(
+                        userID: '01719958727',
+                      ),
+                    ),
+                  );
                 },
                 trailing: const Icon(
                   Icons.arrow_forward_ios,

@@ -7,7 +7,7 @@ import '../../utils/formatters/formatters.dart';
 import '../../widgets/navigations/app_bar.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
-late final String userID;
+late String userID;
 
 class ViewRecordingsHistory extends StatefulWidget {
   const ViewRecordingsHistory({super.key, required userID});
@@ -142,9 +142,15 @@ class RecordedHistoryTile extends StatelessWidget
         ),
         onTap: ()
         {
-          appHelperFunctions.goToScreenAndComeBack(context, RecordingDetails
-            (uid: userID,
-              date: date));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RecordingDetails(
+                  uid: userID,
+                  date: date
+              ),
+            ),
+          );
         },
         trailing: const Icon(
           Icons.arrow_forward_ios,

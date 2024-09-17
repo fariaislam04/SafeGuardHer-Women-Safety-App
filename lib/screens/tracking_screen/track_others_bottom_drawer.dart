@@ -5,7 +5,6 @@ import 'package:geocoding/geocoding.dart'; // Import for geocoding
 import 'package:flutter_svg/flutter_svg.dart'; // Import for SVG icons
 import 'package:safeguardher_flutter_app/screens/tracking_screen/track_others_screen.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
-import '../../widgets/navigations/app_bar.dart';
 import '../../models/alert_model.dart';
 import '../../widgets/navigations/track_others_app_bar.dart';
 
@@ -51,15 +50,17 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TrackOthersAppBar(),
+      appBar: TrackOthersAppBar(
+        panickedPersonName: widget.panickedPersonName,
+        userEndLocation: widget.panickedPersonAlertDetails.userLocationEnd,
+        currentLocation: const GeoPoint(0,0)
+      ),
       body: Stack(
         children: [
            TrackOthersScreen(
             panickedPersonName: widget.panickedPersonName,
             panickedPersonProfilePic : widget.panickedPersonProfilePic,
              panickedPersonSafetyCode : widget.panickedPersonSafetyCode,
-
-
            ),
           DraggableScrollableSheet(
             initialChildSize: 0.2,
