@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Import this package for DateFormat
 import '../../../utils/constants/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
+import '../../../providers.dart'; // Import providers for userAsyncValue
+import '../../../models/user_model.dart';
 
 import 'alert_details.dart';
-
 
 class HistoryPage extends StatefulWidget {
   // Renamed from HistoryScreen to HistoryPage
@@ -56,63 +58,70 @@ class HistoryPageState extends State<HistoryPage>
   }
 }
 
-class MyHistoryPage extends StatelessWidget {
+class MyHistoryPage extends ConsumerWidget {
   const MyHistoryPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc('01719958727')
-          .collection('alerts')
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsyncValue = ref.watch(userStreamProvider);
+
+    return userAsyncValue.when(
+      data: (user) {
+        if (user?.documentRef == null) {
+          return const Center(child: Text('No user data available.'));
         }
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return const Text('Loading...');
-          default:
-            return ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                Map<String, dynamic> data =
+        return StreamBuilder<QuerySnapshot>(
+          stream: user?.documentRef.collection('alerts').snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return const Text('Loading...');
+              default:
+                return ListView(
+                  padding: const EdgeInsets.all(16.0),
+                  children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                    Map<String, dynamic> data =
                     document.data()! as Map<String, dynamic>;
-                Timestamp startTimestamp =
+                    Timestamp startTimestamp =
                     data['alert_duration']['alert_start'] as Timestamp;
-                Timestamp? endTimestamp =
+                    Timestamp? endTimestamp =
                     data['alert_duration'].containsKey('alert_end')
                         ? data['alert_duration']['alert_end'] as Timestamp
                         : null;
 
-                // Calculate the duration
-                Duration duration;
-                if (endTimestamp != null) {
-                  duration =
-                      endTimestamp.toDate().difference(startTimestamp.toDate());
-                } else {
-                  duration =
-                      Duration.zero; // Default duration if endTimestamp is null
-                }
-                String formattedDuration = _formatDuration(duration);
+                    // Calculate the duration
+                    Duration duration;
+                    if (endTimestamp != null) {
+                      duration = endTimestamp
+                          .toDate()
+                          .difference(startTimestamp.toDate());
+                    } else {
+                      duration = Duration.zero; // Default duration if endTimestamp is null
+                    }
+                    String formattedDuration = _formatDuration(duration);
 
-                // Format the start timestamp
-                String formattedDate = DateFormat('d MMM yyyy, h:mm a')
-                    .format(startTimestamp.toDate());
+                    // Format the start timestamp
+                    String formattedDate = DateFormat('d MMM yyyy, h:mm a')
+                        .format(startTimestamp.toDate());
 
-                return HistoryItem(
-                  title: data['type'].toString().toUpperCase() + ' triggered',
-                  date: formattedDate,
-                  duration: formattedDuration,
-                  titleColor: Colors.red,
-                  document: document, // Pass the document here
+                    return HistoryItem(
+                      title: data['type'].toString().toUpperCase() + ' triggered',
+                      date: formattedDate,
+                      duration: formattedDuration,
+                      titleColor: Colors.red,
+                      document: document, // Pass the document here
+                    );
+                  }).toList(),
                 );
-              }).toList(),
-            );
-        }
+            }
+          },
+        );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, stack) => Center(child: Text('Error: $e')),
     );
   }
 
@@ -130,6 +139,7 @@ class MyHistoryPage extends StatelessWidget {
     }
   }
 }
+
 
 class ConnectedContactHistoryPage extends StatelessWidget {
   const ConnectedContactHistoryPage({super.key});

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore import
 import '../signup_screen/signup_screen1.dart';
+import '../../home_screen/home_screen.dart';
+import 'package:safeguardher_flutter_app/models/user_model.dart';
 import 'login_screen.dart';
 
 void main() {
@@ -63,10 +65,12 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
 
         if (storedPassword == password) {
           // Password matches, proceed to the next screen
+          /*
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const SignUpScreen1()),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
           );
+          */
         } else {
           // Password does not match
           _showErrorDialog('Incorrect password. Please try again.');
@@ -262,7 +266,13 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
                         fontSize: 12),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpScreen1()),
+                      );
+                    },
                     child: const Text(
                       "Sign up here",
                       style: TextStyle(

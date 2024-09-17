@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
-
+import '../signup_screen/signup_screen1.dart';
 import 'logininfo_screen.dart';
 
 void main() {
@@ -104,7 +104,11 @@ class LoginScreen extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
-                        // Add your sign-up navigation logic here
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignUpScreen1()),
+                        );
                       },
                       child: const Text(
                         "Sign up here",
@@ -135,7 +139,8 @@ class LoginScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const HomeScreen()),
-                        ); */
+                        );
+                        */
                       },
                       child: const Text(
                         'Click here',

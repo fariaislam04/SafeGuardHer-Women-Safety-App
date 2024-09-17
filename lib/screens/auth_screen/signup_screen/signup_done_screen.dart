@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_otp_screen.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
+import '../login_screen/logininfo_screen.dart';
 
 void main() {
   runApp(const SignUpDoneScreen());
@@ -78,11 +79,11 @@ class _SignUpDoneScreenState extends State<SignUpDoneScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  /*
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  ); */
+                    MaterialPageRoute(
+                        builder: (context) => const LoginInfoScreen()),
+                  );
                 },
                 key: null,
                 style: ElevatedButton.styleFrom(

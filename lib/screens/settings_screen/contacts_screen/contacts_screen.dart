@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
 import '../../../models/emergency_contact_model.dart';
+import '../../settings_screen/settings_screen.dart';
 import '../../../models/user_model.dart';
 import '../../../providers.dart';
 import 'package:safeguardher_flutter_app/widgets/custom_widgets/contacts_fetcher_widget.dart';
@@ -31,7 +32,13 @@ class ContactsScreen extends ConsumerWidget {
                   child: Row(
                     children: [
                       GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SettingsScreen()),
+                          );
+                        },
                         child: const Icon(Icons.arrow_back_ios),
                       ),
                       const SizedBox(width: 10),
@@ -54,18 +61,18 @@ class ContactsScreen extends ConsumerWidget {
                   child: ListView.builder(
                     shrinkWrap: true,
                     physics:
-                    const ClampingScrollPhysics(), // Allow smooth scroll within column
+                        const ClampingScrollPhysics(), // Allow smooth scroll within column
                     itemCount: user!.emergencyContacts.length + 1,
                     itemBuilder: (context, index) {
                       return index == user.emergencyContacts.length
                           ? addContactTile(context, user)
                           : contactTile(
-                        context,
-                        ref,
-                        user,
-                        user.emergencyContacts[index],
-                        'assets/placeholders/profile.png',
-                      );
+                              context,
+                              ref,
+                              user,
+                              user.emergencyContacts[index],
+                              'assets/placeholders/profile.png',
+                            );
                     },
                   ),
                 ),
@@ -95,7 +102,7 @@ class ContactsScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: Colors.white, // Box color
                       borderRadius:
-                      BorderRadius.circular(6.0), // Rounded corners
+                          BorderRadius.circular(6.0), // Rounded corners
                       boxShadow: const [
                         BoxShadow(
                           color: Colors.black12,
@@ -150,7 +157,7 @@ class ContactsScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: Colors.white, // Box color
                       borderRadius:
-                      BorderRadius.circular(6.0), // Rounded corners
+                          BorderRadius.circular(6.0), // Rounded corners
                       boxShadow: const [
                         BoxShadow(
                           color: Colors.black12,
@@ -292,19 +299,19 @@ class ContactsScreen extends ConsumerWidget {
         onTap: isMaxContacts
             ? null // Disable the onTap when contacts are 5 or more
             : () async {
-          // Navigate to the ContactsFetcher screen and wait for the selected contact
-          final Contact? selectedContact = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ContactsFetcher(),
-            ),
-          );
-        },
+                // Navigate to the ContactsFetcher screen and wait for the selected contact
+                final Contact? selectedContact = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ContactsFetcher(),
+                  ),
+                );
+              },
         child: Row(
           children: [
             CircleAvatar(
               backgroundColor:
-              isMaxContacts ? Colors.grey.shade300 : Colors.red,
+                  isMaxContacts ? Colors.grey.shade300 : Colors.red,
               radius: 30.0,
               child: Icon(
                 Icons.add,
