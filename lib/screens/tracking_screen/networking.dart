@@ -10,8 +10,8 @@ class NetworkHelper {
   });
 
   final String url = 'https://api.openrouteservice.org/v2/directions/';
-  final String apiKey = '5b3ce3597851110001cf6248d04c9d7eca04409793700bbc698c1ca5'; // Replace with your OpenRouteService API key
-  final String journeyMode = 'driving-car'; // Change it if you want or make it variable
+  final String apiKey = '5b3ce3597851110001cf6248d04c9d7eca04409793700bbc698c1ca5';
+  final String journeyMode = 'driving-car';
   final double startLng;
   final double startLat;
   final double endLng;

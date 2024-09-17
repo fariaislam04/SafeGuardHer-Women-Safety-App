@@ -5,20 +5,19 @@ import 'package:geocoding/geocoding.dart'; // Import for geocoding
 import 'package:flutter_svg/flutter_svg.dart'; // Import for SVG icons
 import 'package:safeguardher_flutter_app/screens/tracking_screen/track_others_screen.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
-import '../../widgets/navigations/app_bar.dart';
 import '../../models/alert_model.dart';
 import '../../widgets/navigations/track_others_app_bar.dart';
 
-class TrackCloseContact extends StatefulWidget {
+class TrackOthersBottomDrawer extends StatefulWidget {
   final String panickedPersonName;
-  final String? panickedPersonProfilePic;
+  final String panickedPersonProfilePic;
   final String panickedPersonSafetyCode;
   final Alert panickedPersonAlertDetails;
 
-  const TrackCloseContact({
+  const TrackOthersBottomDrawer({
     super.key,
     required this.panickedPersonName,
-    this.panickedPersonProfilePic,
+    required this.panickedPersonProfilePic,
     required this.panickedPersonSafetyCode,
     required this.panickedPersonAlertDetails,
   });
@@ -27,7 +26,7 @@ class TrackCloseContact extends StatefulWidget {
   TrackCloseContactState createState() => TrackCloseContactState();
 }
 
-class TrackCloseContactState extends State<TrackCloseContact> {
+class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
   double _currentChildSize = 0.2;
   String _userLocationStart = '';
   String _formattedTimestamp = '';
@@ -51,10 +50,18 @@ class TrackCloseContactState extends State<TrackCloseContact> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: TrackOthersAppBar(),
+      appBar: TrackOthersAppBar(
+        panickedPersonName: widget.panickedPersonName,
+        userEndLocation: widget.panickedPersonAlertDetails.userLocationEnd,
+        currentLocation: const GeoPoint(0,0)
+      ),
       body: Stack(
         children: [
-          const TrackOthersScreen(),
+           TrackOthersScreen(
+            panickedPersonName: widget.panickedPersonName,
+            panickedPersonProfilePic : widget.panickedPersonProfilePic,
+             panickedPersonSafetyCode : widget.panickedPersonSafetyCode,
+           ),
           DraggableScrollableSheet(
             initialChildSize: 0.2,
             minChildSize: 0.2,

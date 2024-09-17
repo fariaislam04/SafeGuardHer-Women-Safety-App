@@ -203,6 +203,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
               },
             ),
           ),
+
           // Render Track Me Button
           Align(
             alignment: Alignment.bottomCenter,
@@ -248,7 +249,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: const Icon(Icons.my_location, color: Colors.black38),
+              child: const Icon(Icons.my_location, color: AppColors.secondary),
             ),
           ),
         ],
