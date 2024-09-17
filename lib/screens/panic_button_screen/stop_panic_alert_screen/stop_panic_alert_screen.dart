@@ -18,12 +18,12 @@ class StopPanicAlertScreen extends ConsumerWidget
   {
     final user = await ref.read(userStreamProvider.future);
     if(user != null)
-      {
-        await Future.delayed(const Duration(seconds: 2));
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomeScreen(user: user)),
-        );
-      }
+    {
+      await Future.delayed(const Duration(seconds: 2));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    }
   }
 
   @override

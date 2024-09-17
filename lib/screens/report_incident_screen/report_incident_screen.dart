@@ -51,7 +51,7 @@ class ReportIncidentPage extends ConsumerWidget {
               : {'latitude': 0.0, 'longitude': 0.0}; // Default geolocation if not available
 
           await firestore.collection('users').doc("01719958727").collection
-      ('alerts').doc('1').update({
+            ('alerts').doc('1').update({
             'report': {
               'report_type': reportType,
               'report_description': reportDescription,
@@ -81,7 +81,7 @@ class ReportIncidentPage extends ConsumerWidget {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                builder: (context) => HomeScreen(user: user),
+                builder: (context) => const HomeScreen(),
               ),
                   (Route<dynamic> route) => false,
             );
@@ -296,7 +296,7 @@ class ReportIncidentPage extends ConsumerWidget {
                         if (user != null) {
                           appHelperFunctions.goToScreenAndDoNotComeBack(
                             context,
-                            HomeScreen(user: user),
+                            const HomeScreen(),
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(

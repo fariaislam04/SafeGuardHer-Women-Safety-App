@@ -12,45 +12,13 @@ class PanicButtonWidget extends StatefulWidget {
 
 class _PanicButtonWidgetState extends State<PanicButtonWidget> {
   bool _buttonPressed = false;
-  //OverlayEntry? _overlayEntry;
 
   void _handlePanicButtonPress() {
-    setState(() {
-      appHelperFunctions.goToScreenAndComeBack(
-          context, const TenSecondPanicScreen());
-      // _removeSnackbar();
-    });
-
-    /*
-    if (kDebugMode)
-    {
-      print("Panic button pressed");
-    }
-
-    _overlayEntry = OverlayEntry(
-      builder: (BuildContext context) => Positioned(
-        top: MediaQuery.of(context).size.height * 0.23,
-        child: const Material(
-          color: Colors.transparent,
-          child: AnimatedOpacity(
-            duration: Duration(seconds: 1),
-            opacity: 1.0,
-            child: CustomSnackbar(color: Colors.red, message: "Panic alert "
-                "has been pressed.",),
-            ),
-          ),
-        ),
+    // Perform navigation to TenSecondPanicScreen
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => TenSecondPanicScreen()),
     );
-    Overlay.of(context).insert(_overlayEntry!);
-       */
   }
-
-  /*
-  void _removeSnackbar()
-  {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  } */
 
   @override
   Widget build(BuildContext context) {

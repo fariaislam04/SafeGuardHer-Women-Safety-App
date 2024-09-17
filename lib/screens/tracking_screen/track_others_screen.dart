@@ -46,9 +46,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
   Future<void> createAndUpdateCustomMarker() async {
     if (currentLocationOfTheUser == null) return;
 
-    String profilePicUrl = widget.panickedPersonProfilePic.isNotEmpty
-        ? widget.panickedPersonProfilePic
-        : 'assets/placeholders/default_profile_pic.png';
+    String profilePicUrl = 'assets/placeholders/default_profile_pic.png';
 
     BitmapDescriptor customDestinationMarkerIcon = await customMarker
         .createCustomTeardropMarker(profilePicUrl, const Color(0xFFF4327B));
@@ -274,6 +272,20 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
             zoomGesturesEnabled: true,
             trafficEnabled: true,
             onCameraIdle: () {},
+          ),
+          Positioned(
+            top: 20.0,
+            right: 10.0,
+            child: Container(
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.secondary,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.my_location, color: Colors.white),
+                onPressed: _goToUserLocation,
+              ),
+            ),
           ),
           Positioned(
             top: 20.0,

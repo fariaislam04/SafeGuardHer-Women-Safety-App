@@ -54,7 +54,7 @@ class ErrorScreen extends ConsumerWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HomeScreen(user: user),
+                          builder: (context) => const HomeScreen(),
                         ),
                       );
                     }

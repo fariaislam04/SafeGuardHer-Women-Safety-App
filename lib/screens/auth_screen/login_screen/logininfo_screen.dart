@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore import
+import 'package:shared_preferences/shared_preferences.dart';
 import '../signup_screen/signup_screen1.dart';
 import '../../home_screen/home_screen.dart';
 import 'package:safeguardher_flutter_app/models/user_model.dart';
@@ -65,12 +66,14 @@ class _LoginInfoScreenState extends State<LoginInfoScreen> {
 
         if (storedPassword == password) {
           // Password matches, proceed to the next screen
-          /*
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('phoneNumber', phoneNumber);
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const HomeScreen()),
           );
-          */
+
         } else {
           // Password does not match
           _showErrorDialog('Incorrect password. Please try again.');

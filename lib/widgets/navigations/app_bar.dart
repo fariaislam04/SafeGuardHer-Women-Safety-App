@@ -44,14 +44,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Flexible(
-                  child: badges.Badge(
-                    badgeContent:
-                        const Text('3', style: TextStyle(color: Colors.white)),
-                    badgeStyle: const badges.BadgeStyle(
-                      badgeColor: AppColors.badgePrimary,
-                      padding: EdgeInsets.all(6),
-                      shape: badges.BadgeShape.circle,
-                    ),
+                    //badgeContent:
+                      //  const Text('3', style: TextStyle(color: Colors
+                    //  .white)),
+                    //badgeStyle: const badges.BadgeStyle(
+                    //  badgeColor: AppColors.badgePrimary,
+                    //  padding: EdgeInsets.all(6),
+                    //  shape: badges.BadgeShape.circle,
+                  //  ),
                     child: IconButton(
                       onPressed: () {
                         if (kDebugMode) {
@@ -62,7 +62,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       color: AppColors.iconPrimary,
                     ),
                   ),
-                ),
                 const SizedBox(width: 15),
                 Flexible(
                   child: IconButton(

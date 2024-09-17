@@ -98,6 +98,7 @@ class _SignUpDoneScreenState extends State<SignUpDoneScreen> {
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w500,
                   ),
+
                 ),
               ),
             ],

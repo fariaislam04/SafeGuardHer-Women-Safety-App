@@ -3,6 +3,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../models/emergency_contact_model.dart';
 import '../../../providers.dart';
 
@@ -15,11 +16,20 @@ class ContactsFetcher extends ConsumerStatefulWidget {
 
 class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
   List<Contact> _contacts = [];
+  List<Contact> _filteredContacts = []; // To store filtered contacts
+  TextEditingController _searchController = TextEditingController(); // For the search bar
 
   @override
   void initState() {
     super.initState();
     _checkPermissionsAndLoadContacts();
+    _searchController.addListener(_filterContacts); // Add a listener to filter contacts on input
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _checkPermissionsAndLoadContacts() async {
@@ -28,6 +38,7 @@ class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
         final contacts = await ContactsService.getContacts();
         setState(() {
           _contacts = contacts.toList();
+          _filteredContacts = _contacts; // Initialize with all contacts
         });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -41,8 +52,30 @@ class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
     }
   }
 
+  void _filterContacts() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredContacts = _contacts.where((contact) {
+        String contactName = contact.displayName?.toLowerCase() ?? '';
+        String contactNumber = contact.phones?.isNotEmpty == true
+            ? contact.phones!.first.value ?? ''
+            : '';
+        return contactName.contains(query) || contactNumber.contains(query);
+      }).toList();
+    });
+  }
+
   Future<void> _addContactToFirestore(Contact contact) async {
-    // Get the user's DocumentReference
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? phoneNumber = prefs.getString('phoneNumber');
+
+    if (phoneNumber == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Phone number not found in preferences.')),
+      );
+      return;
+    }
+
     final userAsyncValue = ref.watch(userStreamProvider);
 
     userAsyncValue.when(
@@ -59,30 +92,28 @@ class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
           number: contact.phones!.isNotEmpty
               ? contact.phones!.first.value ?? 'No Number'
               : 'No Number',
-          profilePic: 'assets/placeholders/profile.png',
+          profilePic: 'assets/placeholders/default_profile_pic.png',
         );
 
         try {
-          // Add contact to the user's emergency_contacts
           await user.documentRef.update({
-            'emergency_contacts':
-            FieldValue.arrayUnion([emergencyContact.toFirestore()]),
+            'emergency_contacts': FieldValue.arrayUnion([emergencyContact.toFirestore()]),
           });
 
-          // Check if the contact already exists in Firestore
-          final contactDocRef = FirebaseFirestore.instance.collection('users').doc(contact.phones!.first.value);
+          final contactDocRef = FirebaseFirestore.instance
+              .collection('users')
+              .doc(contact.phones!.first.value);
           final contactDoc = await contactDocRef.get();
 
           if (contactDoc.exists) {
-            // Update the 'emergency_contact_of' field in the contact's document
             await contactDocRef.update({
-              'emergency_contact_of': FieldValue.arrayUnion(['01719958727']),
+              'emergency_contact_of': FieldValue.arrayUnion([phoneNumber]),
             });
           }
 
-          Navigator.pop(context, contact); // Pop context after adding contact
+          Navigator.pop(context, contact);
         } catch (e) {
-          Navigator.pop(context, contact); // Pop context even if there is an error
+          Navigator.pop(context, contact);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error adding contact: $e')),
           );
@@ -107,26 +138,45 @@ class _ContactsFetcherState extends ConsumerState<ContactsFetcher> {
       appBar: AppBar(
         title: const Text('Select Contact'),
       ),
-      body: _contacts.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-        itemCount: _contacts.length,
-        itemBuilder: (context, index) {
-          final contact = _contacts[index];
-          return ListTile(
-            leading: (contact.avatar != null && contact.avatar!.isNotEmpty)
-                ? CircleAvatar(
-                backgroundImage: MemoryImage(contact.avatar!))
-                : const CircleAvatar(child: Icon(Icons.person)),
-            title: Text(contact.displayName ?? 'No Name'),
-            subtitle: Text(contact.phones!.isNotEmpty
-                ? contact.phones!.first.value ?? 'No Number'
-                : 'No Number'),
-            onTap: () {
-              _addContactToFirestore(contact);
-            },
-          );
-        },
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Search Contacts',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: _filteredContacts.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+              itemCount: _filteredContacts.length,
+              itemBuilder: (context, index) {
+                final contact = _filteredContacts[index];
+                return ListTile(
+                  leading: (contact.avatar != null && contact.avatar!.isNotEmpty)
+                      ? CircleAvatar(
+                      backgroundImage: MemoryImage(contact.avatar!))
+                      : const CircleAvatar(child: Icon(Icons.person)),
+                  title: Text(contact.displayName ?? 'No Name'),
+                  subtitle: Text(contact.phones!.isNotEmpty
+                      ? contact.phones!.first.value ?? 'No Number'
+                      : 'No Number'),
+                  onTap: () {
+                    _addContactToFirestore(contact);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

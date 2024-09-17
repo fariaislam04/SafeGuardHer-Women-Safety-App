@@ -5,12 +5,10 @@ import 'dart:typed_data';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'view_recordings_history.dart';
 import '../../services/background/background_services.dart';
 import '../../utils/helpers/helper_functions.dart';
-
-late String _date;
-const String _uid = '01719958727';
 
 class RecordScreen extends StatefulWidget {
   const RecordScreen({super.key});
@@ -25,35 +23,43 @@ class _RecordScreenState extends State<RecordScreen> {
   Stream? stream;
   bool isListening = false;
   AppHelperFunctions appHelperFunctions = AppHelperFunctions();
-
-  // Camera service
   late CameraService _cameraService;
-
-  // List for storing audio data
   List<int> audioData = [];
+  late String _date;
+  String? _uid;
 
   @override
   void initState() {
     super.initState();
-    _initializeServices();
-    _date = AppHelperFunctions.extractTodayDate();
+    _initialize();
   }
 
-  Future<void> _initializeServices() async {
+  Future<void> _initialize() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    _uid = prefs.getString('phoneNumber');
+    _date = AppHelperFunctions.extractTodayDate();
+
+    // Request camera permission and initialize camera service
     PermissionService.requestCameraPermission();
     _cameraService = CameraService();
     await _cameraService.initializeCameras();
     setState(() {});
   }
 
-  startListening() async {
+  Future<void> startListening() async {
+    if (_uid == null) {
+      log("UID is null");
+      return;
+    }
+
     _startCameraSwitchTimer();
-    // This part takes input from the user's microphone
+
     stream = MicStream.microphone(
       sampleRate: 16000,
       audioSource: AudioSource.MIC,
       channelConfig: ChannelConfig.CHANNEL_IN_MONO,
     );
+
     if (stream != null) {
       streamSubscription = stream!.listen((event) {
         setState(() {
@@ -66,29 +72,10 @@ class _RecordScreenState extends State<RecordScreen> {
     }
   }
 
-  stopListening() {
+  Future<void> stopListening() async {
     log("stopping");
     streamSubscription?.cancel();
-    _uploadAudioToFirebase();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Recording saved!'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        elevation: 10,
-        margin: const EdgeInsets.fromLTRB(12.0, 60.0, 12.0, 200.0),
-      ),
-    );
-  }
-
-  stopListeningMain() {
-    log("stopping");
-    streamSubscription?.cancel();
-    _uploadAudioToFirebase();
+    await _uploadAudioToFirebase();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Recording saved!'),
@@ -119,6 +106,11 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   Future<void> _uploadAudioToFirebase() async {
+    if (_uid == null) {
+      log("UID is null");
+      return;
+    }
+
     final String audioPath = 'recordings/audios/$_uid/$_date/${DateTime.now()}.wav';
     Uint8List audioBytes = Uint8List.fromList(audioData);
     await StorageService.uploadAudio(audioBytes, audioPath);
@@ -183,8 +175,8 @@ class _RecordScreenState extends State<RecordScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ViewRecordingsHistory(
-                        userID: '01719958727',
+                      builder: (context) => ViewRecordingsHistory(
+                        userID: _uid,
                       ),
                     ),
                   );

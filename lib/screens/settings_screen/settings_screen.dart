@@ -5,6 +5,7 @@ import 'package:safeguardher_flutter_app/screens/settings_screen/safety_tips_scr
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
 import 'package:safeguardher_flutter_app/utils/helpers/helper_functions.dart';
 import 'package:safeguardher_flutter_app/widgets/templates/settings_template.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/user_model.dart';
 import '../../providers.dart';
 import '../edit_profile_screen/edit_profile_screen.dart';
@@ -19,52 +20,69 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsyncValue = ref.watch(userStreamProvider);
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator()); // Show loading indicator
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}')); // Show error message
+        } else if (snapshot.hasData) {
+          final prefs = snapshot.data!;
+          final phoneNumber = prefs.getString('phoneNumber');
 
-    return userAsyncValue.when(
-      data: (user) {
-        return SettingsTemplate(
-          child: Column(
-            children: [
-              buildProfileContainer(context, user!),
-              const SizedBox(height: 20.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton(context, Icons.history, 'History', () {
-                    appHelperFunctions.goToScreenAndComeBack(
-                        context, const HistoryPage());
-                  }),
-                  buildButton(
-                      context, Icons.perm_contact_calendar_rounded, 'Contacts',
-                      () {
-                    appHelperFunctions.goToScreenAndComeBack(
-                        context, const ContactsScreen());
-                  }),
-                  buildButton(context, Icons.security, 'Safety Tips', () {
-                    appHelperFunctions.goToScreenAndComeBack(
-                        context, SafetyTipsPage());
-                  }),
-                  /*
-                  buildButton(context, Icons.devices_other_rounded, 'Devices', () {
-                    appHelperFunctions.goToScreenAndComeBack(context, const DevicesScreen());
-                  }), */
-                ],
-              ),
-            ],
-          ),
-        );
+          if (phoneNumber == null) {
+            return Center(child: Text('Phone number not found')); // Handle missing phone number
+          }
+
+          final userAsyncValue = ref.watch(userStreamProvider);
+
+          return userAsyncValue.when(
+            data: (user) {
+              return SettingsTemplate(
+                child: Column(
+                  children: [
+                    buildProfileContainer(context, user!),
+                    const SizedBox(height: 20.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        buildButton(context, Icons.history, 'History', () {
+                          appHelperFunctions.goToScreenAndComeBack(
+                              context, const HistoryPage());
+                        }),
+                        buildButton(context, Icons.perm_contact_calendar_rounded, 'Contacts', () {
+                          appHelperFunctions.goToScreenAndComeBack(
+                              context, const ContactsScreen());
+                        }),
+                        buildButton(context, Icons.security, 'Safety Tips', () {
+                          appHelperFunctions.goToScreenAndComeBack(
+                              context, SafetyTipsPage());
+                        }),
+                        // Uncomment when `DevicesScreen` is implemented
+                        // buildButton(context, Icons.devices_other_rounded, 'Devices', () {
+                        //   appHelperFunctions.goToScreenAndComeBack(context, const DevicesScreen());
+                        // }),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, stack) => Center(child: Text('Error: $e')),
+          );
+        } else {
+          return const Center(child: Text('Unexpected error occurred.'));
+        }
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, stack) => Center(child: Text('Error: $e')),
     );
   }
 
-  Widget buildButton(BuildContext context, IconData icon, String text,
-      VoidCallback onPressed) {
+  Widget buildButton(BuildContext context, IconData icon, String text, VoidCallback onPressed) {
     return SizedBox(
-      width: 110, // Adjusted size
-      height: 100, // Adjusted size
+      width: 110,
+      height: 100,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -85,9 +103,9 @@ class SettingsScreen extends ConsumerWidget {
               Icon(
                 icon,
                 color: AppColors.primary,
-                size: 40.0, // Adjusted size
+                size: 40.0,
               ),
-              const SizedBox(height: 8), // Adjusted spacing
+              const SizedBox(height: 8),
               Text(
                 text,
                 style: const TextStyle(
@@ -124,11 +142,9 @@ class SettingsScreen extends ConsumerWidget {
           Flexible(
             flex: 1,
             child: CircleAvatar(
-              backgroundImage: profilePicUrl.isNotEmpty
-                  ? AssetImage(profilePicUrl)
-                  : const AssetImage(
-                          'assets/placeholders/default_profile_pic.png')
-                      as ImageProvider,
+              backgroundImage: user.profilePic != null
+                  ? NetworkImage(profilePicUrl)
+                  : const AssetImage('assets/placeholders/default_profile_pic.png') as ImageProvider,
               radius: 30.0,
               onBackgroundImageError: (exception, stackTrace) {
                 if (kDebugMode) {
@@ -136,6 +152,7 @@ class SettingsScreen extends ConsumerWidget {
                 }
               },
             ),
+
           ),
           const SizedBox(width: 10.0),
           Flexible(
@@ -167,12 +184,10 @@ class SettingsScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.edit, color: AppColors.primary),
             onPressed: () {
-              // Navigate to the edit profile page
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      const EditProfileScreen(), // Replace with actual edit profile screen
+                  builder: (context) => const EditProfileScreen(),
                 ),
               );
             },

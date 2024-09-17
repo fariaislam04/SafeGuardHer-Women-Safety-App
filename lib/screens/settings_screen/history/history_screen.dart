@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Import this package for DateFormat
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
@@ -63,65 +64,71 @@ class MyHistoryPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsyncValue = ref.watch(userStreamProvider);
-
-    return userAsyncValue.when(
-      data: (user) {
-        if (user?.documentRef == null) {
-          return const Center(child: Text('No user data available.'));
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
         }
-        return StreamBuilder<QuerySnapshot>(
-          stream: user?.documentRef.collection('alerts').snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        final SharedPreferences prefs = snapshot.data!;
+        String? phoneNumber = prefs.getString('phoneNumber');
+        final userAsyncValue = ref.watch(userStreamProvider);
+
+        return userAsyncValue.when(
+          data: (user) {
+            if (user?.documentRef == null) {
+              return const Center(child: Text('No user data available.'));
             }
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return const Text('Loading...');
-              default:
-                return ListView(
-                  padding: const EdgeInsets.all(16.0),
-                  children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                    Map<String, dynamic> data =
-                    document.data()! as Map<String, dynamic>;
-                    Timestamp startTimestamp =
-                    data['alert_duration']['alert_start'] as Timestamp;
-                    Timestamp? endTimestamp =
-                    data['alert_duration'].containsKey('alert_end')
-                        ? data['alert_duration']['alert_end'] as Timestamp
-                        : null;
+            return StreamBuilder<QuerySnapshot>(
+              stream: user?.documentRef.collection('alerts').snapshots(),
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const Text('Loading...');
+                  default:
+                    return ListView(
+                      padding: const EdgeInsets.all(16.0),
+                      children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                        Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                        Timestamp startTimestamp = data['alert_duration']['alert_start'] as Timestamp;
+                        Timestamp? endTimestamp = data['alert_duration'].containsKey('alert_end')
+                            ? data['alert_duration']['alert_end'] as Timestamp
+                            : null;
 
-                    // Calculate the duration
-                    Duration duration;
-                    if (endTimestamp != null) {
-                      duration = endTimestamp
-                          .toDate()
-                          .difference(startTimestamp.toDate());
-                    } else {
-                      duration = Duration.zero; // Default duration if endTimestamp is null
-                    }
-                    String formattedDuration = _formatDuration(duration);
+                        Duration duration;
+                        if (endTimestamp != null) {
+                          duration = endTimestamp.toDate().difference(startTimestamp.toDate());
+                        } else {
+                          duration = Duration.zero; // Default duration if endTimestamp is null
+                        }
+                        String formattedDuration = _formatDuration(duration);
 
-                    // Format the start timestamp
-                    String formattedDate = DateFormat('d MMM yyyy, h:mm a')
-                        .format(startTimestamp.toDate());
+                        String formattedDate = DateFormat('d MMM yyyy, h:mm a')
+                            .format(startTimestamp.toDate());
 
-                    return HistoryItem(
-                      title: data['type'].toString().toUpperCase() + ' triggered',
-                      date: formattedDate,
-                      duration: formattedDuration,
-                      titleColor: Colors.red,
-                      document: document, // Pass the document here
+                        return HistoryItem(
+                          title: data['type'].toString().toUpperCase() + ' triggered',
+                          date: formattedDate,
+                          duration: formattedDuration,
+                          titleColor: Colors.red,
+                          document: document,
+                        );
+                      }).toList(),
                     );
-                  }).toList(),
-                );
-            }
+                }
+              },
+            );
           },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, stack) => Center(child: Text('Error: $e')),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, stack) => Center(child: Text('Error: $e')),
     );
   }
 
@@ -139,6 +146,7 @@ class MyHistoryPage extends ConsumerWidget {
     }
   }
 }
+
 
 
 class ConnectedContactHistoryPage extends StatelessWidget {

@@ -1,9 +1,7 @@
-
-// providers.dart
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'models/alert_with_contact_model.dart';
 import 'models/emergency_contact_model.dart';
 import 'models/user_model.dart';
@@ -32,6 +30,7 @@ Future<List<UnsafePlace>> fetchUnsafePlaces() async {
   }
 }
 
+// Stream provider for emergency contact alerts
 final emergencyContactAlertsStreamProvider = StreamProvider<List<AlertWithContact>>((ref) async* {
   final userAsyncValue = ref.watch(userStreamProvider);
 
@@ -55,6 +54,7 @@ final emergencyContactAlertsStreamProvider = StreamProvider<List<AlertWithContac
         .where('isActive', isEqualTo: true)
         .snapshots()
         .asyncMap((snapshot) async {
+      print('Fetched alerts for $contactNumber: ${snapshot.docs.length}');
       final alerts = snapshot.docs.map((doc) {
         final alertData = doc.data();
         return Alert.fromFirestore(alertData, doc.id);
@@ -69,6 +69,8 @@ final emergencyContactAlertsStreamProvider = StreamProvider<List<AlertWithContac
       final contactName = contactData['name'] ?? 'Unknown';
       final contactProfilePic = contactData['profilePicUrl'] ?? 'assets/placeholders/default_profile_pic.png';
 
+      print('Contact details: $contactName, $contactProfilePic');
+
       // Combine alerts with contact details
       return alerts.map((alert) => AlertWithContact(
         alert: alert,
@@ -79,10 +81,10 @@ final emergencyContactAlertsStreamProvider = StreamProvider<List<AlertWithContac
   }).toList();
 
   yield* CombineLatestStream.list<List<AlertWithContact>>(streams).map((listOfAlertsLists) {
+    print('Combined alerts list length: ${listOfAlertsLists.length}');
     return listOfAlertsLists.expand((alerts) => alerts).toList();
   });
 });
-
 
 // Fetch user's alerts sub-collection
 Future<List<Alert>> fetchUserAlerts(String phoneNumber) async {
@@ -95,9 +97,14 @@ Future<List<Alert>> fetchUserAlerts(String phoneNumber) async {
 
     if (alertsSnapshot.docs.isEmpty) {
       print('No alerts found for user $phoneNumber.');
+      return [];
     }
     final alertsList = alertsSnapshot.docs.map((doc) {
       final alertData = doc.data();
+      if (alertData == null) {
+        print('No data found in alert document ${doc.id}');
+
+      }
       return Alert.fromFirestore(alertData, doc.id); // Include document ID
     }).toList();
     return alertsList;
@@ -124,6 +131,10 @@ Future<List<Alert>> fetchEmergencyContactAlerts(List<String> emergencyContactOf)
       emergencyContactAlerts.addAll(
         contactAlertsSnapshot.docs.map((doc) {
           final alertData = doc.data();
+          if (alertData == null) {
+            print('No data found in alert document ${doc.id}');
+
+          }
           return Alert.fromFirestore(alertData, doc.id); // Include document ID
         }).toList(),
       );
@@ -136,7 +147,11 @@ Future<List<Alert>> fetchEmergencyContactAlerts(List<String> emergencyContactOf)
 
 // Stream provider for user data
 final userStreamProvider = StreamProvider<User?>((ref) async* {
-  const phoneNumber = '01719958727'; // This should be dynamically set if possible
+  //const phoneNumber = '01719958727'; // This should be dynamically set if
+  // possible
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? phoneNumber = prefs.getString('phoneNumber');
 
   final userDocRef = FirebaseFirestore.instance.collection('users').doc(phoneNumber);
   final userStream = userDocRef.snapshots();
@@ -145,12 +160,13 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
     if (snapshot.exists) {
       try {
         final userData = snapshot.data()!;
+
         final unsafePlaces = await fetchUnsafePlaces();
 
         // Fetch emergency contacts
         List<EmergencyContact> emergencyContacts = [];
         if (userData.containsKey('emergency_contacts')) {
-          final contactsList = userData['emergency_contacts'] as List<dynamic>;
+          final contactsList = userData['emergency_contacts'] as List<dynamic>? ?? [];
           emergencyContacts = contactsList.map((contact) {
             if (contact is Map<String, dynamic>) {
               return EmergencyContact.fromFirestore(contact);
@@ -166,19 +182,36 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
         }
 
         // Fetch user's alerts from the sub-collection
-        final myAlerts = await fetchUserAlerts(phoneNumber);
+        final myAlerts = await fetchUserAlerts(phoneNumber!);
 
         // Fetch emergency contact alerts from their sub-collections
         List<Alert> myEmergencyContactAlerts = [];
         if (userData.containsKey('emergency_contact_of')) {
-          final emergencyContactOfList = List<String>.from(userData['emergency_contact_of']);
-          myEmergencyContactAlerts = await fetchEmergencyContactAlerts(emergencyContactOfList);
+          final emergencyContactOfList = userData['emergency_contact_of'];
+          List<String> emergencyContactOf = [];
+
+          if (emergencyContactOfList is List) {
+            emergencyContactOf = List<String>.from(emergencyContactOfList);
+          } else if (emergencyContactOfList is String) {
+            emergencyContactOf = [emergencyContactOfList]; // Handle as single string if needed
+          } else {
+            print('Unexpected type for emergency_contact_of: ${emergencyContactOfList.runtimeType}');
+          }
+
+          myEmergencyContactAlerts = await fetchEmergencyContactAlerts(emergencyContactOf);
         }
 
         // Fetch the 'emergency_contact_of' field
         List<String> emergencyContactOf = [];
         if (userData.containsKey('emergency_contact_of')) {
-          emergencyContactOf = List<String>.from(userData['emergency_contact_of']);
+          final contactOfData = userData['emergency_contact_of'];
+          if (contactOfData is List) {
+            emergencyContactOf = List<String>.from(contactOfData);
+          } else if (contactOfData is String) {
+            emergencyContactOf = [contactOfData]; // Handle as single string if needed
+          } else {
+            print('Unexpected type for emergency_contact_of: ${contactOfData.runtimeType}');
+          }
         }
 
         yield User(
@@ -242,5 +275,5 @@ final emergencyContactsProvider = Provider<List<EmergencyContact>>((ref) {
 
 // State providers for various states
 final selectedContactsProvider = StateProvider<List<int>>((ref) => []);
-final searchQueryProvider = StateProvider<String>((ref) => "");
+final searchQueryProvider = StateProvider<String>((ref) => '');
 final selectedOptionProvider = StateProvider<int>((ref) => 1);

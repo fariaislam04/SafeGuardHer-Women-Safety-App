@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:safeguardher_flutter_app/screens/auth_screen/signup_screen/signup_screen1.dart';
 import 'package:safeguardher_flutter_app/screens/home_screen/home_screen.dart';
-import '../signup_screen/signup_screen1.dart';
+
 import 'logininfo_screen.dart';
 
 void main() {
@@ -139,8 +140,7 @@ class LoginScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const HomeScreen()),
-                        );
-                        */
+                        ); */
                       },
                       child: const Text(
                         'Click here',

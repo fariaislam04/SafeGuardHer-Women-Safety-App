@@ -136,7 +136,7 @@ class _SignUpOTPScreenState extends State<SignUpOTPScreen> {
               ),
               const SizedBox(height: 10),
               const Text(
-                'Please enter the OTP verification code sent to your email (fa***@gmail.com)',
+                'Please enter the OTP verification code sent to your email.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,

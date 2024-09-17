@@ -20,7 +20,7 @@ class TrackOthersAppBar extends StatefulWidget implements PreferredSizeWidget {
   _TrackOthersAppBarState createState() => _TrackOthersAppBarState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(170);
+  Size get preferredSize => const Size.fromHeight(150);
 }
 
 class _TrackOthersAppBarState extends State<TrackOthersAppBar> {
@@ -66,7 +66,6 @@ class _TrackOthersAppBarState extends State<TrackOthersAppBar> {
       flexibleSpace: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -85,7 +84,7 @@ class _TrackOthersAppBarState extends State<TrackOthersAppBar> {
               "${widget.panickedPersonName}’s Current Location",
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 17,
+                fontSize: 14,
                 color: Colors.black,
               ),
             ),

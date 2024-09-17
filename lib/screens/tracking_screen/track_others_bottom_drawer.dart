@@ -150,7 +150,7 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                     Text(
                       widget.panickedPersonName,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -158,7 +158,7 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                       'has triggered panic alert!',
                       style: TextStyle(
                         color: Colors.grey[700],
-                        fontSize: 10,
+                        fontSize: 11,
                       ),
                     ),
                   ],
@@ -175,7 +175,7 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                   Text('Call', style: TextStyle(fontSize: 10)),
                 ],
               ),
-              SizedBox(width: 20),
+              SizedBox(width: 5),
               Column(
                 children: [
                   IconButton(
@@ -248,8 +248,8 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                   label: Text(
                     'View captured images',
                     style: TextStyle(
-                      fontSize: 11, // Decrease font size
-                      color: Colors.grey[600], // Color for the label
+                      fontSize: 11,
+                      color: Colors.grey[600],
                     ),
                   ),
                   style: ElevatedButton.styleFrom(

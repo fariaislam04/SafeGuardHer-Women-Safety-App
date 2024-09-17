@@ -11,17 +11,17 @@ AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class RecordingDetails extends StatelessWidget {
   final String audioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-  final String uid;
+  final String? uid;
   final String date;
 
-  const RecordingDetails({super.key, required this.uid, required this.date});
+  const RecordingDetails({super.key, this.uid, required this.date});
 
   @override
   Widget build(BuildContext context) {
     String formattedDate = Formatters.formatDateString(date);
 
     return FutureBuilder<List<ImageData>>(
-      future: StorageService().listImagesForEachDate(uid, date),
+      future: StorageService().listImagesForEachDate(uid!, date),
       builder: (context, snapshot)
       {
         // -- while app is fetching data from storage, show app loader

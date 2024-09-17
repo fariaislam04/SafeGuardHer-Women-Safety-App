@@ -1,58 +1,85 @@
+import 'dart:async'; // Import this for asynchronous initialization
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:safeguardher_flutter_app/screens/record_screen/recording_details.dart';
 import 'package:safeguardher_flutter_app/utils/helpers/helper_functions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/background/storage_service/storage_service.dart';
 import '../../utils/formatters/formatters.dart';
 import '../../widgets/navigations/app_bar.dart';
 
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
-late String userID;
 
 class ViewRecordingsHistory extends StatefulWidget {
-  const ViewRecordingsHistory({super.key, required userID});
+  const ViewRecordingsHistory({super.key, String? userID});
 
   @override
   State<ViewRecordingsHistory> createState() => _ViewRecordingHistoryState();
 }
 
-class _ViewRecordingHistoryState extends State<ViewRecordingsHistory>
-{
+class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
   final StorageService _storageService = StorageService();
   List<String> dateFolders = [];
   bool isLoading = true;
+  late String userID;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
-    fetchDateFolders();
+    _initializeUserID();
   }
 
-  Future<void> fetchDateFolders() async
-  {
+  Future<void> _initializeUserID() async {
     try {
-      List<String> folders = await _storageService.listDateFolders(userID);
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final storedUserID = prefs.getString('phoneNumber');
+      if (storedUserID != null) {
+        setState(() {
+          userID = storedUserID;
+        });
+        await fetchDateFolders();
+      } else {
+        // Handle case where userID is null
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing userID: $e');
+      }
       setState(() {
-        dateFolders = folders;
         isLoading = false;
       });
-    } catch (e)
-    {
-      if (kDebugMode)
-      {
-        print('Error fetching date folders: $e');
+    }
+  }
+
+  Future<void> fetchDateFolders() async {
+    if (userID.isNotEmpty) {
+      try {
+        List<String> folders = await _storageService.listDateFolders(userID);
+        setState(() {
+          dateFolders = folders;
+          isLoading = false;
+        });
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error fetching date folders: $e');
+        }
+        setState(() {
+          isLoading = false;
+        });
       }
-      setState(()
-      {
+    } else {
+      // Handle case where userID is empty
+      setState(() {
         isLoading = false;
       });
     }
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(),
@@ -93,8 +120,7 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory>
             const Divider(color: Color(0xFFEDEDED)),
             const SizedBox(height: 13),
             isLoading
-                ? const Center(child: CircularProgressIndicator()) // --
-            // Don't change it. Causes render flex overflow
+                ? const Center(child: CircularProgressIndicator())
                 : Expanded(
               child: ListView.builder(
                 itemCount: dateFolders.length,
@@ -102,6 +128,7 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory>
                   final dateFolder = dateFolders[index];
                   return RecordedHistoryTile(
                     date: dateFolder,
+                    userID: userID,
                   );
                 },
               ),
@@ -113,17 +140,18 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory>
   }
 }
 
-class RecordedHistoryTile extends StatelessWidget
-{
+class RecordedHistoryTile extends StatelessWidget {
   final String date;
+  final String userID;
+
   const RecordedHistoryTile({
     super.key,
     required this.date,
+    required this.userID,
   });
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     String formattedDate = Formatters.formatDateString(date);
 
     return Card(
@@ -140,14 +168,13 @@ class RecordedHistoryTile extends StatelessWidget
             fontWeight: FontWeight.w600,
           ),
         ),
-        onTap: ()
-        {
+        onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => RecordingDetails(
-                  uid: userID,
-                  date: date
+                uid: userID,
+                date: date,
               ),
             ),
           );

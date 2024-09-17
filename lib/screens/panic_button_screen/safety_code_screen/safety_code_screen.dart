@@ -125,7 +125,8 @@ class SafetyCodeScreenState extends State<SafetyCodeScreen> {
           .collection('alerts')
           .doc(widget.alertId)  // Update specific alert document
           .update({
-        'alert_duration.alert_end': Timestamp.now(),  // Mark alert end time
+        'alert_duration.alert_end': Timestamp.now(),
+        'isActive' : false
       });
     } catch (e) {
       print('Error marking alert as resolved: $e');

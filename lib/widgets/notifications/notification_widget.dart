@@ -8,7 +8,7 @@ import '../../screens/tracking_screen/track_others_bottom_drawer.dart';
 
 class NotificationWidget extends ConsumerWidget {
   final String panickedPersonName;
-  final String panickedPersonProfilePic; // Nullable
+  final String panickedPersonProfilePic;
   final String panickedPersonSafetyCode;
   final Alert panickedPersonAlertDetails;
 
@@ -104,7 +104,7 @@ class NotificationWidget extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "Safe Code",
+                  "Safety Code",
                   style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Poppins',

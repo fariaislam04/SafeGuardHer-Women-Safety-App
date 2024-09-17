@@ -61,8 +61,6 @@ class MapScreenState extends ConsumerState<MapScreen> {
     });
   }
 
-
-
   Future<void> _getUserLocation() async {
     try {
       var userLocation = await location.getLocation();
@@ -125,7 +123,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
                 if (kDebugMode) {
                   print('Error creating danger marker icon: ${snapshot.error}');
                 }
-                return Center(child: Text('Error creating marker icon'));
+                return const Center(child: Text('Error creating marker icon'));
               }
               final dangerMarkerIcon = snapshot.data;
 
@@ -173,7 +171,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
               );
             },
           ),
-          // Render NotificationWidget(s)
+          // Render NotificationWidget(s) or AddContactWidget
           Positioned(
             top: 0,
             left: 0,
@@ -194,16 +192,17 @@ class MapScreenState extends ConsumerState<MapScreen> {
                   }).toList(),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) {
-                if (kDebugMode) {
+              loading: () => Center(child: Container()),
+              error: (error, stack)
+              {
+                if (kDebugMode)
+                {
                   print('Error fetching active alerts: $error');
                 }
-                return const Center(child: Text('Error fetching active alerts'));
+                return Center(child: Container());
               },
             ),
           ),
-
           // Render Track Me Button
           Align(
             alignment: Alignment.bottomCenter,
@@ -239,9 +238,22 @@ class MapScreenState extends ConsumerState<MapScreen> {
               ),
             ),
           ),
-          // Render Location Enabled Button
           Positioned(
-            top: 120,
+            top: emergencyContactAlertsAsyncValue.when(
+              data: (alertsWithContacts)
+              {
+                if (alertsWithContacts.isEmpty)
+                {
+                  return 80;
+                }
+                else
+                {
+                  return 120;
+                }
+              },
+              loading: () => 80,
+              error: (error, stack) => 80,
+            ),
             right: 16,
             child: FloatingActionButton(
               onPressed: _centerOnUserLocation,

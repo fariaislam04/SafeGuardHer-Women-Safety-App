@@ -53,7 +53,7 @@ class AppHelperFunctions
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(user: user),
+        builder: (context) => HomeScreen(),
       ),
     );
   }
