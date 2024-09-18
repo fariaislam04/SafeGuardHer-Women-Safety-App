@@ -46,7 +46,9 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
   Future<void> createAndUpdateCustomMarker() async {
     if (currentLocationOfTheUser == null) return;
 
-    String profilePicUrl = 'assets/placeholders/default_profile_pic.png';
+    String profilePicUrl = widget.panickedPersonProfilePic.isNotEmpty
+        ? widget.panickedPersonProfilePic
+        : 'https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc';
 
     BitmapDescriptor customDestinationMarkerIcon = await customMarker
         .createCustomTeardropMarker(profilePicUrl, const Color(0xFFF4327B));
@@ -66,27 +68,42 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
   Future<void> createAndUpdateSourceMarker() async {
     if (currentLocationOfTheUser == null) return;
 
-    final center = LatLng(
-      currentLocationOfTheUser!.latitude!,
-      currentLocationOfTheUser!.longitude!,
+    final userProfileAsyncValue = ref.watch(userStreamProvider);
+
+    userProfileAsyncValue.when(
+      data: (userProfile) async {
+        final profilePicUrl = userProfile?.profilePic ?? 'assets/placeholders/default_profile_pic.png';
+
+        final center = LatLng(
+          currentLocationOfTheUser!.latitude!,
+          currentLocationOfTheUser!.longitude!,
+        );
+
+        BitmapDescriptor customSourceMarkerIcon = await customMarker
+            .createCustomTeardropMarker(profilePicUrl, const Color(0xFF6393F2));
+
+        setState(() {
+          _markers.removeWhere((marker) => marker.markerId.value == 'source');
+          _markers.add(
+            Marker(
+              markerId: const MarkerId('source'),
+              position: center,
+              icon: customSourceMarkerIcon,
+              infoWindow: const InfoWindow(
+                title: "Source",
+              ),
+            ),
+          );
+        });
+      },
+      loading: () {
+        // Handle loading state if necessary
+      },
+      error: (error, stackTrace) {
+        // Handle error state if necessary
+        print('Error fetching user profile: $error');
+      },
     );
-
-    BitmapDescriptor customSourceMarkerIcon = await customMarker
-        .createCustomTeardropMarker('assets/placeholders/profile.png', const Color(0xFF6393F2));
-
-    setState(() {
-      _markers.removeWhere((marker) => marker.markerId.value == 'source');
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('source'),
-          position: center,
-          icon: customSourceMarkerIcon,
-          infoWindow: const InfoWindow(
-            title: "Source",
-          ),
-        ),
-      );
-    });
   }
 
   Future<void> getCurrentUserLocation() async {
@@ -120,75 +137,90 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
     if (currentLocationOfTheUser != null) {
       _markers.clear();
 
-      BitmapDescriptor customSourceMarkerIcon = await customMarker.createCustomTeardropMarker(
-          'assets/placeholders/profile.png', const Color(0xFF6393F2));
+      // Fetch the user's profile picture URL
+      final userProfileAsyncValue = ref.watch(userStreamProvider);
 
-      _markers.add(
-        Marker(
-          markerId: const MarkerId("current_location"),
-          icon: customSourceMarkerIcon,
-          position: LatLng(
-            currentLocationOfTheUser!.latitude!,
-            currentLocationOfTheUser!.longitude!,
-          ),
-          infoWindow: const InfoWindow(
-            title: "You are here",
-          ),
-        ),
-      );
+      userProfileAsyncValue.when(
+        data: (userProfile) async {
+          final profilePicUrl = userProfile?.profilePic ?? 'https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc';
 
-      final asyncValue = ref.watch(emergencyContactAlertsStreamProvider);
-      asyncValue.when(
-        data: (alerts) async {
-          final alert = alerts.isNotEmpty ? alerts.first : null;
-          if (alert != null) {
-            destination = LatLng(
-              alert.alert.userLocationEnd.latitude,
-              alert.alert.userLocationEnd.longitude,
-            );
+          BitmapDescriptor customSourceMarkerIcon = await customMarker.createCustomTeardropMarker(
+              profilePicUrl, const Color(0xFF6393F2));
 
-            await createAndUpdateCustomMarker();
-          }
+          _markers.add(
+            Marker(
+              markerId: const MarkerId("current_location"),
+              icon: customSourceMarkerIcon,
+              position: LatLng(
+                currentLocationOfTheUser!.latitude!,
+                currentLocationOfTheUser!.longitude!,
+              ),
+              infoWindow: const InfoWindow(
+                title: "You are here",
+              ),
+            ),
+          );
 
-          final asyncValue = ref.watch(unsafePlacesStreamProvider);
-          asyncValue.when(
-            data: (unsafePlaces) async {
-              int i = 0;
-
-              for (final place in unsafePlaces) {
-                final placeLocation = LatLng(place.location.latitude, place.location.longitude);
-                final dangerMarkerIcon = await customMarker.createDangerMarker(); // Using the custom danger marker
-                final marker = Marker(
-                  markerId: MarkerId('$i'),
-                  position: placeLocation,
-                  icon: dangerMarkerIcon,
-                  infoWindow: InfoWindow(
-                    title: place.type,
-                    snippet: place.description,
-                  ),
+          final alertsAsyncValue = ref.watch(emergencyContactAlertsStreamProvider);
+          alertsAsyncValue.when(
+            data: (alerts) async {
+              final alert = alerts.isNotEmpty ? alerts.first : null;
+              if (alert != null) {
+                destination = LatLng(
+                  alert.alert.userLocationEnd.latitude,
+                  alert.alert.userLocationEnd.longitude,
                 );
-                ++i;
-                _markers.add(marker);
+
+                await createAndUpdateCustomMarker();
               }
 
-              setState(() {});
+              final unsafePlacesAsyncValue = ref.watch(unsafePlacesStreamProvider);
+              unsafePlacesAsyncValue.when(
+                data: (unsafePlaces) async {
+                  int i = 0;
 
-              if (alerts.isEmpty || !alerts.first.alert.isActive)
-              {
-                _showInactiveAlertDialog();
-              }
+                  for (final place in unsafePlaces) {
+                    final placeLocation = LatLng(place.location.latitude, place.location.longitude);
+                    final dangerMarkerIcon = await customMarker.createDangerMarker(); // Using the custom danger marker
+                    final marker = Marker(
+                      markerId: MarkerId('$i'),
+                      position: placeLocation,
+                      icon: dangerMarkerIcon,
+                      infoWindow: InfoWindow(
+                        title: place.type,
+                        snippet: place.description,
+                      ),
+                    );
+                    ++i;
+                    _markers.add(marker);
+                  }
+
+                  setState(() {});
+
+                  if (alerts.isEmpty || !alerts.first.alert.isActive) {
+                    _showInactiveAlertDialog();
+                  }
+                },
+                loading: () => null,
+                error: (error, stack) => print("Error fetching unsafe places: $error"),
+              );
             },
-            loading: () => null,
-            error: (error, stack) => print("Error fetching unsafe places: $error"),
+            error: (Object error, StackTrace stackTrace) {
+              print("Error fetching emergency contact alerts: $error");
+            },
+            loading: () {},
           );
         },
-        error: (Object error, StackTrace stackTrace) {} ,
-        loading: () {} ,
+        error: (Object error, StackTrace stackTrace) {
+          print("Error fetching user profile: $error");
+        },
+        loading: () {
+          // Handle loading state if needed
+        },
       );
-
-
     }
   }
+
 
   void getRouteData() async {
     if (currentLocationOfTheUser != null) {

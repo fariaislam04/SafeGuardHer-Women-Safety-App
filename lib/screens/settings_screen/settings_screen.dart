@@ -126,7 +126,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget buildProfileContainer(BuildContext context, User user) {
     final String profilePicUrl = user.profilePic.isNotEmpty
         ? user.profilePic
-        : 'assets/placeholders/default_profile_pic.png';
+        : 'https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc';
 
     return Container(
       height: 100.0,
@@ -142,9 +142,7 @@ class SettingsScreen extends ConsumerWidget {
           Flexible(
             flex: 1,
             child: CircleAvatar(
-              backgroundImage: user.profilePic != null
-                  ? NetworkImage(profilePicUrl)
-                  : const AssetImage('assets/placeholders/default_profile_pic.png') as ImageProvider,
+              backgroundImage: NetworkImage(profilePicUrl),
               radius: 30.0,
               onBackgroundImageError: (exception, stackTrace) {
                 if (kDebugMode) {

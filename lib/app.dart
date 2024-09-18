@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:safeguardher_flutter_app/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/home_screen/home_screen.dart';
 import 'screens/auth_screen/login_screen/login_screen.dart';
@@ -35,7 +36,7 @@ class SafeGuardHer extends ConsumerWidget {
             theme: ThemeData(
               fontFamily: GoogleFonts.poppins().fontFamily,
             ),
-            home: phoneNumber != null ? const HomeScreen() : const LoginScreen(),
+            home: phoneNumber != null ? const HomeScreen() : OnboardingScreen(),
           );
         }
         else

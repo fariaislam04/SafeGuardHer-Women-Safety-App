@@ -62,7 +62,7 @@ class CustomMarker
 
     canvas.drawPath(teardropPath, borderPaint);
 
-    final imageProvider = AssetImage(circleImageUrl);
+    final imageProvider = NetworkImage(circleImageUrl);
     final Completer<ui.Image> imageCompleter = Completer();
     final ImageStreamListener listener = ImageStreamListener((imageInfo, synchronousCall) {
       final image = imageInfo.image;
