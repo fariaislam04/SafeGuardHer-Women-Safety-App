@@ -58,7 +58,7 @@ class ContactsScreen extends ConsumerWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                    const SettingsScreen()),
+                                        const SettingsScreen()),
                               );
                             },
                             child: const Icon(Icons.arrow_back_ios),
@@ -87,12 +87,12 @@ class ContactsScreen extends ConsumerWidget {
                           return index == user.emergencyContacts.length
                               ? addContactTile(context, user)
                               : contactTile(
-                            context,
-                            ref,
-                            user,
-                            user.emergencyContacts[index],
-                            'assets/placeholders/profile.png',
-                          );
+                                  context,
+                                  ref,
+                                  user,
+                                  user.emergencyContacts[index],
+                                  'assets/placeholders/profile.png',
+                                );
                         },
                       ),
                     ),
@@ -151,7 +151,8 @@ class ContactsScreen extends ConsumerWidget {
                                 ),
                               ),
                               onPressed: () async {
-                                await FlutterPhoneDirectCaller.callNumber('9999');
+                                await FlutterPhoneDirectCaller.callNumber(
+                                    '9999');
                               },
                               child: const Text(
                                 'CALL 9999',
@@ -208,7 +209,8 @@ class ContactsScreen extends ConsumerWidget {
                                 ),
                               ),
                               onPressed: () async {
-                                await FlutterPhoneDirectCaller.callNumber('1099');
+                                await FlutterPhoneDirectCaller.callNumber(
+                                    '1099');
                               },
                               child: const Text(
                                 'CALL 1099',
@@ -308,7 +310,7 @@ class ContactsScreen extends ConsumerWidget {
   }
 
   Widget addContactTile(BuildContext context, User user) {
-    final bool isMaxContacts = user.emergencyContacts.length >= 10;
+    final bool isMaxContacts = user.emergencyContacts.length >= 5;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -316,46 +318,60 @@ class ContactsScreen extends ConsumerWidget {
         onTap: isMaxContacts
             ? null
             : () async {
-          final Contact? selectedContact = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ContactsFetcher(),
-            ),
-          );
+                final Contact? selectedContact = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ContactsFetcher(),
+                  ),
+                );
 
-          // Logic to add selected contact to Firestore here
-          if (selectedContact != null) {
-            final emergencyContact = EmergencyContact(
-              name: selectedContact.displayName ?? 'Unknown',
-              number: selectedContact.phones?.isNotEmpty == true
-                  ? selectedContact.phones!.first.value ?? 'Unknown'
-                  : 'Unknown',
-              profilePic: "assets/placeholders/default_profile_pic.png"
-            );
+                // Logic to add selected contact to Firestore here
+                if (selectedContact != null) {
+                  final emergencyContact = EmergencyContact(
+                      name: selectedContact.displayName ?? 'Unknown',
+                      number: selectedContact.phones?.isNotEmpty == true
+                          ? selectedContact.phones!.first.value ?? 'Unknown'
+                          : 'Unknown',
+                      profilePic:
+                          "assets/placeholders/default_profile_pic.png");
 
-            await user.documentRef.update({
-              'emergency_contacts':
-              FieldValue.arrayUnion([emergencyContact.toFirestore()]),
-            });
-          }
-        },
+                  await user.documentRef.update({
+                    'emergency_contacts':
+                        FieldValue.arrayUnion([emergencyContact.toFirestore()]),
+                  });
+                }
+              },
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: Colors.grey[300],
+              backgroundColor:
+                  isMaxContacts ? Colors.grey.shade300 : Colors.red,
               radius: 30.0,
-              child: const Icon(Icons.add, color: Colors.black),
-            ),
-            const SizedBox(width: 10.0),
-            const Text(
-              'Add New Contact',
-              style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
+              child: Icon(
+                Icons.add,
+                color: isMaxContacts ? Colors.black45 : Colors.white,
               ),
             ),
-            const Spacer(),
-            const Icon(Icons.arrow_forward_ios),
+            const SizedBox(width: 10.0),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isMaxContacts ? 'Max Contacts Reached' : 'Add Contact',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: isMaxContacts ? Colors.grey : Colors.black,
+                  ),
+                ),
+                const Text(
+                  'Max. 5 contacts',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
