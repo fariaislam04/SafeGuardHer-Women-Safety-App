@@ -217,7 +217,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         'name': _nameController.text,
         'email': _emailController.text,
         if (_newPasswordController.text.isNotEmpty) 'pwd': _newPasswordController.text,
-        if (imageUrl != null) 'profilePic': imageUrl,
+        if (imageUrl != null) 'profilePicUrl': imageUrl,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(

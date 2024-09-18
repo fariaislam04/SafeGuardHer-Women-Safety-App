@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:ffi';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../utils/constants/colors.dart';
+import '../../widgets/custom_widgets/track_others_app_bar.dart';
 import '../home_screen/home_screen.dart';
 import 'custom_marker.dart';
 import 'networking.dart';
@@ -28,6 +31,7 @@ class TrackOthersScreen extends ConsumerStatefulWidget {
 class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with SingleTickerProviderStateMixin {
   final Completer<GoogleMapController> _controller = Completer();
   LatLng destination = LatLng(23.775236, 90.389920); // Default destination
+  bool shownOnce = false;
 
   List<LatLng> polylineCoordinates = [];
   Set<Polyline> polyLines = {};
@@ -140,6 +144,7 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
       // Fetch the user's profile picture URL
       final userProfileAsyncValue = ref.watch(userStreamProvider);
 
+
       userProfileAsyncValue.when(
         data: (userProfile) async {
           final profilePicUrl = userProfile?.profilePic ?? 'https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc';
@@ -176,9 +181,9 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
 
               final unsafePlacesAsyncValue = ref.watch(unsafePlacesStreamProvider);
               unsafePlacesAsyncValue.when(
+
                 data: (unsafePlaces) async {
                   int i = 0;
-
                   for (final place in unsafePlaces) {
                     final placeLocation = LatLng(place.location.latitude, place.location.longitude);
                     final dangerMarkerIcon = await customMarker.createDangerMarker(); // Using the custom danger marker
@@ -197,7 +202,10 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
 
                   setState(() {});
 
-                  if (alerts.isEmpty || !alerts.first.alert.isActive) {
+                 // print("active status is ${alert?.alert.isActive}");
+                  if (alert?.alert.isActive == null && shownOnce == false)
+                  {
+                    shownOnce = true;
                     _showInactiveAlertDialog();
                   }
                 },
@@ -293,7 +301,8 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('${widget.panickedPersonName} is saved!'),
+          title: Text('${widget.panickedPersonName} is saved!', style:
+            const TextStyle(fontSize: 17), textAlign: TextAlign.center,),
           actions: [
             TextButton(
               onPressed: () {
@@ -322,25 +331,70 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      body: currentLocationOfTheUser == null
-          ? Center(child: appHelperFunctions.appLoader(context))
+      appBar: TrackOthersAppBar(
+        panickedPersonName: widget.panickedPersonName,
+        userEndLocation: GeoPoint(
+          destination.latitude,
+          destination.longitude
+        ),
+        currentLocation: GeoPoint(
+          currentLocationOfTheUser?.latitude ?? 0.0,
+          currentLocationOfTheUser?.longitude ?? 0.0,
+        ),
+      ),
+
+      body: loading
+          ? Center(child: CircularProgressIndicator())
           : Stack(
         children: [
           GoogleMap(
+            mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
-              target: LatLng(
-                currentLocationOfTheUser!.latitude!,
-                currentLocationOfTheUser!.longitude!,
-              ),
-              zoom: 15.0,
+              target: LatLng(currentLocationOfTheUser?.latitude ?? 0.0, currentLocationOfTheUser?.longitude ?? 0.0),
+              zoom: 12,
             ),
-            polylines: polyLines,
-            onMapCreated: (mapController) {
-              _controller.complete(mapController);
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
             },
-            markers: Set<Marker>.from(_markers),
-            zoomGesturesEnabled: true,
+            markers: _markers,
+            polylines: polyLines,
+          ),
+          Positioned(
+            top: 20,
+            left: 20,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.secondary,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Text(
+                'Safe Code: ${widget.panickedPersonSafetyCode}',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight
+                    .bold, fontSize: 14),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 30,
+            right: 30,
+            child: GestureDetector(
+              onTap: _goToUserLocation,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: const BoxDecoration(
+                  color: AppColors.secondary,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.my_location_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ),
           ),
         ],
       ),

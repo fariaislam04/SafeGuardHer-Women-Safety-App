@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../utils/constants/colors.dart';
+
 class TrackOthersAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String panickedPersonName;
   final GeoPoint userEndLocation;
-  final GeoPoint currentLocation;
+  final GeoPoint? currentLocation;
 
   const TrackOthersAppBar({
     super.key,
     required this.panickedPersonName,
     required this.userEndLocation,
-    required this.currentLocation,
+    this.currentLocation,
   });
 
   @override
@@ -38,22 +40,44 @@ class _TrackOthersAppBarState extends State<TrackOthersAppBar> {
         widget.userEndLocation.latitude,
         widget.userEndLocation.longitude,
       );
+
       if (placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+        String postalCode = placemark.postalCode ?? 'N/A';
+        String locality = placemark.locality ?? 'Unknown locality';
+        String street = placemark.thoroughfare ?? '';
+        String subLocality = placemark.subLocality ?? '';
+
+        List<String> addressComponents = [];
+        if (street.isNotEmpty) addressComponents.add(street);
+        if (subLocality.isNotEmpty) addressComponents.add(subLocality);
+        if (locality.isNotEmpty) addressComponents.add(locality);
+        if (postalCode.isNotEmpty) addressComponents.add(postalCode);
+
+        String addressLine = addressComponents.join(', ');
+
         setState(() {
-          address = "${placemarks[0].postalCode}, ${placemarks[0].locality}";
+          address = addressLine.isEmpty ? "No address found" : addressLine;
+        });
+      } else {
+        setState(() {
+          address = "No address found";
         });
       }
     } catch (e) {
       setState(() {
-        address = "Address not found";
+        address = "Error fetching address";
       });
+      print("Error fetching address: $e");
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
     final LatLng userEndLatLng = _geoPointToLatLng(widget.userEndLocation);
-    final LatLng currentLatLng = _geoPointToLatLng(widget.currentLocation);
+    final LatLng currentLatLng = _geoPointToLatLng(widget.currentLocation!);
     final distance = _calculateDistance(currentLatLng, userEndLatLng);
     final distanceText = distance < 1
         ? "${(distance * 1000).toInt()} meters"
@@ -91,7 +115,8 @@ class _TrackOthersAppBarState extends State<TrackOthersAppBar> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.my_location_rounded, color: Colors.blueAccent),
+                const Icon(Icons.my_location_rounded, color: AppColors
+                    .secondary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -108,7 +133,7 @@ class _TrackOthersAppBarState extends State<TrackOthersAppBar> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.access_time, color: Colors.green),
+                const Icon(Icons.access_time, color: AppColors.secondary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -152,7 +177,7 @@ class _TrackOthersAppBarState extends State<TrackOthersAppBar> {
   }
 
   String _estimateTravelTime(double distance) {
-    const double averageSpeedKmH = 60.0; // Average speed in km/h
+    const double averageSpeedKmH = 40.0; // Average speed in km/h
     const double averageSpeedKmPerMinute = averageSpeedKmH / 60.0; // km/min
 
     if (distance <= 0) return "N/A";

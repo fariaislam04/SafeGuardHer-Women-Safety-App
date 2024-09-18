@@ -58,7 +58,8 @@ class NotificationWidget extends ConsumerWidget {
                   radius: 30.0,
                   backgroundImage: panickedPersonProfilePic.isNotEmpty
                       ? NetworkImage(panickedPersonProfilePic)
-                      : const AssetImage('assets/placeholders/default_profile_pic.png') as ImageProvider,
+                      : const NetworkImage
+                    ('https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc'),
                 ),
               ),
             ),
@@ -104,7 +105,7 @@ class NotificationWidget extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "Safety Code",
+                  "Safe Code",
                   style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Poppins',

@@ -10,9 +10,9 @@ class OnboardingScreen extends StatelessWidget {
     PageViewModel(
       titleWidget: Column(
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 20),
           SvgPicture.asset('assets/logos/logo.svg', height: 60),
-          const SizedBox(height: 30),
+          const SizedBox(height: 5),
         ],
       ),
       bodyWidget: Column(
@@ -20,10 +20,11 @@ class OnboardingScreen extends StatelessWidget {
         children: [
           SvgPicture.asset('assets/illustrations/Onboarding01.svg',
               height: 300),
-          const SizedBox(height: 50),
+          const SizedBox(height: 30),
           const Text(
             "Track Anytime, Anywhere!",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
           Container(
@@ -32,7 +33,7 @@ class OnboardingScreen extends StatelessWidget {
               "Share your route with trusted contacts and enable real-time tracking to ensure your safety, whether you're on a short walk or a long journey!",
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 12,
                   fontFamily: 'Poppins',
                   color: AppColors.textSecondary),
             ),
@@ -43,9 +44,9 @@ class OnboardingScreen extends StatelessWidget {
     PageViewModel(
       titleWidget: Column(
         children: [
-          const SizedBox(height: 40),
-          SvgPicture.asset('assets/logos/logo.svg', height: 60),
           const SizedBox(height: 20),
+          SvgPicture.asset('assets/logos/logo.svg', height: 60),
+          const SizedBox(height: 5),
         ],
       ),
       bodyWidget: Column(
@@ -53,11 +54,11 @@ class OnboardingScreen extends StatelessWidget {
         children: [
           SvgPicture.asset('assets/illustrations/Onboarding02.svg',
               height: 300),
-          const SizedBox(height: 50),
+          const SizedBox(height: 7),
           const Text(
             "Instantly Inform Emergency Contacts by One Single Press!",
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           Container(
@@ -66,7 +67,7 @@ class OnboardingScreen extends StatelessWidget {
               "With just a single press, send an emergency alert to your pre-selected contacts, sharing your real-time location and a distress signal for immediate assistance",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 12,
                 color: Color(0xFF777B84), // Hex color
               ),
             ),
@@ -77,7 +78,7 @@ class OnboardingScreen extends StatelessWidget {
     PageViewModel(
       titleWidget: Column(
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 20),
           SvgPicture.asset('assets/logos/logo.svg', height: 60),
           const SizedBox(height: 0),
         ],
@@ -87,7 +88,7 @@ class OnboardingScreen extends StatelessWidget {
         children: [
           SvgPicture.asset('assets/illustrations/Onboarding03.svg',
               height: 300),
-          const SizedBox(height: 50),
+          const SizedBox(height: 10),
           const Text(
             "View Safe Locations While Travelling!",
             textAlign: TextAlign.center,
@@ -97,10 +98,11 @@ class OnboardingScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: const Text(
-              "Find and navigate to nearby safe zones marked on the map to ensure a secure journey. Access real-time information about well-lit areas, police stations, and trusted public spaces to enhance your safety on the go.",
+              "Find and navigate to nearby unsafe zones marked on the map to "
+                  "ensure a secure journey. Access real-time information about public spaces to enhance your safety on the go.",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 12,
                 color: Color(0xFF777B84), // Hex color
               ),
             ),
@@ -134,7 +136,7 @@ class OnboardingScreen extends StatelessWidget {
         ),
       ),
       next: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: const Color(0xFFD20451), // Cool background color
           borderRadius: BorderRadius.circular(20), // Rounded corners
@@ -144,6 +146,7 @@ class OnboardingScreen extends StatelessWidget {
           style: TextStyle(
             color: Colors.white, // Text color
             fontWeight: FontWeight.bold,
+            fontSize: 12
           ),
         ),
       ),

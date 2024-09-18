@@ -61,7 +61,7 @@ class _TrackMeCountdownWidgetState extends State<TrackMeCountdownWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 145.0,
+      height: 150.0,
       padding: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),

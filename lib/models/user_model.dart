@@ -34,7 +34,7 @@ class User {
     return User(
       name: 'User',
       pwd: '',
-      profilePic: 'assets/placeholders/default_profile_pic.png',
+      profilePic: 'https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc',
       email: '',
       dob: '',
       emergencyContacts: [],
@@ -50,7 +50,7 @@ class User {
     return User(
       name: data['name'] ?? 'User',
       pwd: data['pwd'] ?? '',
-      profilePic: data['profilePicUrl'] ?? 'assets/placeholders/default_profile_pic.png',
+      profilePic: data['profilePicUrl'] ?? 'https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc',
       email: data['email'] ?? '',
       dob: data['DOB'] ?? '',
       emergencyContacts: (data['emergency_contacts'] as List<dynamic>? ?? [])

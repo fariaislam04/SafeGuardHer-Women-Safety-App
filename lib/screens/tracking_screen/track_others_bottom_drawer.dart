@@ -27,7 +27,7 @@ class TrackOthersBottomDrawer extends StatefulWidget {
 }
 
 class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
-  double _currentChildSize = 0.2;
+  double _currentChildSize = 0.18;
   String _userLocationStart = '';
   String _formattedTimestamp = '';
 
@@ -37,24 +37,16 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
     _fetchDetails();
   }
 
-  Future<void> _fetchDetails() async {
-    // Convert timestamp to readable format
+  Future<void> _fetchDetails() async
+  {
     _formattedTimestamp = _formatTimestamp(widget.panickedPersonAlertDetails.alertStart);
-
-    // Convert GeoPoint to location name
     _userLocationStart = await _convertGeoPointToString(widget.panickedPersonAlertDetails.userLocationStart);
-
-    setState(() {}); // Refresh UI after fetching details
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TrackOthersAppBar(
-        panickedPersonName: widget.panickedPersonName,
-        userEndLocation: widget.panickedPersonAlertDetails.userLocationEnd,
-        currentLocation: const GeoPoint(0,0)
-      ),
       body: Stack(
         children: [
            TrackOthersScreen(
@@ -63,9 +55,9 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
              panickedPersonSafetyCode : widget.panickedPersonSafetyCode,
            ),
           DraggableScrollableSheet(
-            initialChildSize: 0.2,
-            minChildSize: 0.2,
-            maxChildSize: 0.5,
+            initialChildSize: 0.18,
+            minChildSize: 0.18,
+            maxChildSize: 0.44,
             expand: true,
             builder: (BuildContext context, ScrollController scrollController) {
               return NotificationListener<DraggableScrollableNotification>(
@@ -94,7 +86,7 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                   child: ListView(
                     controller: scrollController,
                     children: [
-                      if (_currentChildSize <= 0.2)
+                      if (_currentChildSize <= 0.18)
                         _buildMinimizedUI()
                       else
                         _buildExpandedUI(),
@@ -111,7 +103,8 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
 
   Widget _buildMinimizedUI() {
     return Padding(
-      padding: const EdgeInsets.only(right: 15.0, left: 8.0, top: 12.0, bottom: 10.0),
+      padding: const EdgeInsets.only(right: 15.0, left: 8.0, top: 0.0,
+          bottom: 10.0),
       child: Column(
         children: [
           Container(
@@ -134,8 +127,8 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                   child: CircleAvatar(
                     backgroundImage: widget.panickedPersonProfilePic != null &&
                         widget.panickedPersonProfilePic!.isNotEmpty
-                        ? AssetImage(widget.panickedPersonProfilePic!)
-                        : const AssetImage('assets/placeholders/default_profile_pic.png') as ImageProvider,
+                        ? NetworkImage(widget.panickedPersonProfilePic!)
+                        : const NetworkImage('https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc'),
                     radius: 30,
                     backgroundColor: Colors.transparent,
                   ),
@@ -149,7 +142,7 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                   children: [
                     Text(
                       widget.panickedPersonName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
@@ -158,7 +151,7 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                       'has triggered panic alert!',
                       style: TextStyle(
                         color: Colors.grey[700],
-                        fontSize: 11,
+                        fontSize: 10,
                       ),
                     ),
                   ],
@@ -196,7 +189,7 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
 
   Widget _buildExpandedUI() {
     return Padding(
-      padding: const EdgeInsets.only(left: 12.0, right: 12.0, top: 15.0),
+      padding: const EdgeInsets.only(left: 12.0, right: 12.0, top: 5.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -207,10 +200,9 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                 border: Border.all(color: AppColors.secondary, width: 2), // Border color and width
               ),
               child: CircleAvatar(
-                backgroundImage: widget.panickedPersonProfilePic != null &&
-                    widget.panickedPersonProfilePic!.isNotEmpty
-                    ? AssetImage(widget.panickedPersonProfilePic!)
-                    : const AssetImage('assets/placeholders/default_profile_pic.png') as ImageProvider,
+                backgroundImage: widget.panickedPersonProfilePic.isNotEmpty
+                    ? NetworkImage(widget.panickedPersonProfilePic)
+                    : const NetworkImage('https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc'),
                 radius: 33,
                 backgroundColor: Colors.transparent,
               ),
@@ -224,13 +216,13 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
             ),
             subtitle: Text(
               'Alert sent on $_formattedTimestamp from $_userLocationStart',
-              style: TextStyle(
-                fontWeight: FontWeight.w300,
-                fontSize: 11,
+              style: const TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
               ),
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -242,8 +234,8 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
                   },
                   icon: SvgPicture.asset(
                     'assets/icons/view_image.svg',
-                    width: 35, // Increase the width of SVG icon
-                    height: 35, // Increase the height of SVG icon
+                    width: 35,
+                    height: 35,
                   ),
                   label: Text(
                     'View captured images',
@@ -294,12 +286,13 @@ class TrackCloseContactState extends State<TrackOthersBottomDrawer> {
           ),
           Divider(),
           SizedBox(height: 10),
-          Text(
+          const Text(
             'Tap on “Get Directions” button to navigate in Google Maps',
             style: TextStyle(
-              fontWeight: FontWeight.w100,
+              fontWeight: FontWeight.w200,
               fontSize: 9,
             ),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 10),
           ElevatedButton(
