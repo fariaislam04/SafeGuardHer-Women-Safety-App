@@ -10,7 +10,8 @@ import '../../widgets/navigations/app_bar.dart';
 AppHelperFunctions appHelperFunctions = AppHelperFunctions();
 
 class RecordingDetails extends StatelessWidget {
-  final String audioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+  final String audioUrl =
+      'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
   final String? uid;
   final String date;
 
@@ -22,11 +23,9 @@ class RecordingDetails extends StatelessWidget {
 
     return FutureBuilder<List<ImageData>>(
       future: StorageService().listImagesForEachDate(uid!, date),
-      builder: (context, snapshot)
-      {
+      builder: (context, snapshot) {
         // -- while app is fetching data from storage, show app loader
-        if (snapshot.connectionState == ConnectionState.waiting)
-        {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: const CustomAppBar(),
@@ -37,8 +36,7 @@ class RecordingDetails extends StatelessWidget {
         }
 
         // -- If there's an error, show error
-        else if (snapshot.hasError)
-        {
+        else if (snapshot.hasError) {
           return Scaffold(
             appBar: const CustomAppBar(),
             body: Center(
@@ -48,8 +46,7 @@ class RecordingDetails extends StatelessWidget {
         }
 
         // -- If the date folder contains no images, show "No images"
-        else if (!snapshot.hasData || snapshot.data!.isEmpty)
-        {
+        else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Scaffold(
             appBar: CustomAppBar(),
             body: Center(
@@ -59,8 +56,7 @@ class RecordingDetails extends StatelessWidget {
         }
 
         // -- Show the images in PhotoWidget
-        else
-        {
+        else {
           List<ImageData> imageDatas = snapshot.data!;
           return Scaffold(
             backgroundColor: Colors.white,
@@ -113,7 +109,9 @@ class RecordingDetails extends StatelessWidget {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: imageDatas.map((data) => PhotoWidget(data: data)).toList(),
+                      children: imageDatas
+                          .map((data) => PhotoWidget(data: data))
+                          .toList(),
                     ),
                   ),
                   const Divider(color: Color(0xFFEDEDED)),
@@ -176,7 +174,8 @@ class PhotoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        appHelperFunctions.goToScreenAndComeBack(context, ZoomableImagePage(imageSrc: data.imageUrl));
+        appHelperFunctions.goToScreenAndComeBack(
+            context, ZoomableImagePage(imageSrc: data.imageUrl));
       },
       child: Column(
         children: [

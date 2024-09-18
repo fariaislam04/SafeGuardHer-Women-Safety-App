@@ -96,7 +96,8 @@ class _RecordScreenState extends State<RecordScreen> {
       if (isListening) {
         final imagePath = await _cameraService.captureImage();
         if (imagePath != null) {
-          await StorageService.uploadImage(imagePath, 'recordings/images/$_uid/$_date/${DateTime.now()}.jpg');
+          await StorageService.uploadImage(imagePath,
+              'recordings/images/$_uid/$_date/${DateTime.now()}.jpg');
         }
         await _cameraService.toggleCamera();
       } else {
@@ -111,7 +112,8 @@ class _RecordScreenState extends State<RecordScreen> {
       return;
     }
 
-    final String audioPath = 'recordings/audios/$_uid/$_date/${DateTime.now()}.wav';
+    final String audioPath =
+        'recordings/audios/$_uid/$_date/${DateTime.now()}.wav';
     Uint8List audioBytes = Uint8List.fromList(audioData);
     await StorageService.uploadAudio(audioBytes, audioPath);
     audioData.clear();
@@ -194,7 +196,7 @@ class _RecordScreenState extends State<RecordScreen> {
                 children: [
                   ...List.generate(
                     samples.length,
-                        (index) => CustomPaint(
+                    (index) => CustomPaint(
                       foregroundPainter: AudioWaves(samples[index], index * 2),
                       child: Container(),
                     ),

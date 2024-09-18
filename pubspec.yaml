@@ -34,6 +34,7 @@ dependencies:
   audio_wave: ^0.1.5
   flutter_phone_direct_caller: ^2.1.1
   emailjs: ^4.0.0
+  encrypt: ^5.0.3
 
   # -- Map packages
   google_maps_flutter: ^2.2.8

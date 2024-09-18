@@ -122,17 +122,17 @@ class _ViewRecordingHistoryState extends State<ViewRecordingsHistory> {
             isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : Expanded(
-              child: ListView.builder(
-                itemCount: dateFolders.length,
-                itemBuilder: (context, index) {
-                  final dateFolder = dateFolders[index];
-                  return RecordedHistoryTile(
-                    date: dateFolder,
-                    userID: userID,
-                  );
-                },
-              ),
-            ),
+                    child: ListView.builder(
+                      itemCount: dateFolders.length,
+                      itemBuilder: (context, index) {
+                        final dateFolder = dateFolders[index];
+                        return RecordedHistoryTile(
+                          date: dateFolder,
+                          userID: userID,
+                        );
+                      },
+                    ),
+                  ),
           ],
         ),
       ),
