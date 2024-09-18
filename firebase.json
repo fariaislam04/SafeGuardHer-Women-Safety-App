@@ -1,1 +1,38 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"safeguardher-app","appId":"1:404049514776:android:82266952c9e852f4508e6d","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"safeguardher-app","configurations":{"android":"1:404049514776:android:82266952c9e852f4508e6d","ios":"1:404049514776:ios:16f38ebcb0124660508e6d"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "safeguardher-app",
+          "appId": "1:404049514776:android:82266952c9e852f4508e6d",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "safeguardher-app",
+          "configurations": {
+            "android": "1:404049514776:android:82266952c9e852f4508e6d",
+            "ios": "1:404049514776:ios:16f38ebcb0124660508e6d"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}

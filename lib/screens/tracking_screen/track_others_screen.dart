@@ -172,14 +172,21 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
               }
 
               setState(() {});
+
+              if (alerts.isEmpty || !alerts.first.alert.isActive)
+              {
+                _showInactiveAlertDialog();
+              }
             },
             loading: () => null,
             error: (error, stack) => print("Error fetching unsafe places: $error"),
           );
         },
-        error: (Object error, StackTrace stackTrace) {},
-        loading: () {},
+        error: (Object error, StackTrace stackTrace) {} ,
+        loading: () {} ,
       );
+
+
     }
   }
 
@@ -249,6 +256,38 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
     }
   }
 
+  void _showInactiveAlertDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('${widget.panickedPersonName} is saved!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                decoration: BoxDecoration(
+                  color: Colors.pink,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: const Text(
+                  'Return to Home',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -270,51 +309,6 @@ class _TrackOthersScreenState extends ConsumerState<TrackOthersScreen> with Sing
             },
             markers: Set<Marker>.from(_markers),
             zoomGesturesEnabled: true,
-            trafficEnabled: true,
-            onCameraIdle: () {},
-          ),
-          Positioned(
-            top: 20.0,
-            right: 10.0,
-            child: Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.secondary,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.my_location, color: Colors.white),
-                onPressed: _goToUserLocation,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 20.0,
-            left: 10.0,
-            right: 140.0,
-            child: Container(
-              padding: const EdgeInsets.all(10.0),
-              decoration: BoxDecoration(
-                color: AppColors.secondary,
-                borderRadius: BorderRadius.circular(40.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Text(
-                'Safe Code: ${widget.panickedPersonSafetyCode}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
           ),
         ],
       ),

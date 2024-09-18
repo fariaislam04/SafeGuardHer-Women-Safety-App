@@ -82,6 +82,8 @@ dependencies:
   lottie: ^3.1.2
   baseflow_plugin_template: ^2.2.0
   rxdart: ^0.27.7
+  awesome_notifications: ^0.9.3+1
+  palette_generator: ^0.3.3+4
 
 dev_dependencies:
   flutter_test:

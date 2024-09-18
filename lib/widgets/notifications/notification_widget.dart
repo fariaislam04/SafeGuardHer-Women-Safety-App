@@ -56,8 +56,8 @@ class NotificationWidget extends ConsumerWidget {
                 child: CircleAvatar(
                   backgroundColor: Colors.grey[100],
                   radius: 30.0,
-                  backgroundImage: panickedPersonProfilePic != null && panickedPersonProfilePic!.isNotEmpty
-                      ? AssetImage(panickedPersonProfilePic!)
+                  backgroundImage: panickedPersonProfilePic.isNotEmpty
+                      ? NetworkImage(panickedPersonProfilePic)
                       : const AssetImage('assets/placeholders/default_profile_pic.png') as ImageProvider,
                 ),
               ),
@@ -73,12 +73,12 @@ class NotificationWidget extends ConsumerWidget {
                     style: const TextStyle(
                       color: Colors.white,
                       fontFamily: 'Poppins',
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const Text(
-                    "Triggered SOS alert",
+                    "Triggered panic alert",
                     style: TextStyle(
                       color: Colors.white,
                       fontFamily: 'Poppins',

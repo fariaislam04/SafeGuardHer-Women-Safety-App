@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart'; // Import for SVG icons
 import 'package:safeguardher_flutter_app/screens/tracking_screen/track_others_screen.dart';
 import 'package:safeguardher_flutter_app/utils/constants/colors.dart';
 import '../../models/alert_model.dart';
-import '../../widgets/navigations/track_others_app_bar.dart';
+import '../../widgets/custom_widgets/track_others_app_bar.dart';
 
 class TrackOthersBottomDrawer extends StatefulWidget {
   final String panickedPersonName;

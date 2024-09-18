@@ -6,6 +6,7 @@ class Alert {
   final String alertId;
   final String alertType;
   final String safetyCode;
+  final bool isActive;
   final Timestamp alertStart;
   final Timestamp alertEnd;
   final Report report;
@@ -16,6 +17,7 @@ class Alert {
     required this.alertId,
     required this.alertType,
     required this.safetyCode,
+    required this.isActive,
     required this.alertStart,
     required this.alertEnd,
     required this.report,
@@ -28,6 +30,7 @@ class Alert {
       alertId: id,
       alertType: data['type'] ?? '',
       safetyCode: data['safety_code'] ?? '',
+      isActive : data['isActive'] ?? false,
       alertStart: data['alert_duration']['alert_start'] ?? Timestamp.now(),
       alertEnd: data['alert_duration']['alert_end'] ?? Timestamp.now(),
       report: Report.fromFirestore(data['report'] ?? {}),

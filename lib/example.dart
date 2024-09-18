@@ -1,83 +1,104 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'firebase_options.dart';
-import 'models/alert_with_contact_model.dart';
-import 'providers.dart';
-import 'models/user_model.dart';
-import 'models/alert_model.dart';
-import 'models/emergency_contact_model.dart';
-import 'models/unsafe_place_model.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
+import '../providers.dart'; // Update this path
+import '../models/alert_model.dart'; // Update this path
+import '../models/user_model.dart';
+import 'firebase_options.dart'; // Update this path
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(ProviderScope(child: MyApp()));
+
+  // Fetch SharedPreferences and retrieve the phone number
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? phoneNumber = prefs.getString('phoneNumber');
+
+  // Print the phone number to the console
+  print('Phone Number from SharedPreferences: $phoneNumber');
+
+  runApp(ProviderScope(child: MyApp(phoneNumber: phoneNumber)));
 }
 
 class MyApp extends StatelessWidget {
+  final String? phoneNumber;
+
+  MyApp({required this.phoneNumber});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Alert Dashboard',
-      home: DashboardScreen(),
+      home: AlertsScreen(phoneNumber: phoneNumber),
     );
   }
 }
-// Dashboard Screen
-class DashboardScreen extends ConsumerWidget {
+
+class AlertsScreen extends ConsumerWidget {
+  final String? phoneNumber;
+
+  AlertsScreen({required this.phoneNumber});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watching user stream for real-time updates
     final userAsyncValue = ref.watch(userStreamProvider);
-    final emergencyContactAlertsAsyncValue = ref.watch(emergencyContactAlertsStreamProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Alert Dashboard')),
-      body: userAsyncValue.when(
-        data: (user) {
-          if (user == null) return Center(child: Text('No user data available'));
+      appBar: AppBar(
+        title: Text('My Alerts'),
+      ),
+      body: Column(
+        children: [
+          // Display the phone number at the top
+          if (phoneNumber != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Phone Number: $phoneNumber',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
 
-          return Column(
-            children: [
-              Expanded(
-                child: emergencyContactAlertsAsyncValue.when(
-                  data: (alerts) {
-                    if (alerts.isEmpty) {
-                      return Center(child: Text('No active alerts'));
-                    }
-                    return ListView.builder(
-                      itemCount: alerts.length,
-                      itemBuilder: (context, index) {
-                        final alertWithContact = alerts[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(alertWithContact.contactProfilePic),
-                          ),
-                          title: Text(alertWithContact.contactName),
-                          subtitle: Text('Alert: ${alertWithContact.alert.safetyCode}'),
-                          trailing: Icon(Icons.warning, color: Colors.red),
-                        );
-                      },
+          // Display the alerts
+          Expanded(
+            child: userAsyncValue.when(
+              data: (user) {
+                if (user == null || user.myAlerts.isEmpty) {
+                  return Center(
+                    child: Text('No alerts found.'),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: user.myAlerts.length,
+                  itemBuilder: (context, index) {
+                    final alert = user.myAlerts[index];
+
+                    return ListTile(
+                      title: Text('Alert ID: ${alert.alertId}'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Alert Type: ${alert.alertType}'),
+                        ],
+                      ),
+                      isThreeLine: true,
                     );
                   },
-                  loading: () => Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => Center(child: Text('Error fetching alerts: $error')),
-                ),
+                );
+              },
+              loading: () => Center(child: CircularProgressIndicator()),
+              error: (error, stackTrace) => Center(
+                child: Text('Error: $error'),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to another screen or perform an action
-                },
-                child: Text('Perform Action'),
-              ),
-            ],
-          );
-        },
-        loading: () => Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error fetching user data: $error')),
+            ),
+          ),
+        ],
       ),
     );
   }

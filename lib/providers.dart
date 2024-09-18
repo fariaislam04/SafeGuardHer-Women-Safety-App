@@ -153,6 +153,8 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? phoneNumber = prefs.getString('phoneNumber');
 
+  print("Phone number in providers is ${phoneNumber}");
+
   final userDocRef = FirebaseFirestore.instance.collection('users').doc(phoneNumber);
   final userStream = userDocRef.snapshots();
 
@@ -183,6 +185,7 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
 
         // Fetch user's alerts from the sub-collection
         final myAlerts = await fetchUserAlerts(phoneNumber!);
+        print("my alerts are ${myAlerts.first.alertId}");
 
         // Fetch emergency contact alerts from their sub-collections
         List<Alert> myEmergencyContactAlerts = [];
@@ -193,7 +196,7 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
           if (emergencyContactOfList is List) {
             emergencyContactOf = List<String>.from(emergencyContactOfList);
           } else if (emergencyContactOfList is String) {
-            emergencyContactOf = [emergencyContactOfList]; // Handle as single string if needed
+            emergencyContactOf = [emergencyContactOfList];
           } else {
             print('Unexpected type for emergency_contact_of: ${emergencyContactOfList.runtimeType}');
           }

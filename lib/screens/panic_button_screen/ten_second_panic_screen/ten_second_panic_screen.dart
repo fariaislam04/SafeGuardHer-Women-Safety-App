@@ -4,6 +4,7 @@ import 'package:awesome_ripple_animation/awesome_ripple_animation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/emergency_contact_model.dart';
@@ -46,6 +47,7 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   final SMSSender smsSender = SMSSender();
   late String safetyCode;
   late String alertId;
+  String? userId;
 
   @override
   void initState() {
@@ -54,12 +56,20 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
     _startCountdown();
     safetyCode = _generateSafetyCode();
     alertId = FirebaseFirestore.instance.collection('alerts').doc().id;
+    _loadUserId();
   }
 
   @override
   void dispose() {
     _timer.cancel();
     super.dispose();
+  }
+
+  Future<void> _loadUserId() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      userId = pref.getString("phoneNumber");
+    });
   }
 
   void _startCountdown() {
@@ -78,12 +88,12 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
   Future<void> _getUserLocation() async {
     _userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
+
   Future<void> _sendAlertAndNavigate() async {
     // Check if emergency contacts exist
     if (widget.emergencyContacts.isEmpty) {
       _showSnackBar('No emergency contacts available.');
-      // If no emergency contacts, still proceed with a default emergency number
-      String number = '999'; // Default emergency number if no contacts
+      String number = '999';
       await FlutterPhoneDirectCaller.callNumber(number);
     } else {
       final locationMessage =
@@ -106,20 +116,28 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
     }
 
     // After SMS and phone call, navigate to SafetyCodeScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SafetyCodeScreen(
-          safetyCode: safetyCode,
-          userId: '01719958727', // Example userId
-          alertId: alertId,
+    if (userId != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SafetyCodeScreen(
+            safetyCode: safetyCode,
+            userId: userId!,
+            alertId: alertId,
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      _showSnackBar('User ID not found');
+    }
   }
 
-
   Future<void> _logAlertToFirestore() async {
+    if (userId == null) {
+      _showSnackBar('User ID not loaded');
+      return;
+    }
+
     final alertEntry = {
       'isActive': true,
       'alert_duration': {'alert_start': Timestamp.now()},
@@ -138,7 +156,7 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc('01719958727')
+        .doc(userId)  // Use the loaded userId here
         .collection('alerts')
         .doc(alertId)
         .set(alertEntry); // Use set to create the document
@@ -154,6 +172,7 @@ class _TenSecondPanicScreenBodyState extends State<_TenSecondPanicScreenBody> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
