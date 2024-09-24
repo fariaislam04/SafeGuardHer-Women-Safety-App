@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safeguardher_flutter_app/models/alert_with_contact_model.dart';
 import '../../models/alert_model.dart';
 import '../../providers.dart';
+import 'custom_marker.dart';
 
 class TrackEmergencyContactLocationMap extends ConsumerStatefulWidget {
   final String panickedPersonName;
-  final Alert panickedPersonAlertDetails; // Contains alertId
+  final Alert panickedPersonAlertDetails;
   final String panickedPersonProfilePic;
 
   const TrackEmergencyContactLocationMap({
@@ -30,36 +31,31 @@ class _TrackEmergencyContactLocationMapState
   List<LatLng> polylineCoordinates = [];
   Set<Polyline> polyLines = {};
   Set<Marker> markers = {};
-  BitmapDescriptor? userMarkerIcon;
-  BitmapDescriptor? panicLocationMarkerIcon;
+  BitmapDescriptor? userProfilePicMarker;
 
   // Placeholder coordinates
-  LatLng placeholderStartLocation = LatLng(37.7749, -122.4194); // San Francisco, CA
-  LatLng placeholderEndLocation = LatLng(37.7849, -122.4094); // Slightly different location in San Francisco
+  LatLng placeholderStartLocation = LatLng(0,0);
+  LatLng placeholderEndLocation = LatLng(0,0);
+  // in San Francisco
 
   @override
   void initState() {
     super.initState();
-    _initializeMarkers();
 
     // Set placeholder coordinates
     startLocation = placeholderStartLocation;
     endLocation = placeholderEndLocation;
     updatePolyline();
     updateMarkers();
+    _initializeUserProfileMarker(widget.panickedPersonProfilePic);
   }
 
-  // Initialize custom markers (for the panicked person's profile and start location)
-  Future<void> _initializeMarkers() async {
-    userMarkerIcon = await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(size: Size(48, 48)),
-      'assets/icons/src_marker.png', // Add custom marker path for the user
-    );
-
-    panicLocationMarkerIcon = await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(size: Size(48, 48)),
-      'assets/images/panic_marker.png', // Add custom marker path for the panicked location
-    );
+  Future<void> _initializeUserProfileMarker(String profilePicUrl) async {
+    BitmapDescriptor marker = await CustomMarker()
+        .createCustomTeardropMarker(profilePicUrl, Colors.blue);
+    setState(() {
+      userProfilePicMarker = marker;
+    });
   }
 
   @override
@@ -72,7 +68,7 @@ class _TrackEmergencyContactLocationMapState
           // Look for the specific alert by alertId
           var alert = alerts.firstWhere(
                 (a) => a.alert.alertId == widget.panickedPersonAlertDetails.alertId,
-           // orElse: () => null,
+//orElse: () => null,
           );
 
           if (alert != null) {
@@ -116,10 +112,22 @@ class _TrackEmergencyContactLocationMapState
           GoogleMap(
             onMapCreated: (GoogleMapController controller) {
               mapController = controller;
+              mapController!.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: startLocation!,
+                    zoom: 15.0,
+                    tilt: 80.0,  // Set the tilt to 80 degrees
+                    bearing: 30.0, // Set the bearing to 30 degrees
+                  ),
+                ),
+                );
             },
             initialCameraPosition: CameraPosition(
               target: startLocation!,
               zoom: 15.0,
+              tilt: 80,
+              bearing: 30
             ),
             markers: markers,
             polylines: polyLines,
@@ -168,7 +176,7 @@ class _TrackEmergencyContactLocationMapState
         Marker(
           markerId: const MarkerId('startLocation'),
           position: startLocation!,
-          icon: panicLocationMarkerIcon ?? BitmapDescriptor.defaultMarker,
+          icon: BitmapDescriptor.defaultMarker,
           infoWindow: InfoWindow(
             title: '${widget.panickedPersonName}\'s Start Location',
           ),
@@ -180,7 +188,7 @@ class _TrackEmergencyContactLocationMapState
         Marker(
           markerId: const MarkerId('endLocation'),
           position: endLocation!,
-          icon: userMarkerIcon ?? BitmapDescriptor.defaultMarker,
+          icon: userProfilePicMarker ?? BitmapDescriptor.defaultMarker,
           infoWindow: InfoWindow(
             title: '${widget.panickedPersonName}\'s Current Location',
           ),

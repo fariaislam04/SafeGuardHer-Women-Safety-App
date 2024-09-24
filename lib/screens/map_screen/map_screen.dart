@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:safeguardher_flutter_app/widgets/notifications/notification_widget.dart';
 import 'package:safeguardher_flutter_app/widgets/custom_widgets/add_contact_widget.dart';
 import '../../providers.dart';
@@ -26,11 +27,31 @@ class MapScreenState extends ConsumerState<MapScreen> {
   late Future<BitmapDescriptor> dangerMarkerIconFuture;
   LatLng? userLocation;
 
+  // Initialize Flutter Local Notifications
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+
+  // Track contacts for which notifications have already been shown
+  final Set<String> notifiedContacts = {};
+
   @override
   void initState() {
     super.initState();
     _requestLocationPermission();
     dangerMarkerIconFuture = CustomMarker().createDangerMarker();
+    _initializeNotifications();
+  }
+
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
   }
 
   Future<void> _requestLocationPermission() async {
@@ -105,6 +126,33 @@ class MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
+  Future<void> _showTrackMeNotification(String contactName) async {
+    if (notifiedContacts.contains(contactName)) return; // Prevent duplicate notifications
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'track_me_channel',
+      'Track Me Alerts',
+      channelDescription: 'Channel for Track Me notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Track Me Alert',
+      'Your emergency contact $contactName is sharing location with you!',
+      platformChannelSpecifics,
+      payload: 'track_me_payload', // Optional payload
+    );
+
+    notifiedContacts.add(contactName); // Mark contact as notified
+  }
+
   @override
   Widget build(BuildContext context) {
     final unsafePlacesAsyncValue = ref.watch(unsafePlacesStreamProvider);
@@ -173,7 +221,6 @@ class MapScreenState extends ConsumerState<MapScreen> {
             },
           ),
           // Render NotificationWidget(s) or AddContactWidget
-          // Render NotificationWidget(s) or AddContactWidget
           Positioned(
             top: 0,
             left: 0,
@@ -186,6 +233,9 @@ class MapScreenState extends ConsumerState<MapScreen> {
                 return Column(
                   children: alertsWithContacts.map((alertWithContact) {
                     if (alertWithContact.alert.alertType == 'trackMe') {
+                      // Show Flutter Local Notification
+                      _showTrackMeNotification(alertWithContact.contactName);
+
                       return TrackEmergencyContactLocationNotificationWidget(
                         panickedPersonName: alertWithContact.contactName,
                         panickedPersonProfilePic: alertWithContact.contactProfilePic,
@@ -250,19 +300,20 @@ class MapScreenState extends ConsumerState<MapScreen> {
           ),
           Positioned(
             top: emergencyContactAlertsAsyncValue.when(
-              data: (alertsWithContacts)
-              {
-                if (alertsWithContacts.isEmpty)
-                {
+              data: (alertsWithContacts) {
+                if (alertsWithContacts.isEmpty) {
                   return 80;
-                }
-                else
-                {
+                } else {
                   return 120;
                 }
               },
               loading: () => 80,
-              error: (error, stack) => 80,
+              error: (error, stack) {
+                if (kDebugMode) {
+                  print('Error fetching active alerts: $error');
+                }
+                return 80;
+              },
             ),
             right: 16,
             child: FloatingActionButton(
