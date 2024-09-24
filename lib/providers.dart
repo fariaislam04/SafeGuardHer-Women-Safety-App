@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:safeguardher_flutter_app/utils/logging/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/alert_with_contact_model.dart';
 import 'models/emergency_contact_model.dart';
+import 'models/track_me_alert_model.dart';
 import 'models/user_model.dart';
 import 'models/unsafe_place_model.dart';
 import 'models/alert_model.dart';
@@ -86,27 +88,38 @@ final emergencyContactAlertsStreamProvider = StreamProvider<List<AlertWithContac
   });
 });
 
-// Fetch user's alerts sub-collection
+// Updated fetchUserAlerts function
 Future<List<Alert>> fetchUserAlerts(String phoneNumber) async {
   try {
-    final alertsSnapshot = await FirebaseFirestore.instance
+    final alertsCollection = FirebaseFirestore.instance
         .collection('users')
         .doc(phoneNumber)
-        .collection('alerts')
-        .get();
+        .collection('alerts');
+
+    // Check if the collection exists
+    final collectionSnapshot = await alertsCollection.limit(1).get();
+
+    if (collectionSnapshot.docs.isEmpty) {
+      print('No alerts collection found for user $phoneNumber.');
+      return [];
+    }
+
+    final alertsSnapshot = await alertsCollection.get();
 
     if (alertsSnapshot.docs.isEmpty) {
       print('No alerts found for user $phoneNumber.');
       return [];
     }
+
     final alertsList = alertsSnapshot.docs.map((doc) {
       final alertData = doc.data();
       if (alertData == null) {
         print('No data found in alert document ${doc.id}');
-
+        return null;
       }
-      return Alert.fromFirestore(alertData, doc.id); // Include document ID
-    }).toList();
+      return Alert.fromFirestore(alertData, doc.id);
+    }).whereType<Alert>().toList();
+
     return alertsList;
   } catch (e) {
     print('Error fetching user alerts: $e');
@@ -133,10 +146,10 @@ Future<List<Alert>> fetchEmergencyContactAlerts(List<String> emergencyContactOf)
           final alertData = doc.data();
           if (alertData == null) {
             print('No data found in alert document ${doc.id}');
-
+            return null;
           }
-          return Alert.fromFirestore(alertData, doc.id); // Include document ID
-        }).toList(),
+          return Alert.fromFirestore(alertData, doc.id);
+        }).whereType<Alert>().toList(),
       );
     } catch (e) {
       print('Error fetching alerts for contact $contactNumber: $e');
@@ -145,15 +158,12 @@ Future<List<Alert>> fetchEmergencyContactAlerts(List<String> emergencyContactOf)
   return emergencyContactAlerts;
 }
 
-// Stream provider for user data
+// Updated Stream provider for user data
 final userStreamProvider = StreamProvider<User?>((ref) async* {
-  //const phoneNumber = '01719958727'; // This should be dynamically set if
-  // possible
-
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? phoneNumber = prefs.getString('phoneNumber');
 
-  print("Phone number in providers is ${phoneNumber}");
+  print("Phone number in providers is $phoneNumber");
 
   final userDocRef = FirebaseFirestore.instance.collection('users').doc(phoneNumber);
   final userStream = userDocRef.snapshots();
@@ -185,7 +195,6 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
 
         // Fetch user's alerts from the sub-collection
         final myAlerts = await fetchUserAlerts(phoneNumber!);
-        print("my alerts are ${myAlerts.first.alertId}");
 
         // Fetch emergency contact alerts from their sub-collections
         List<Alert> myEmergencyContactAlerts = [];
@@ -211,7 +220,7 @@ final userStreamProvider = StreamProvider<User?>((ref) async* {
           if (contactOfData is List) {
             emergencyContactOf = List<String>.from(contactOfData);
           } else if (contactOfData is String) {
-            emergencyContactOf = [contactOfData]; // Handle as single string if needed
+            emergencyContactOf = [contactOfData];
           } else {
             print('Unexpected type for emergency_contact_of: ${contactOfData.runtimeType}');
           }
@@ -275,6 +284,40 @@ final emergencyContactsProvider = Provider<List<EmergencyContact>>((ref) {
     },
   );
 });
+
+final myTrackMeAlertsActiveProvider = StreamProvider<TrackMeAlert>((ref) {
+  final userAsyncValue = ref.watch(userStreamProvider);
+
+  if (userAsyncValue.isLoading) {
+    return Stream.value(TrackMeAlert.empty());
+  }
+
+  if (!userAsyncValue.hasValue || userAsyncValue.value == null) {
+    return Stream.value(TrackMeAlert.empty());
+  }
+
+  final phoneNumber = userAsyncValue.value!.documentRef.id;
+
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(phoneNumber)
+      .collection('alerts')
+      .where('isActive', isEqualTo: true)
+      .where('type', isEqualTo: "trackMe")
+      .snapshots()
+      .asyncMap((snapshot) {
+    if (snapshot.docs.isNotEmpty)
+    {
+      // Assuming you want to return the first active alert
+      final alertData = snapshot.docs.first.data();
+      logger.d("Found active alerts: ${snapshot.docs.length}");
+      final alert = TrackMeAlert.fromFirestore(alertData, snapshot.docs.first.id);
+      return alert;
+    }
+    return TrackMeAlert.empty();
+  });
+});
+
 
 // State providers for various states
 final selectedContactsProvider = StateProvider<List<int>>((ref) => []);

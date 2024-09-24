@@ -10,10 +10,10 @@ class User {
   final String email;
   final String dob;
   final List<EmergencyContact> emergencyContacts;
-  final List<Alert> myAlerts;
-  final List<UnsafePlace> unsafePlaces;
-  final List<String> emergencyContactOf;
-  final List<Alert> myEmergencyContactAlerts;
+  final List<Alert>? myAlerts;
+  final List<UnsafePlace>? unsafePlaces;
+  final List<String>? emergencyContactOf;
+  final List<Alert>? myEmergencyContactAlerts;
   final DocumentReference documentRef;
 
   User({
@@ -22,11 +22,11 @@ class User {
     required this.profilePic,
     required this.email,
     required this.dob,
-    required this.emergencyContacts,
-    required this.myAlerts,
-    required this.myEmergencyContactAlerts,
-    required this.unsafePlaces,
-    required this.emergencyContactOf,
+    this.emergencyContacts = const [],
+    this.myAlerts = const [],
+    this.myEmergencyContactAlerts = const [],
+    this.unsafePlaces = const [],
+    this.emergencyContactOf = const [],
     required this.documentRef,
   });
 
@@ -37,11 +37,6 @@ class User {
       profilePic: 'https://firebasestorage.googleapis.com/v0/b/safeguardher-app.appspot.com/o/profile_pics%2F01719958727%2F1000007043.png?alt=media&token=34a85510-d1e2-40bd-b84b-5839bef880bc',
       email: '',
       dob: '',
-      emergencyContacts: [],
-      myAlerts: [],
-      unsafePlaces: [],
-      myEmergencyContactAlerts: [],
-      emergencyContactOf: [],
       documentRef: FirebaseFirestore.instance.collection('users').doc('empty'),
     );
   }
@@ -56,13 +51,11 @@ class User {
       emergencyContacts: (data['emergency_contacts'] as List<dynamic>? ?? [])
           .map((contact) => EmergencyContact.fromFirestore(contact as Map<String, dynamic>))
           .toList(),
-      myAlerts: (data['alerts'] as List<dynamic>? ?? [])
-          .map((alertDoc) {
-        final alertId = alertDoc.id; // Assuming alertDoc has an 'id' property
+      myAlerts: (data['alerts'] as List<dynamic>?)?.map((alertDoc) {
+        final alertId = alertDoc.id;
         final alertData = alertDoc.data() as Map<String, dynamic>;
         return Alert.fromFirestore(alertData, alertId);
-      })
-          .toList(),
+      }).toList(),
       unsafePlaces: (data['unsafe_places'] as List<dynamic>? ?? [])
           .map((place) => UnsafePlace.fromFirestore(place as Map<String, dynamic>))
           .toList(),
@@ -70,14 +63,14 @@ class User {
           .map((contactNumber) => contactNumber.toString())
           .toList(),
       documentRef: docRef,
-      myEmergencyContactAlerts: [], // Initialize with empty list
+      myEmergencyContactAlerts: [],
     );
   }
 
   Future<void> fetchEmergencyContactAlerts() async {
     try {
       List<Alert> alerts = [];
-      for (String contactNumber in emergencyContactOf) {
+      for (String contactNumber in emergencyContactOf!) {
         final contactAlertsSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(contactNumber)
@@ -86,10 +79,10 @@ class User {
 
         for (var alertDoc in contactAlertsSnapshot.docs) {
           final alertData = alertDoc.data();
-          alerts.add(Alert.fromFirestore(alertData, alertDoc.id)); // Pass the document ID
+          alerts.add(Alert.fromFirestore(alertData, alertDoc.id));
         }
       }
-      myEmergencyContactAlerts.addAll(alerts);
+      myEmergencyContactAlerts?.addAll(alerts);
     } catch (e) {
       print('Error fetching emergency contact alerts: $e');
     }

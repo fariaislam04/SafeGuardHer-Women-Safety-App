@@ -1,86 +1,58 @@
-//alert_model.dart
-
+//track_me_alert_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:safeguardher_flutter_app/models/emergency_contact_model.dart';
 
-class Alert {
+class TrackMeAlert {
   final String alertId;
   final String alertType;
-  final String safetyCode;
   final bool isActive;
+  final String trackMeLimit;
   final Timestamp alertStart;
   final Timestamp alertEnd;
-  final Report report;
+  final List<EmergencyContact> alertedContacts;
   final GeoPoint userLocationStart;
   final GeoPoint userLocationEnd;
 
-  Alert({
+  TrackMeAlert({
     required this.alertId,
     required this.alertType,
-    required this.safetyCode,
     required this.isActive,
+    required this.trackMeLimit,
     required this.alertStart,
     required this.alertEnd,
-    required this.report,
     required this.userLocationStart,
     required this.userLocationEnd,
+    required this.alertedContacts,
   });
 
   // Factory constructor to create an empty alert
-  factory Alert.empty() {
-    return Alert(
+  factory TrackMeAlert.empty() {
+    return TrackMeAlert(
       alertId: '',
       alertType: '',
-      safetyCode: '',
       isActive: false,
+      trackMeLimit: "1",
       alertStart: Timestamp.now(),
       alertEnd: Timestamp.now(),
-      report: Report.empty(),
+      alertedContacts: [],
       userLocationStart: const GeoPoint(0, 0),
       userLocationEnd: const GeoPoint(0, 0),
     );
   }
 
-  factory Alert.fromFirestore(Map<String, dynamic> data, String id) {
-    return Alert(
+  factory TrackMeAlert.fromFirestore(Map<String, dynamic> data, String id) {
+    return TrackMeAlert(
       alertId: id,
       alertType: data['type'] ?? '',
-      safetyCode: data['safety_code'] ?? '',
-      isActive : data['isActive'] ?? false,
+      isActive: data['isActive'] ?? false,
+      trackMeLimit: data['track_me_limit'] ?? "1",
+      alertedContacts: (data['alerted_contacts'] as List<dynamic>?)?.map((contactData) {
+        return EmergencyContact.fromFirestore(contactData);
+      }).toList() ?? [],
       alertStart: data['alert_duration']['alert_start'] ?? Timestamp.now(),
       alertEnd: data['alert_duration']['alert_end'] ?? Timestamp.now(),
-      report: Report.fromFirestore(data['report'] ?? {}),
       userLocationStart: data['user_locations']['user_location_start'] as GeoPoint,
       userLocationEnd: data['user_locations']['user_location_end'] as GeoPoint,
-    );
-  }
-}
-
-class Report {
-  final String reportDescription;
-  final String reportType;
-  final GeoPoint? reportGeopoint;
-
-  Report({
-    required this.reportDescription,
-    required this.reportType,
-    this.reportGeopoint,
-  });
-
-  factory Report.fromFirestore(Map<String, dynamic> data)
-  {
-    return Report(
-      reportDescription: data['report_description'] ?? '',
-      reportType: data['report_type'] ?? '',
-      reportGeopoint: data['report_geopoint'] as GeoPoint?,
-    );
-  }
-
-  factory Report.empty()
-  {
-    return Report(
-      reportDescription: '',
-      reportType: '',
-      reportGeopoint: const GeoPoint (0,0),
     );
   }
 

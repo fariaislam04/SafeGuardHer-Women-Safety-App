@@ -8,6 +8,7 @@ import 'package:safeguardher_flutter_app/widgets/notifications/notification_widg
 import 'package:safeguardher_flutter_app/widgets/custom_widgets/add_contact_widget.dart';
 import '../../providers.dart';
 import '../../utils/constants/colors.dart';
+import '../../widgets/notifications/track_me_notification_widget.dart';
 import '../tracking_screen/custom_marker.dart';
 import '../tracking_screen/track_me_modal.dart';
 
@@ -172,6 +173,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
             },
           ),
           // Render NotificationWidget(s) or AddContactWidget
+          // Render NotificationWidget(s) or AddContactWidget
           Positioned(
             top: 0,
             left: 0,
@@ -183,26 +185,34 @@ class MapScreenState extends ConsumerState<MapScreen> {
                 }
                 return Column(
                   children: alertsWithContacts.map((alertWithContact) {
-                    return NotificationWidget(
-                      panickedPersonName: alertWithContact.contactName,
-                      panickedPersonProfilePic: alertWithContact.contactProfilePic,
-                      panickedPersonSafetyCode: alertWithContact.alert.safetyCode,
-                      panickedPersonAlertDetails: alertWithContact.alert,
-                    );
+                    if (alertWithContact.alert.alertType == 'trackMe') {
+                      return TrackEmergencyContactLocationNotificationWidget(
+                        panickedPersonName: alertWithContact.contactName,
+                        panickedPersonProfilePic: alertWithContact.contactProfilePic,
+                        panickedPersonAlertDetails: alertWithContact.alert,
+                      );
+                    } else if (alertWithContact.alert.alertType == 'panic') {
+                      return NotificationWidget(
+                        panickedPersonName: alertWithContact.contactName,
+                        panickedPersonProfilePic: alertWithContact.contactProfilePic,
+                        panickedPersonSafetyCode: alertWithContact.alert.safetyCode,
+                        panickedPersonAlertDetails: alertWithContact.alert,
+                      );
+                    }
+                    return Container(); // Fallback if type doesn't match
                   }).toList(),
                 );
               },
               loading: () => Center(child: Container()),
-              error: (error, stack)
-              {
-                if (kDebugMode)
-                {
+              error: (error, stack) {
+                if (kDebugMode) {
                   print('Error fetching active alerts: $error');
                 }
                 return Center(child: Container());
               },
             ),
           ),
+
           // Render Track Me Button
           Align(
             alignment: Alignment.bottomCenter,

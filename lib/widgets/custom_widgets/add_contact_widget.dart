@@ -32,7 +32,7 @@ class AddContactWidget extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(top: 0.0),
                     child: Text(
-                      'Track Me',
+                      'Add Contact',
                       style: TextStyle(
                         fontSize: 14,
                         fontFamily: 'Poppins',
@@ -43,9 +43,9 @@ class AddContactWidget extends StatelessWidget {
                   ),
                   SizedBox(height: 2.0),
                   Text(
-                    'Share your live location with close contacts',
+                    'Add close contacts to share live location with',
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 9,
                       fontFamily: 'Poppins',
                       color: Colors.black,
                     ),
