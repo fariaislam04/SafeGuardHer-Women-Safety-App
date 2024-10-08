@@ -163,7 +163,8 @@ class TrackMeModal extends ConsumerWidget {
                           Column(
                             children: [
                               CircleAvatar(
-                                backgroundImage: AssetImage(contact.profilePic),
+                                backgroundImage: NetworkImage(contact
+                                    .profilePic),
                                 radius: 40,
                               ),
                               const SizedBox(height: 8),
