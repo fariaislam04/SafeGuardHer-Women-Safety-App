@@ -1,6 +1,9 @@
-<h1 align="center" style="font-size: 52px;" ><img height=50 src="https://i.ibb.co.com/b3yN7PJ/logo.png"> SafeGuardHer: Women Safety App</h1>
+<h1 align="center"  style="vertical-align: middle;" >
+  <img src="https://i.ibb.co/b3yN7PJ/logo.png" alt="Logo" height="60" width="65">
+  SafeGuardHer: Women Safety App
+</h1>
 
-This is an Android-based easy-to-use women safety app designed to provide reliable safety tools for women.
+This is an Android-based women safety app designed to provide reliable safety tools for women.
 
 ## ⚠️ Problem Statement
 Violence against women is a persistent issue, especially in South Asia, where legal protections are often insufficient. This has led to a significant increase in crimes against women, with very few resulting in convictions.
