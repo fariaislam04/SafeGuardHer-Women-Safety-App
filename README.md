@@ -1,7 +1,9 @@
 <h1 align="center"  style="vertical-align: middle;" >
   <img src="https://i.ibb.co/b3yN7PJ/logo.png" alt="Logo" height="60" width="65">
   SafeGuardHer: Women Safety App
+  
 </h1>
+<p align="center"> [App is currently under re-construction] </p>
 
 <p align="center"> This is an Android-based women safety app designed to provide reliable safety tools for women. </p>
 
